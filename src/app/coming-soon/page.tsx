@@ -16,11 +16,8 @@ export default function ComingSoonPage() {
   });
 
   React.useEffect(() => {
-    // Set target date (example: 2 days 12 hours 31 minutes from now)
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() + 2);
-    targetDate.setHours(targetDate.getHours() + 12);
-    targetDate.setMinutes(targetDate.getMinutes() + 31);
+    // Set target date to February 18, 2026, at 17:55
+    const targetDate = new Date('2026-02-18T17:55:00');
 
     const timer = setInterval(() => {
       const now = new Date().getTime();
