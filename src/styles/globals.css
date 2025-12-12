@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-@plugin 'tw-animate-css';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 @plugin '@tailwindcss/forms';
@@ -45,6 +45,27 @@
   --color-neutral-500: #6d6d6d;
   --color-neutral-600: #3d3d3d;
   --color-neutral-800: #121212;
+
+  /* Semantic color palette - Light mode defaults */
+  --color-background: #ffffff;
+  --color-foreground: #121212;
+  --color-card: #ffffff;
+  --color-card-foreground: #121212;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #121212;
+  --color-primary: #c33a3c;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #bcbcbc;
+  --color-secondary-foreground: #121212;
+  --color-muted: #bcbcbc;
+  --color-muted-foreground: #6d6d6d;
+  --color-accent: #bcbcbc;
+  --color-accent-foreground: #121212;
+  --color-destructive: #c33a3c;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #bcbcbc;
+  --color-input: #bcbcbc;
+  --color-ring: #c33a3c;
 
   /* Animation configuration */
   --animate-flicker: flicker 3s linear infinite;
