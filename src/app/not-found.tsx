@@ -18,7 +18,7 @@ export default function NotFound() {
           alt='Stars pattern left'
           width={400}
           height={400}
-          className='h-auto w-full opacity-30'
+          className='h-auto w-full'
           priority
         />
       </div>
@@ -30,7 +30,7 @@ export default function NotFound() {
           alt='Stars pattern right'
           width={400}
           height={400}
-          className='h-auto w-full opacity-30'
+          className='h-auto w-full'
           priority
         />
       </div>
