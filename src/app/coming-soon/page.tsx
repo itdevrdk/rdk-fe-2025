@@ -8,39 +8,32 @@ import NextImage from '@/components/NextImage';
 import Typography from '@/components/Typography';
 
 export default function ComingSoonPage() {
-  const [timeLeft, setTimeLeft] = React.useState({
-    days: 2,
-    hours: 12,
-    minutes: 31,
-    seconds: 0,
-  });
+  const calculateTimeLeft = React.useCallback(() => {
+    const targetDate = new Date('2026-02-18T17:55:00');
+    const now = new Date().getTime();
+    const distance = targetDate.getTime() - now;
+
+    if (distance < 0) {
+      return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    return {
+      days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+      minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+      seconds: Math.floor((distance % (1000 * 60)) / 1000),
+    };
+  }, []);
+
+  const [timeLeft, setTimeLeft] = React.useState(calculateTimeLeft);
 
   React.useEffect(() => {
-    // Set target date to February 18, 2026, at 17:55
-    const targetDate = new Date('2026-02-18T17:55:00');
-
     const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = targetDate.getTime() - now;
-
-      if (distance < 0) {
-        clearInterval(timer);
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
-      );
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      setTimeLeft({ days, hours, minutes, seconds });
+      setTimeLeft(calculateTimeLeft());
     }, 1000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [calculateTimeLeft]);
 
   const formatTime = (num: number) => String(num).padStart(2, '0');
 
