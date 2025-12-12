@@ -47,25 +47,25 @@
   --color-neutral-800: #121212;
 
   /* Semantic color palette - Light mode defaults */
-  --color-background: #ffffff;
-  --color-foreground: #121212;
-  --color-card: #ffffff;
-  --color-card-foreground: #121212;
-  --color-popover: #ffffff;
-  --color-popover-foreground: #121212;
-  --color-primary: #c33a3c;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #bcbcbc;
-  --color-secondary-foreground: #121212;
-  --color-muted: #bcbcbc;
-  --color-muted-foreground: #6d6d6d;
-  --color-accent: #bcbcbc;
-  --color-accent-foreground: #121212;
-  --color-destructive: #c33a3c;
-  --color-destructive-foreground: #ffffff;
-  --color-border: #bcbcbc;
-  --color-input: #bcbcbc;
-  --color-ring: #c33a3c;
+  --color-background: var(--color-neutral-50);
+  --color-foreground: var(--color-neutral-800);
+  --color-card: var(--color-neutral-50);
+  --color-card-foreground: var(--color-neutral-800);
+  --color-popover: var(--color-neutral-50);
+  --color-popover-foreground: var(--color-neutral-800);
+  --color-primary: var(--color-primary-100);
+  --color-primary-foreground: var(--color-neutral-50);
+  --color-secondary: var(--color-neutral-300);
+  --color-secondary-foreground: var(--color-neutral-800);
+  --color-muted: var(--color-neutral-300);
+  --color-muted-foreground: var(--color-neutral-500);
+  --color-accent: var(--color-neutral-300);
+  --color-accent-foreground: var(--color-neutral-800);
+  --color-destructive: var(--color-primary-100);
+  --color-destructive-foreground: var(--color-neutral-50);
+  --color-border: var(--color-neutral-300);
+  --color-input: var(--color-neutral-300);
+  --color-ring: var(--color-primary-100);
 
   /* Animation configuration */
   --animate-flicker: flicker 3s linear infinite;
