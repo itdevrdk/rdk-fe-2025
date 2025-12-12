@@ -1,7 +1,5 @@
-import { LucideIcon } from 'lucide-react';
+import { Loader2, LucideIcon } from 'lucide-react';
 import * as React from 'react';
-import { IconType } from 'react-icons';
-import { ImSpinner2 } from 'react-icons/im';
 
 import { cn } from '@/lib/utils';
 
@@ -13,8 +11,8 @@ type ButtonProps = {
   isDarkBg?: boolean;
   variant?: (typeof ButtonVariant)[number];
   size?: (typeof ButtonSize)[number];
-  leftIcon?: IconType | LucideIcon;
-  rightIcon?: IconType | LucideIcon;
+  leftIcon?: LucideIcon;
+  rightIcon?: LucideIcon;
   classNames?: {
     leftIcon?: string;
     rightIcon?: string;
@@ -36,7 +34,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       classNames,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const disabled = isLoading || buttonDisabled;
 
@@ -95,7 +93,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           'disabled:cursor-not-allowed',
           isLoading &&
             'relative text-transparent transition-none hover:text-transparent disabled:cursor-wait',
-          className
+          className,
         )}
         {...rest}
       >
@@ -107,10 +105,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 'text-white': ['primary', 'dark'].includes(variant),
                 'text-black': ['light'].includes(variant),
                 'text-primary-500': ['outline', 'ghost'].includes(variant),
-              }
+              },
             )}
           >
-            <ImSpinner2 className='animate-spin' />
+            <Loader2 className='animate-spin' />
           </div>
         )}
         {LeftIcon && (
@@ -127,7 +125,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                   size === 'base' && 'md:text-md text-md',
                   size === 'sm' && 'md:text-md text-sm',
                 ],
-                classNames?.leftIcon
+                classNames?.leftIcon,
               )}
             />
           </div>
@@ -147,14 +145,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                   size === 'base' && 'text-md md:text-md',
                   size === 'sm' && 'md:text-md text-sm',
                 ],
-                classNames?.rightIcon
+                classNames?.rightIcon,
               )}
             />
           </div>
         )}
       </button>
     );
-  }
+  },
 );
 
 export default Button;

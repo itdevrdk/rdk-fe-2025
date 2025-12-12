@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import * as React from 'react';
 
 import '@/styles/globals.css';
-// !STARTERCONF This is for demo purposes, remove @/styles/colors.css import immediately
-import '@/styles/colors.css';
+
+import { marquisette, zabal } from '@/lib/fonts';
 
 import Providers from '@/app/providers';
 import { siteConfig } from '@/constant/config';
@@ -40,14 +40,7 @@ export const metadata: Metadata = {
     title: siteConfig.title,
     description: siteConfig.description,
     images: [`${siteConfig.url}/images/og.jpg`],
-    // creator: '@th_clarence',
   },
-  // authors: [
-  //   {
-  //     name: 'Theodorus Clarence',
-  //     url: 'https://theodorusclarence.com',
-  //   },
-  // ],
 };
 
 export default function RootLayout({
@@ -56,8 +49,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
-      <body>
+    <html lang='en' suppressHydrationWarning>
+      <body className={`${marquisette.variable} ${zabal.variable}`}>
         <Providers>{children}</Providers>
       </body>
     </html>
