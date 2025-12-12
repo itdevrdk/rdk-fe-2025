@@ -36,7 +36,7 @@ export default function NotFound() {
       </div>
 
       {/* Main Content */}
-      <section className='relative z-10 flex min-h-screen flex-col items-center justify-center px-4 pb-48 sm:pb-56 md:pb-64'>
+      <section className='relative z-10 flex min-h-screen flex-col items-center justify-center'>
         <div className='flex flex-col items-center text-center'>
           {/* 404 Text */}
           <Typography
@@ -44,7 +44,7 @@ export default function NotFound() {
             variant='h1'
             font='marquisette'
             weight='regular'
-            className='text-[120px] leading-none text-primary-100 sm:text-[180px] md:text-[240px] lg:text-[300px]'
+            className='text-[96px] leading-none text-primary-100 sm:text-[100px] md:text-[120px] lg:text-[120px]'
           >
             404
           </Typography>
@@ -55,21 +55,21 @@ export default function NotFound() {
             variant='body'
             font='zabal'
             weight='regular'
-            className='mt-4 text-neutral-600 sm:mt-6 md:text-lg lg:text-xl text-stereoscopic'
+            className='mt-4 text-primary-100 text-lg sm:text-xl md:text-xl lg:text-xl xl:mb-20'
           >
-            Halaman yang Anda cari tidak ditemukan.
+            Halaman yang Anda cari <br className='md:hidden' /> tidak ditemukan.
           </Typography>
         </div>
       </section>
 
       {/* Castle/Fort at Bottom - Fixed width/height aspect ratio for consistency */}
-      <div className='absolute bottom-0 left-0 right-0 w-full'>
+      <div className='absolute bottom-0 left-0 right-0 w-full '>
         <NextImage
           src='/images/404/benteng-bawah.png'
           alt='Castle decoration'
           width={1920}
           height={400}
-          className='w-full object-cover md:h-auto'
+          className='absolute md:relative bottom-0 left-1/2 -translate-x-1/2 md:left-0 md:-translate-x-0 md:w-full w-[1000px] object-contain md:h-auto'
           priority
         />
       </div>
