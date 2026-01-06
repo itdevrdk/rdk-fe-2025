@@ -1,0 +1,147 @@
+'use client';
+
+import { ChevronDown, Menu, X } from 'lucide-react';
+import NextImage from 'next/image';
+import { useState } from 'react';
+
+import Typography from '@/components/Typography';
+
+export default function Header() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [kegiatanOpen, setKegiatanOpen] = useState(false);
+
+  const kegiatanItems = ['Kajian', 'Festival Ramadan', 'Lomba RDK'];
+
+  return (
+    <header className='relative z-50 bg-white'>
+      <div className='mx-auto flex h-20 max-w-7xl items-center justify-between px-6'>
+        <div className='flex items-center gap-3'>
+          <NextImage
+            src='/images/navbar/logo-rdk.svg'
+            alt='RDK 47'
+            width={40}
+            height={40}
+            priority
+          />
+          <Typography
+            as='span'
+            font='marquisette'
+            weight='bold'
+            variant='h5'
+            className='text-lg text-[#8B1E1F]'
+          >
+            RDK 47
+          </Typography>
+        </div>
+
+        {/* DESKTOP MENU */}
+        <nav className='hidden items-center md:flex gap-10'>
+          <Typography className='cursor-pointer text-[#8B1E1F]' weight='bold'>
+            Kalender
+          </Typography>
+
+          <div className='relative'>
+            <button
+              onClick={() => setKegiatanOpen((v) => !v)}
+              className='flex items-center gap-1 text-[#8B1E1F] cursor-pointer'
+            >
+              <Typography weight='bold'>Kegiatan</Typography>
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-300 ${
+                  kegiatanOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            <div
+              className={`
+                absolute left-0 top-full mt-3 w-48 rounded-lg bg-white shadow-lg
+                origin-top
+                transition-all duration-300 ease-out
+                ${kegiatanOpen ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'}
+              `}
+            >
+              {kegiatanItems.map((item) => (
+                <div
+                  key={item}
+                  onClick={() => setKegiatanOpen(false)}
+                  className='cursor-pointer px-4 py-3 text-sm text-[#8B1E1F] hover:bg-[#FFE9B5]'
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+            Pendaftaran Kegiatan
+          </Typography>
+
+          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+            Laporan Keuangan
+          </Typography>
+        </nav>
+
+        <button
+          onClick={() => setMobileOpen((v) => !v)}
+          className='md:hidden text-[#8B1E1F]'
+        >
+          {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
+      </div>
+
+      <div
+        className={`
+          md:hidden overflow-hidden bg-white
+          transition-all duration-300 ease-out
+          ${mobileOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}
+        `}
+      >
+        <nav className='flex flex-col gap-6 px-6 py-6'>
+          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+            Kalender
+          </Typography>
+          <button
+            onClick={() => setKegiatanOpen((v) => !v)}
+            className='flex items-center justify-between text-[#8B1E1F]'
+          >
+            <Typography weight='bold'>Kegiatan</Typography>
+            <ChevronDown
+              size={16}
+              className={`transition-transform duration-300 ${
+                kegiatanOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </button>
+
+          {kegiatanOpen && (
+            <div className='mb-6 overflow-hidden transition-all duration-300 ease-out'>
+              <div className='flex flex-col gap-4 pt-2'>
+                {kegiatanItems.map((item) => (
+                  <Typography
+                    key={item}
+                    className='cursor-pointer text-sm text-[#8B1E1F]'
+                    onClick={() => {
+                      setKegiatanOpen(false);
+                    }}
+                  >
+                    {item}
+                  </Typography>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <Typography className='cursor-pointer text-[#8B1E1F]' weight='bold'>
+            Pendaftaran Kegiatan
+          </Typography>
+
+          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+            Laporan Keuangan
+          </Typography>
+        </nav>
+      </div>
+    </header>
+  );
+}
