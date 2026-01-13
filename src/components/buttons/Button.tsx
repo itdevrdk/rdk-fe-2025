@@ -3,7 +3,14 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-const ButtonVariant = ['primary', 'outline', 'ghost', 'light', 'dark'] as const;
+const ButtonVariant = [
+  'primary',
+  'secondary',
+  'outline',
+  'ghost',
+  'light',
+  'dark',
+] as const;
 const ButtonSize = ['sm', 'base'] as const;
 
 type ButtonProps = {
@@ -44,7 +51,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         type='button'
         disabled={disabled}
         className={cn(
-          'inline-flex items-center rounded-sm font-medium',
+          'inline-flex items-center justify-center rounded-sm font-medium',
           'focus-visible:ring-primary-500 focus:outline-hidden focus-visible:ring-3',
           'shadow-xs',
           'transition-colors duration-75',
@@ -62,6 +69,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
               'hover:bg-primary-600 hover:text-white',
               'active:bg-primary-700',
               'disabled:bg-primary-700',
+            ],
+            variant === 'secondary' && [
+              'bg-secondary-500 text-white',
+              'border-secondary-600 border',
+              'hover:bg-secondary-600 hover:text-white',
+              'active:bg-secondary-700',
+              'disabled:bg-secondary-700',
             ],
             variant === 'outline' && [
               'text-primary-500',

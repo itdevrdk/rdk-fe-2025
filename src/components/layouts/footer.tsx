@@ -102,7 +102,7 @@ export default function Footer() {
             weight='regular'
             className='text-center md:text-start text-white'
           >
-            © 2025 RDK 47 Institut Teknologi Sepuluh Nopember. All rights
+            © 2026 RDK 47 Institut Teknologi Sepuluh Nopember. All rights
             reserved.
           </Typography>
         </div>
