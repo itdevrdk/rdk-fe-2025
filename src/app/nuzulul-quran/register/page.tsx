@@ -15,7 +15,6 @@ export default function NuzululQuranRegisterPage() {
     email: '',
     whatsapp: '',
     jenisKelamin: '',
-    alamat: '',
     instansi: '',
     mentoring2026: '',
   });
@@ -194,26 +193,6 @@ export default function NuzululQuranRegisterPage() {
                   </select>
                 </div>
 
-                {/* Alamat Input */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='alamat'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Alamat
-                  </label>
-                  <textarea
-                    id='alamat'
-                    name='alamat'
-                    placeholder='Alamat'
-                    value={formData.alamat}
-                    onChange={handleInputChange}
-                    required
-                    rows={3}
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-300 border-2 border-transparent focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base resize-none'
-                  />
-                </div>
-
                 {/* Asal Instansi/Departemen Input */}
                 <div className='flex flex-col gap-2'>
                   <label
@@ -243,7 +222,7 @@ export default function NuzululQuranRegisterPage() {
                     htmlFor='mentoring2026'
                     className='text-[#681819] font-bold text-sm md:text-base'
                   >
-                    Apakah Peserta Mentoring 2026?
+                    Apakah Peserta Mentoring 2025/2026?
                   </label>
                   <select
                     id='mentoring2026'
