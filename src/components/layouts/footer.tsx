@@ -1,4 +1,7 @@
+import { Instagram, Youtube } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { RiTiktokLine } from 'react-icons/ri';
 
 import Typography from '@/components/Typography';
 
@@ -58,6 +61,34 @@ export default function Footer() {
               </Typography>
             ))}
           </nav>
+
+          {/* Social Media */}
+          <div className='flex gap-6'>
+            <Link
+              href='https://instagram.com/rdk.its'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='Instagram'
+            >
+              <Instagram width={28} height={28} className='text-white' />
+            </Link>
+            <Link
+              href='https://www.tiktok.com/@rdk.its'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='TikTok'
+            >
+              <RiTiktokLine size={28} className='text-white' />
+            </Link>
+            <Link
+              href='https://www.youtube.com/@MasjidITS'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='YouTube'
+            >
+              <Youtube width={28} height={28} className='text-white' />
+            </Link>
+          </div>
         </div>
 
         {/* Mobile */}
@@ -93,6 +124,34 @@ export default function Footer() {
               </Typography>
             ))}
           </nav>
+
+          {/* Social Media */}
+          <div className='flex justify-center gap-6 mt-6'>
+            <Link
+              href='https://instagram.com/rdk.its'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='Instagram'
+            >
+              <Instagram width={28} height={28} className='text-white' />
+            </Link>
+            <Link
+              href='https://www.tiktok.com/@rdk.its'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='TikTok'
+            >
+              <RiTiktokLine size={28} className='text-white' />
+            </Link>
+            <Link
+              href='https://www.youtube.com/@MasjidITS'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='YouTube'
+            >
+              <Youtube width={28} height={28} className='text-white' />
+            </Link>
+          </div>
         </div>
         <div className='relative border-t border-white/30 mt-8 py-6'>
           <Typography

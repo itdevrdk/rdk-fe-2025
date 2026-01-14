@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export function middleware(request: NextRequest) {
   if (request.nextUrl.pathname === '/') {
-    return NextResponse.rewrite(new URL('/coming-soon', request.url));
+    return NextResponse.rewrite(new URL('/homepage', request.url));
   }
   return NextResponse.next();
 }

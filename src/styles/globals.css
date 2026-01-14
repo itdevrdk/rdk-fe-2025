@@ -4,6 +4,10 @@
 @custom-variant dark (&:is(.dark *));
 @plugin '@tailwindcss/forms';
 
+html {
+  scroll-behavior: smooth;
+}
+
 @theme {
   /* Font configuration */
   --font-primary: 'Inter', system-ui, sans-serif;
