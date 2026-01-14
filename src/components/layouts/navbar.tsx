@@ -2,6 +2,7 @@
 
 import { ChevronDown, Menu, X } from 'lucide-react';
 import NextImage from 'next/image';
+import Link from 'next/link';
 import { useState } from 'react';
 
 import Typography from '@/components/Typography';
@@ -10,12 +11,17 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [kegiatanOpen, setKegiatanOpen] = useState(false);
 
-  const kegiatanItems = ['Kajian', 'Festival Ramadan', 'Lomba RDK'];
+  const kegiatanItems = [
+    { name: 'Ramadan Islamic Competition', href: '/ric' },
+    { name: 'Kajian Inspiratif', href: '/kajian-inspiratif' },
+    { name: "Nuzulul Qur'an", href: '/nuzulul-quran' },
+    { name: 'Lailatul Hikmah', href: '/lailatul-hikmah' },
+  ];
 
   return (
     <header className='relative z-50 bg-white'>
       <div className='mx-auto flex h-20 max-w-7xl items-center justify-between px-6'>
-        <div className='flex items-center gap-3'>
+        <Link href='/' className='flex items-center gap-3'>
           <NextImage
             src='/images/navbar/logo-rdk.svg'
             alt='RDK 47'
@@ -32,7 +38,7 @@ export default function Header() {
           >
             RDK 47
           </Typography>
-        </div>
+        </Link>
 
         {/* DESKTOP MENU */}
         <nav className='hidden items-center md:flex gap-10'>
@@ -63,20 +69,23 @@ export default function Header() {
               `}
             >
               {kegiatanItems.map((item) => (
-                <div
-                  key={item}
+                <Link
+                  key={item.name}
+                  href={item.href}
                   onClick={() => setKegiatanOpen(false)}
-                  className='cursor-pointer px-4 py-3 text-sm text-[#8B1E1F] hover:bg-[#FFE9B5]'
+                  className='block cursor-pointer px-4 py-3 text-sm text-[#8B1E1F] hover:bg-[#FFE9B5]'
                 >
-                  {item}
-                </div>
+                  {item.name}
+                </Link>
               ))}
             </div>
           </div>
 
-          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
-            Pendaftaran Kegiatan
-          </Typography>
+          <Link href='/#pendaftaran-kegiatan'>
+            <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+              Pendaftaran Kegiatan
+            </Typography>
+          </Link>
 
           <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
             Laporan Keuangan
@@ -119,23 +128,30 @@ export default function Header() {
             <div className='mb-6 overflow-hidden transition-all duration-300 ease-out'>
               <div className='flex flex-col gap-4 pt-2'>
                 {kegiatanItems.map((item) => (
-                  <Typography
-                    key={item}
+                  <Link
+                    key={item.name}
+                    href={item.href}
                     className='cursor-pointer text-sm text-[#8B1E1F]'
                     onClick={() => {
                       setKegiatanOpen(false);
+                      setMobileOpen(false);
                     }}
                   >
-                    {item}
-                  </Typography>
+                    {item.name}
+                  </Link>
                 ))}
               </div>
             </div>
           )}
 
-          <Typography className='cursor-pointer text-[#8B1E1F]' weight='bold'>
-            Pendaftaran Kegiatan
-          </Typography>
+          <Link
+            href='/#pendaftaran-kegiatan'
+            onClick={() => setMobileOpen(false)}
+          >
+            <Typography className='cursor-pointer text-[#8B1E1F]' weight='bold'>
+              Pendaftaran Kegiatan
+            </Typography>
+          </Link>
 
           <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
             Laporan Keuangan
