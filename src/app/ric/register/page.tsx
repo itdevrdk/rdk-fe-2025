@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 import Layout from '@/components/layouts/Layout';
 import Typography from '@/components/Typography';
@@ -106,7 +106,7 @@ const loadDraft = () => {
 
 const clearDraft = () => localStorage.removeItem(STORAGE_KEY);
 
-export default function RICPendaftaranPage() {
+function RICPendaftaranContent() {
   // const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<number>(1);
@@ -384,7 +384,7 @@ export default function RICPendaftaranPage() {
                         setForm({
                           ...form,
                           event_type: v,
-                          participants: [],
+                          members: [],
                         });
                       }}
                     >
@@ -904,5 +904,21 @@ export default function RICPendaftaranPage() {
         </div>
       </main>
     </Layout>
+  );
+}
+
+export default function RICPendaftaranPage() {
+  return (
+    <Suspense
+      fallback={
+        <Layout withNavbar withFooter>
+          <div className='min-h-screen flex items-center justify-center'>
+            Loading...
+          </div>
+        </Layout>
+      }
+    >
+      <RICPendaftaranContent />
+    </Suspense>
   );
 }
