@@ -4,6 +4,7 @@ import { Instagram, Youtube } from 'lucide-react';
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { RiTiktokLine } from 'react-icons/ri';
 
@@ -41,7 +42,7 @@ const EVENT_LABEL: Record<EventKey, string> = {
 
 const isEventKey = (value: string): value is EventKey => value in WA_GROUP_LINK;
 
-export default function RICSuccessPage() {
+function RICSuccessContent() {
   const searchParams = useSearchParams();
   const eventParam = (searchParams.get('event') || '').toUpperCase();
   const eventKey = isEventKey(eventParam) ? eventParam : null;
@@ -222,5 +223,21 @@ export default function RICSuccessPage() {
         </div>
       </section>
     </Layout>
+  );
+}
+
+export default function RICSuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <Layout withNavbar withFooter>
+          <div className='min-h-screen flex items-center justify-center'>
+            Loading...
+          </div>
+        </Layout>
+      }
+    >
+      <RICSuccessContent />
+    </Suspense>
   );
 }

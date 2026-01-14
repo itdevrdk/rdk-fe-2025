@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, Instagram, Youtube } from 'lucide-react';
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 import { RiTiktokLine } from 'react-icons/ri';
 
@@ -129,7 +129,7 @@ export default function RICLandingPage() {
 
   const maxSlide = Math.max(0, MOMENT_IMAGES.length - visibleItems);
 
-  const nextSlide = React.useCallback(() => {
+  const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev >= maxSlide ? 0 : prev + 1));
   }, [maxSlide]);
 
