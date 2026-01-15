@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight, Instagram, X } from 'lucide-react';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 import * as React from 'react';
 
 import Button from '@/components/buttons/Button';
@@ -128,6 +129,12 @@ const JOIN_US_ITEMS = [
     link: '/tenant-iftar',
     registrationOpenDate: null,
   },
+];
+
+const MOMENT_IMAGES = [
+  '/images/homepage/carousel/1.png',
+  '/images/homepage/carousel/2.png',
+  '/images/homepage/carousel/3.png',
 ];
 
 // Helper function untuk mengecek apakah pendaftaran sudah dibuka
@@ -495,9 +502,55 @@ export default function HomeSection() {
   const router = useRouter();
   const [showPopup, setShowPopup] = React.useState(true);
   const [kegiatanSlide, setKegiatanSlide] = React.useState(0);
-  const [isAutoPlay, setIsAutoPlay] = React.useState(true);
-  const [visibleItems, setVisibleItems] = React.useState(3);
+  const [isAutoPlayKegiatan, setIsAutoPlayKegiatan] = React.useState(true);
+  const [visibleItemsKegiatan, setVisibleItemsKegiatan] = React.useState(3);
   const [selectedDate, setSelectedDate] = React.useState<number | null>(null);
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlay, setIsAutoPlay] = useState(true);
+  const [visibleItems, setVisibleItems] = useState(3);
+
+  // Responsive visible items
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setVisibleItems(1); // Mobile: 1 card
+      } else if (window.innerWidth < 1024) {
+        setVisibleItems(2); // Tablet: 2 cards
+      } else {
+        setVisibleItems(3); // Desktop: 3 cards
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const maxSlide = Math.max(0, MOMENT_IMAGES.length - visibleItems);
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev >= maxSlide ? 0 : prev + 1));
+  }, [maxSlide]);
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev <= 0 ? maxSlide : prev - 1));
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  // Auto-play carousel
+  useEffect(() => {
+    if (!isAutoPlay) return;
+
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 4000); // Slide setiap 4 detik
+
+    return () => clearInterval(interval);
+  }, [isAutoPlay, nextSlide]);
 
   // Handler untuk klik tombol pendaftaran
   const handleRegisterClick = (
@@ -518,11 +571,11 @@ export default function HomeSection() {
   React.useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setVisibleItems(1); // Mobile: 1 card
+        setVisibleItemsKegiatan(1); // Mobile: 1 card
       } else if (window.innerWidth < 1024) {
-        setVisibleItems(2); // Tablet: 2 cards
+        setVisibleItemsKegiatan(2); // Tablet: 2 cards
       } else {
-        setVisibleItems(3); // Desktop: 3 cards
+        setVisibleItemsKegiatan(3); // Desktop: 3 cards
       }
     };
 
@@ -531,14 +584,16 @@ export default function HomeSection() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const maxSlide = Math.max(0, KEGIATAN_ITEMS.length - visibleItems);
+  const maxSlideKegiatan = Math.max(
+    0,
+    KEGIATAN_ITEMS.length - visibleItemsKegiatan,
+  );
 
   const nextKegiatanSlide = React.useCallback(() => {
-    setKegiatanSlide((prev) => (prev >= maxSlide ? 0 : prev + 1));
-  }, [maxSlide]);
-
+    setKegiatanSlide((prev) => (prev >= maxSlideKegiatan ? 0 : prev + 1));
+  }, [maxSlideKegiatan]);
   const prevKegiatanSlide = () => {
-    setKegiatanSlide((prev) => (prev <= 0 ? maxSlide : prev - 1));
+    setKegiatanSlide((prev) => (prev <= 0 ? maxSlideKegiatan : prev - 1));
   };
 
   const goToKegiatanSlide = (index: number) => {
@@ -547,14 +602,13 @@ export default function HomeSection() {
 
   // Auto-play carousel
   React.useEffect(() => {
-    if (!isAutoPlay) return;
-
+    if (!isAutoPlayKegiatan) return;
     const interval = setInterval(() => {
       nextKegiatanSlide();
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlay, nextKegiatanSlide]);
+  }, [isAutoPlayKegiatan, nextKegiatanSlide]);
 
   return (
     <Layout withNavbar withFooter>
@@ -567,7 +621,7 @@ export default function HomeSection() {
           alt='Ornament'
           width={100}
           height={100}
-          className='absolute left-20 top-0 h-auto md:w-32 w-20'
+          className='absolute left-20 top-0 h-auto w-32 md:w-32 w-20'
         />
 
         <div className='relative mx-auto grid max-w-7xl grid-cols-1 items-center px-12 pt-36 md:grid-cols-2'>
@@ -633,7 +687,7 @@ export default function HomeSection() {
             Coming Soon
           </Typography>
 
-          <Typography className='mt-6 font-bold'>Informasi Penting</Typography>
+          <Typography className='mt-6 font-bold'>Event Spesial</Typography>
           <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
             Coming Soon
           </Typography>
@@ -666,15 +720,6 @@ export default function HomeSection() {
           height={300}
           className='absolute right-0 bottom-0 z-0'
         />
-        <Typography
-          as='h2'
-          variant='h1'
-          font='marquisette'
-          weight='bold'
-          className='text-center bg-gradient-to-r from-[#FFDD9D] to-[#FFB121] bg-clip-text text-transparent py-18'
-        >
-          Pendaftaran Kegiatan
-        </Typography>
         <div className='mx-auto max-w-7xl px-6 z-10 relative'>
           <Typography
             as='h2'
@@ -694,8 +739,8 @@ export default function HomeSection() {
           {/* Carousel */}
           <div
             className='mt-16 relative flex flex-col items-center'
-            onMouseEnter={() => setIsAutoPlay(false)}
-            onMouseLeave={() => setIsAutoPlay(true)}
+            onMouseEnter={() => setIsAutoPlayKegiatan(false)}
+            onMouseLeave={() => setIsAutoPlayKegiatan(true)}
           >
             <div className='flex items-center gap-4 w-full'>
               {/* Previous Button */}
@@ -713,12 +758,12 @@ export default function HomeSection() {
                   className='flex transition-transform duration-700 ease-in-out'
                   style={{
                     gap:
-                      visibleItems === 1
+                      visibleItemsKegiatan === 1
                         ? '0px'
-                        : visibleItems === 2
+                        : visibleItemsKegiatan === 2
                           ? '16px'
                           : '24px',
-                    transform: `translateX(calc(-${kegiatanSlide} * (100% / ${visibleItems} + ${visibleItems === 1 ? 0 : visibleItems === 2 ? 8 : 8}px)))`,
+                    transform: `translateX(calc(-${kegiatanSlide} * (100% / ${visibleItemsKegiatan} + ${visibleItemsKegiatan === 1 ? 0 : visibleItemsKegiatan === 2 ? 8 : 8}px)))`,
                   }}
                 >
                   {KEGIATAN_ITEMS.map((item, index) => (
@@ -727,9 +772,9 @@ export default function HomeSection() {
                       className='rounded-xl bg-[#FFF6DD] p-6 text-center flex-shrink-0 flex flex-col'
                       style={{
                         width:
-                          visibleItems === 1
+                          visibleItemsKegiatan === 1
                             ? '100%'
-                            : visibleItems === 2
+                            : visibleItemsKegiatan === 2
                               ? 'calc((100% - 16px) / 2)'
                               : 'calc((100% - 48px) / 3)',
                       }}
@@ -782,7 +827,7 @@ export default function HomeSection() {
 
             {/* Dots Indicator */}
             <div className='flex justify-center gap-2 mt-8'>
-              {Array.from({ length: maxSlide + 1 }).map((_, index) => (
+              {Array.from({ length: maxSlideKegiatan + 1 }).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => goToKegiatanSlide(index)}
@@ -1144,6 +1189,139 @@ export default function HomeSection() {
             )}
           </div>
         </div>
+      </section>
+
+      {/* SECTION 5: Kilas Balik RDK */}
+      <section className='relative bg-white py-12 md:py-20'>
+        {/* Left Decoration */}
+        <NextImage
+          src='/images/ric/landing/section-5-left-decoration.png'
+          alt='Left Decoration'
+          width={500}
+          height={500}
+          className='absolute -bottom-10 -left-4 lg:-bottom-48 lg:-left-18 z-10 w-32 md:w-96'
+        />
+
+        {/* Right Decoration */}
+        <NextImage
+          src='/images/ric/landing/section-5-right-decoration.png'
+          alt='Right Decoration'
+          width={200}
+          height={200}
+          className='absolute bottom-0 right-0 z-5 w-16 md:w-32'
+        />
+
+        <Typography
+          as='h3'
+          variant='h3'
+          font='marquisette'
+          weight='bold'
+          className='bg-gradient-to-r from-[#C33A3C] to-[#5D1C1D] bg-clip-text text-transparent text-center'
+        >
+          Kilas Balik Ramadan di Kampus
+        </Typography>
+        <Typography
+          as='p'
+          variant='body'
+          className='text-center text-[#681819] mb-6'
+        >
+          Perjalanan panjang RDK dari tahun ke tahun.
+        </Typography>
+
+        <div
+          className='relative flex items-center gap-4 md:gap-8'
+          onMouseEnter={() => setIsAutoPlay(false)}
+          onMouseLeave={() => setIsAutoPlay(true)}
+        >
+          {/* Previous Button */}
+          {maxSlide > 0 && (
+            <button
+              onClick={prevSlide}
+              className='flex-shrink-0 bg-white hover:bg-gray-100 text-[#681819] p-3 rounded-full shadow-lg transition-all hover:scale-110 z-10 border-2 border-[#681819] ml-2'
+              aria-label='Previous slide'
+            >
+              <ChevronLeft className='w-6 h-6 md:w-8 md:h-8' />
+            </button>
+          )}
+
+          {/* Carousel Images Container */}
+          <div className='flex-1 overflow-hidden px-4'>
+            <div
+              className='flex transition-transform duration-700 ease-in-out'
+              style={{
+                gap:
+                  visibleItems === 1
+                    ? '0px'
+                    : visibleItems === 2
+                      ? '16px'
+                      : '24px',
+                transform: `translateX(calc(-${currentSlide} * (100% / ${visibleItems} + ${visibleItems === 1 ? 0 : visibleItems === 2 ? 8 : 8}px)))`,
+              }}
+            >
+              {MOMENT_IMAGES.map((src, index) => (
+                <div
+                  key={index}
+                  className='relative h-48 md:h-64 rounded-xl overflow-hidden shadow-lg bg-white flex-shrink-0 cursor-pointer group'
+                  style={{
+                    width:
+                      visibleItems === 1
+                        ? '100%'
+                        : visibleItems === 2
+                          ? 'calc((100% - 16px) / 2)'
+                          : 'calc((100% - 48px) / 3)',
+                  }}
+                >
+                  <NextImage
+                    src={src}
+                    alt={`Moment ${index + 1}`}
+                    fill
+                    className='object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out'
+                  />
+                  {/* Hover Overlay */}
+                  <div className='absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center'>
+                    <Typography
+                      as='span'
+                      variant='body'
+                      weight='medium'
+                      className='text-white text-sm md:text-base'
+                    >
+                      Klik untuk detail
+                    </Typography>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Next Button */}
+          {maxSlide > 0 && (
+            <button
+              onClick={nextSlide}
+              className='flex-shrink-0 bg-white hover:bg-gray-100 text-[#681819] p-3 rounded-full shadow-lg transition-all hover:scale-110 z-10 border-2 border-[#681819] mr-2'
+              aria-label='Next slide'
+            >
+              <ChevronRight className='w-6 h-6 md:w-8 md:h-8' />
+            </button>
+          )}
+        </div>
+
+        {/* Dots Indicator */}
+        {maxSlide > 0 && (
+          <div className='flex justify-center gap-2 mt-8'>
+            {Array.from({ length: maxSlide + 1 }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`transition-all ${
+                  index === currentSlide
+                    ? 'w-8 h-3 bg-[#681819]'
+                    : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
+                } rounded-full`}
+                aria-label={`Go to item ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       {/* DONASI */}

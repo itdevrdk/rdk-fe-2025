@@ -1,10 +1,7 @@
 'use client';
 
-import { Instagram, Youtube } from 'lucide-react';
 import NextImage from 'next/image';
-import Link from 'next/link';
 import { FaWhatsapp } from 'react-icons/fa';
-import { RiTiktokLine } from 'react-icons/ri';
 
 import Layout from '@/components/layouts/Layout';
 import Typography from '@/components/Typography';
@@ -123,49 +120,6 @@ export default function NuzululQuranSuccessPage() {
                   08123456789 (Abc)
                 </a>
               </div>
-            </div>
-          </div>
-
-          <div className='mx-auto max-w-7xl'>
-            <Typography
-              as='h3'
-              variant='h3'
-              font='marquisette'
-              weight='bold'
-              className='text-center text-[#681819] mb-6'
-            >
-              Follow Us
-            </Typography>
-
-            <div className='flex justify-center gap-6 md:gap-8'>
-              <Link
-                href='https://instagram.com/rdk.its'
-                target='_blank'
-                className='text-4xl hover:scale-110 transition-transform'
-                title='Instagram'
-              >
-                <Instagram width={32} height={32} className='text-[#681819]' />
-              </Link>
-              <Link
-                href='https://www.tiktok.com/@rdk.its'
-                target='_blank'
-                className='text-4xl hover:scale-110 transition-transform'
-                title='TikTok'
-              >
-                <RiTiktokLine
-                  width={32}
-                  height={32}
-                  className='text-[#681819]'
-                />
-              </Link>
-              <Link
-                href='https://www.youtube.com/@MasjidITS'
-                target='_blank'
-                className='text-4xl hover:scale-110 transition-transform'
-                title='YouTube'
-              >
-                <Youtube width={32} height={32} className='text-[#681819]' />
-              </Link>
             </div>
           </div>
         </div>
