@@ -36,7 +36,7 @@ const formatDate = (date: Date): string => {
 const EVENTS = [
   {
     id: 'MHQ',
-    title: "Musabaqah Hafdzil Qur'an",
+    title: "Musabaqah Hifdzil Qur'an",
     icon: '/images/ric/landing/logo-mhq.png',
     link: '/ric/register?event=MHQ',
   },

@@ -14,6 +14,14 @@ import Typography from '@/components/Typography';
 
 const KEGIATAN_ITEMS = [
   {
+    title: 'Ramadan Islamic Competition',
+    desc: 'Ajang kompetisi bergengsi tingkat Jawa Timur dengan 6 cabang lomba: MHQ, MTQ, KTIQ, Dai, Poster, dan Sinematografi.',
+    hasRegister: true,
+    link: '/ric',
+    image: '/images/homepage/coming-soon-placeholder.png',
+    registrationOpenDate: new Date('2026-01-18'),
+  },
+  {
     title: 'Ngabuburits #1',
     desc: 'Seni Memantaskan Diri: Mengubah Sudut Pandang Kesendirian Menjadi Ibadah dan Investasi Masa Depan',
     hasRegister: true,
@@ -84,14 +92,6 @@ const KEGIATAN_ITEMS = [
     link: '/lailatul-hikmah',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
-  },
-  {
-    title: 'Ramadan Islamic Competition',
-    desc: 'Ajang kompetisi bergengsi tingkat Jawa Timur dengan 6 cabang lomba: MHQ, MTQ, KTIQ, Dai, Poster, dan Sinematografi.',
-    hasRegister: true,
-    link: '/ric',
-    image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: new Date('2026-01-18'),
   },
   {
     title: 'Ganti Oli & Cek Kendaraan Gratis',

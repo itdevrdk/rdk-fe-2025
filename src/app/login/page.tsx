@@ -1,12 +1,47 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import NextImage from 'next/image';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import Typography from '@/components/Typography';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+import { useLoginMutation } from './hook/mutation';
+
+import { LoginRequest } from '@/types/login';
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email wajib diisi')
+    .email('Format email tidak valid'),
+  password: z.string().min(1, 'Password wajib diisi'),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
 export default function LoginPage() {
+  const { handleLogin, isPending } = useLoginMutation();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginFormData) => {
+    const loginData: LoginRequest = {
+      email: data.email,
+      password: data.password,
+    };
+    handleLogin(loginData);
+  };
+
   return (
     <main className='min-h-screen grid grid-cols-1 md:grid-cols-2'>
       {/* ================= BRANDING ================= */}
@@ -75,28 +110,49 @@ export default function LoginPage() {
             Masuk
           </Typography>
 
-          <form className='space-y-6'>
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
             <div>
               <label className='mb-2 block text-sm font-medium text-gray-700'>
                 Email
               </label>
-              <Input placeholder='Masukkan email Anda' />
+              <Input
+                type='email'
+                placeholder='Masukkan email Anda'
+                {...register('email')}
+                className={errors.email ? 'border-red-500' : ''}
+              />
+              {errors.email && (
+                <p className='mt-1 text-sm text-red-500'>
+                  {errors.email.message}
+                </p>
+              )}
             </div>
 
             <div>
               <label className='mb-2 block text-sm font-medium text-gray-700'>
                 Password
               </label>
-              <Input type='password' placeholder='Masukkan password Anda' />
+              <Input
+                type='password'
+                placeholder='Masukkan password Anda'
+                {...register('password')}
+                className={errors.password ? 'border-red-500' : ''}
+              />
+              {errors.password && (
+                <p className='mt-1 text-sm text-red-500'>
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <Button
               type='submit'
+              disabled={isPending}
               className='w-full h-12 rounded-xl
                          bg-[#681819] hover:bg-[#7a1c1d]
-                         text-white'
+                         text-white disabled:opacity-50'
             >
-              Selanjutnya
+              {isPending ? 'Memproses...' : 'Masuk'}
             </Button>
           </form>
         </div>
