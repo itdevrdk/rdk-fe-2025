@@ -1,12 +1,10 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, Instagram, Youtube } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import NextImage from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-import { RiTiktokLine } from 'react-icons/ri';
 
 import Button from '@/components/buttons/Button';
 import Layout from '@/components/layouts/Layout';
@@ -38,13 +36,13 @@ const formatDate = (date: Date): string => {
 const EVENTS = [
   {
     id: 'MHQ',
-    title: "Musobaqah Hafdzil Qur'an",
+    title: "Musabaqah Hafdzil Qur'an",
     icon: '/images/ric/landing/logo-mhq.png',
     link: '/ric/register?event=MHQ',
   },
   {
     id: 'MTQ',
-    title: "Musobaqah Tilawatil Qur'an",
+    title: "Musabaqah Tilawatil Qur'an",
     icon: '/images/ric/landing/logo-mtq.png',
     link: '/ric/register?event=MTQ',
   },
@@ -218,8 +216,9 @@ export default function RICLandingPage() {
                   variant='primary'
                   className='w-full bg-gradient-to-r from-[#FFB121] to-[#FFDD9D] text-[#681819] font-semibold py-3 rounded-lg hover:from-[#E69E1E] hover:to-[#FFCC66] transition-all'
                   onClick={() =>
-                    router.push(
+                    window.open(
                       'https://drive.google.com/drive/folders/1Nh9esyQ1rtQvHkGYZcz82ekwFWbr0sN0',
+                      '_blank',
                     )
                   }
                 >
@@ -268,9 +267,8 @@ export default function RICLandingPage() {
                 kebaikan, mensinergikan nilai keilmuan dan keislaman, serta
                 menumbuhkan kebersamaan dalam pertumbuhan spiritual. Cabang
                 lomba yang dipertandingkan meliputi Musabaqah Tilawatil Qur’an
-                (MTQ), Musabaqah Hifdzil Qur’an (MHQ), Musabaqah Syarhil Qur’an
-                (MSQ), Lomba Da’i, Karya Tulis Ilmiah Al-Qur’an (KTIQ), poster,
-                dan videografi.
+                (MTQ), Musabaqah Hifdzil Qur’an (MHQ), Lomba Da’i, Karya Tulis
+                Ilmiah Al-Qur’an (KTIQ), poster, dan videografi.
               </Typography>
             </div>
 
@@ -380,7 +378,7 @@ export default function RICLandingPage() {
           alt='Left Decoration'
           width={500}
           height={500}
-          className='absolute -bottom-48 -left-18 z-10 w-16 md:w-96'
+          className='absolute -bottom-10 -left-4 lg:-bottom-48 lg:-left-18 z-10 w-32 md:w-96'
         />
 
         {/* Right Decoration */}
@@ -410,7 +408,7 @@ export default function RICLandingPage() {
           {/* Previous Button */}
           <button
             onClick={prevSlide}
-            className='flex-shrink-0 bg-white hover:bg-gray-100 text-[#681819] p-3 rounded-full shadow-lg transition-all hover:scale-110 z-10 border-2 border-[#681819]'
+            className='flex-shrink-0 bg-white hover:bg-gray-100 text-[#681819] p-3 rounded-full shadow-lg transition-all hover:scale-110 z-10 border-2 border-[#681819] ml-2'
             aria-label='Previous slide'
           >
             <ChevronLeft className='w-6 h-6 md:w-8 md:h-8' />
@@ -457,7 +455,7 @@ export default function RICLandingPage() {
           {/* Next Button */}
           <button
             onClick={nextSlide}
-            className='flex-shrink-0 bg-white hover:bg-gray-100 text-[#681819] p-3 rounded-full shadow-lg transition-all hover:scale-110 z-10 border-2 border-[#681819]'
+            className='flex-shrink-0 bg-white hover:bg-gray-100 text-[#681819] p-3 rounded-full shadow-lg transition-all hover:scale-110 z-10 border-2 border-[#681819] mr-2'
             aria-label='Next slide'
           >
             <ChevronRight className='w-6 h-6 md:w-8 md:h-8' />
@@ -539,7 +537,7 @@ export default function RICLandingPage() {
                   { name: 'CP DAI 🤵Naufal', phone: '08980442427' },
                   { name: 'CP KTIQ 🤵Nadhif', phone: '081290233045' },
                   { name: 'CP KTIQ 🤵Salwa', phone: '082131711572' },
-                  { name: 'CP POSTER 🧕Nasywa', phone: '0895405759422' },
+                  { name: 'CP POSTER 🧕Nasywa', phone: '081265281067' },
                   { name: 'CP POSTER 🤵Sofyan', phone: '081232265003' },
                   { name: 'CP VIDEOGRAFI 🧕Khosyi', phone: '087739030500' },
                   { name: 'CP VIDEOGRAFI 🤵Sofyan', phone: '081232265003' },
@@ -574,48 +572,6 @@ export default function RICLandingPage() {
                 title='Masjid Manarul Ilmi ITS'
               />
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 7: SOCIAL MEDIA */}
-      <section className='relative bg-white py-12 md:py-16 overflow-hidden border-t border-gray-200'>
-        <div className='mx-auto max-w-7xl'>
-          <Typography
-            as='h3'
-            variant='h3'
-            font='marquisette'
-            weight='bold'
-            className='text-center text-[#681819] mb-6'
-          >
-            Our Social Media
-          </Typography>
-
-          <div className='flex justify-center gap-6 md:gap-8'>
-            <Link
-              href='https://instagram.com/rdk.its'
-              target='_blank'
-              className='text-4xl hover:scale-110 transition-transform'
-              title='Instagram'
-            >
-              <Instagram width={32} height={32} className='text-[#681819]' />
-            </Link>
-            <Link
-              href='https://www.tiktok.com/@rdk.its'
-              target='_blank'
-              className='text-4xl hover:scale-110 transition-transform'
-              title='TikTok'
-            >
-              <RiTiktokLine width={32} height={32} className='text-[#681819]' />
-            </Link>
-            <Link
-              href='https://www.youtube.com/@MasjidITS'
-              target='_blank'
-              className='text-4xl hover:scale-110 transition-transform'
-              title='YouTube'
-            >
-              <Youtube width={32} height={32} className='text-[#681819]' />
-            </Link>
           </div>
         </div>
       </section>

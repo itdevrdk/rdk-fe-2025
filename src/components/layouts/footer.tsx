@@ -1,6 +1,7 @@
 import { Instagram, Youtube } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { FaWhatsapp } from 'react-icons/fa';
 import { RiTiktokLine } from 'react-icons/ri';
 
 import Typography from '@/components/Typography';
@@ -65,6 +66,14 @@ export default function Footer() {
           {/* Social Media */}
           <div className='flex gap-6'>
             <Link
+              href='https://whatsapp.com/channel/0029VaqSS5UFCCoZBnLNIE43'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='WhatsApp'
+            >
+              <FaWhatsapp className='text-white w-[28px] h-[28px]' />
+            </Link>
+            <Link
               href='https://instagram.com/rdk.its'
               target='_blank'
               className='hover:scale-110 transition-transform'
@@ -127,6 +136,14 @@ export default function Footer() {
 
           {/* Social Media */}
           <div className='flex justify-center gap-6 mt-6'>
+            <Link
+              href='https://whatsapp.com/channel/0029VaqSS5UFCCoZBnLNIE43'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='WhatsApp'
+            >
+              <FaWhatsapp className='text-white w-[28px] h-[28px]' />
+            </Link>
             <Link
               href='https://instagram.com/rdk.its'
               target='_blank'
