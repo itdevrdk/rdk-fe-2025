@@ -28,11 +28,33 @@ const registerRIC = async (
     formData.append('team_name', form.team_name);
     formData.append('supervisor_name', form.supervisor_name);
     formData.append('supervisor_phone', form.supervisor_phone);
-    formData.append('participants', JSON.stringify(form.participants));
     formData.append('result_link', form.result_link);
+
+    // Append participants without identity_card (will be sent separately)
+    const participantsData = form.participants.map((p) => ({
+      fullname: p.fullname,
+      email: p.email,
+      phone: p.phone,
+      province: p.province,
+      city: p.city,
+      institution: p.institution,
+      role: p.role,
+    }));
+    formData.append('participants', JSON.stringify(participantsData));
+
+    // Append identity cards for each participant
+    form.participants.forEach((p, index) => {
+      if (p.identity_card) {
+        formData.append(`identity_card_${index}`, p.identity_card);
+      }
+    });
 
     if (form.statement_link) {
       formData.append('statement_link', form.statement_link);
+    }
+
+    if (form.plagiarism_statement) {
+      formData.append('plagiarism_statement', form.plagiarism_statement);
     }
   } else {
     // Individual registration
@@ -43,6 +65,9 @@ const registerRIC = async (
     formData.append('city', form.city);
     formData.append('institution', form.institution);
 
+    if (form.identity_card) {
+      formData.append('identity_card', form.identity_card);
+    }
     if (form.statement_link) {
       formData.append('statement_link', form.statement_link);
     }

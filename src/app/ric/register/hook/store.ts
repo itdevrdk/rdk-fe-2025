@@ -9,6 +9,7 @@ export type Participant = {
   city: string;
   institution: string;
   role: 'Ketua' | 'Anggota';
+  identity_card: File | null;
 };
 
 export const EVENT_CONFIG = {
@@ -43,6 +44,8 @@ export type RegistrationForm = {
   // Files (not persisted)
   statement_link: File | null;
   poster_link: File | null;
+  identity_card: File | null;
+  plagiarism_statement: File | null;
   result_link: string;
   agree_data_usage: boolean;
   agree_guidebook: boolean;
@@ -75,6 +78,7 @@ const initialParticipants: Participant[] = [
     city: '',
     institution: '',
     role: 'Ketua',
+    identity_card: null,
   },
   {
     fullname: '',
@@ -84,6 +88,7 @@ const initialParticipants: Participant[] = [
     city: '',
     institution: '',
     role: 'Anggota',
+    identity_card: null,
   },
   {
     fullname: '',
@@ -93,6 +98,7 @@ const initialParticipants: Participant[] = [
     city: '',
     institution: '',
     role: 'Anggota',
+    identity_card: null,
   },
 ];
 
@@ -110,6 +116,8 @@ const initialForm: RegistrationForm = {
   participants: initialParticipants,
   statement_link: null,
   poster_link: null,
+  identity_card: null,
+  plagiarism_statement: null,
   result_link: '',
   agree_data_usage: false,
   agree_guidebook: false,
@@ -167,6 +175,13 @@ export const useRegistrationStore = create<RegistrationState>()(
           ...state.form,
           statement_link: null,
           poster_link: null,
+          identity_card: null,
+          plagiarism_statement: null,
+          // Clear identity_card from participants as well
+          participants: state.form.participants.map((p) => ({
+            ...p,
+            identity_card: null,
+          })),
         },
         step: state.step,
       }),
@@ -205,6 +220,7 @@ export const validateForm = (
       if (!p.province.trim()) return `Provinsi ${p.role} wajib diisi.`;
       if (!p.city.trim()) return `Kota ${p.role} wajib diisi.`;
       if (!p.institution.trim()) return `Asal instansi ${p.role} wajib diisi.`;
+      if (!p.identity_card) return `Kartu identitas ${p.role} wajib diunggah.`;
     }
 
     // Validate result_link for KTIQ and VIDEOGRAFI
@@ -214,6 +230,11 @@ export const validateForm = (
     if (form.event_type === 'KTIQ' && !form.statement_link) {
       return 'Surat pernyataan wajib diunggah.';
     }
+
+    // Validate plagiarism_statement for KTIQ
+    if (form.event_type === 'KTIQ' && !form.plagiarism_statement) {
+      return 'Surat pernyataan tidak plagiarisme wajib diunggah.';
+    }
   } else {
     // Validate individual fields
     if (!form.fullname.trim()) return 'Nama lengkap wajib diisi.';
@@ -222,6 +243,11 @@ export const validateForm = (
     if (!form.province.trim()) return 'Provinsi wajib diisi.';
     if (!form.city.trim()) return 'Kota wajib diisi.';
     if (!form.institution.trim()) return 'Asal instansi wajib diisi.';
+
+    // Validate identity_card for individual
+    if (!form.identity_card) {
+      return 'Kartu identitas wajib diunggah.';
+    }
 
     // Validate files based on event type
     if (

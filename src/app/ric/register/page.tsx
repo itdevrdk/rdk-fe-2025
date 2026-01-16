@@ -28,6 +28,17 @@ import {
   validateForm,
 } from './hook/store';
 
+// Helper function to update participant file
+const updateParticipantFile = (
+  participants: Participant[],
+  index: number,
+  file: File | null,
+): Participant[] => {
+  const updated = [...participants];
+  updated[index] = { ...updated[index], identity_card: file };
+  return updated;
+};
+
 function RICPendaftaranContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -418,6 +429,29 @@ function RICPendaftaranContent() {
                           updateParticipant(0, 'institution', e.target.value)
                         }
                       />
+                      <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
+                        Kartu Identitas Ketua (KTM/KTP/Kartu Pelajar)
+                      </Label>
+                      <Input
+                        type='file'
+                        accept='.jpg,.jpeg,.png,.pdf'
+                        className='bg-white'
+                        onChange={(e) =>
+                          setForm({
+                            participants: updateParticipantFile(
+                              form.participants,
+                              0,
+                              e.target.files?.[0] ?? null,
+                            ),
+                          })
+                        }
+                      />
+                      {form.participants[0]?.identity_card && (
+                        <p className='text-sm text-green-600 mt-1'>
+                          File terpilih:{' '}
+                          {form.participants[0].identity_card.name}
+                        </p>
+                      )}
                     </div>
 
                     {/* BIODATA ANGGOTA */}
@@ -524,6 +558,28 @@ function RICPendaftaranContent() {
                                 )
                               }
                             />
+                            <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
+                              Kartu Identitas (KTM/KTP/Kartu Pelajar)
+                            </Label>
+                            <Input
+                              type='file'
+                              accept='.jpg,.jpeg,.png,.pdf'
+                              className='bg-white'
+                              onChange={(e) =>
+                                setForm({
+                                  participants: updateParticipantFile(
+                                    form.participants,
+                                    i + 1,
+                                    e.target.files?.[0] ?? null,
+                                  ),
+                                })
+                              }
+                            />
+                            {member.identity_card && (
+                              <p className='text-sm text-green-600 mt-1'>
+                                File terpilih: {member.identity_card.name}
+                              </p>
+                            )}
                           </div>
                         ))}
                     </div>
@@ -549,12 +605,36 @@ function RICPendaftaranContent() {
                       </div>
                     )}
 
+                    {/* Identity card upload for individual */}
+                    {!isTeam && (
+                      <>
+                        <Label className='text-black font-bold pb-0 mb-1 text-xs'>
+                          Kartu Identitas (KTM/KTP/Kartu Pelajar)
+                        </Label>
+                        <Input
+                          type='file'
+                          accept='.jpg,.jpeg,.png,.pdf'
+                          className='bg-white'
+                          onChange={(e) =>
+                            setForm({
+                              identity_card: e.target.files?.[0] ?? null,
+                            })
+                          }
+                        />
+                        {form.identity_card && (
+                          <p className='text-sm text-green-600 mt-1'>
+                            File terpilih: {form.identity_card.name}
+                          </p>
+                        )}
+                      </>
+                    )}
+
                     {/* Statement link for MHQ, MTQ, DAI (Individual) and KTIQ (Team) */}
                     {['MHQ', 'MTQ', 'DAI', 'KTIQ'].includes(
                       form.event_type,
                     ) && (
                       <>
-                        <Label className='text-black font-bold pb-0 mb-1 text-xs'>
+                        <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
                           Unggah Surat Pernyataan (Format: PDF)
                         </Label>
                         <Input
@@ -570,6 +650,42 @@ function RICPendaftaranContent() {
                         {form.statement_link && (
                           <p className='text-sm text-green-600 mt-1'>
                             File terpilih: {form.statement_link.name}
+                          </p>
+                        )}
+                      </>
+                    )}
+
+                    {/* Plagiarism statement for KTIQ */}
+                    {form.event_type === 'KTIQ' && (
+                      <>
+                        <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
+                          Unggah Surat Pernyataan Tidak Plagiarisme (Format:
+                          PDF)
+                        </Label>
+                        <p className='text-xs text-gray-600 mb-2'>
+                          Template dapat diunduh{' '}
+                          <a
+                            href='https://drive.google.com/file/d/1G5oyxCMwBB0QoEwUNkHIG1xXCx7PFIyS/view?usp=sharing'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-blue-600 underline hover:text-blue-800'
+                          >
+                            di sini
+                          </a>
+                        </p>
+                        <Input
+                          type='file'
+                          accept='.pdf'
+                          className='bg-white'
+                          onChange={(e) =>
+                            setForm({
+                              plagiarism_statement: e.target.files?.[0] ?? null,
+                            })
+                          }
+                        />
+                        {form.plagiarism_statement && (
+                          <p className='text-sm text-green-600 mt-1'>
+                            File terpilih: {form.plagiarism_statement.name}
                           </p>
                         )}
                       </>
