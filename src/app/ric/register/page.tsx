@@ -430,7 +430,7 @@ function RICPendaftaranContent() {
                         }
                       />
                       <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
-                        Kartu Identitas Ketua (KTM/KTP/Kartu Pelajar)
+                        Kartu Identitas Ketua (KTM/Kartu Pelajar)
                       </Label>
                       <Input
                         type='file'
@@ -559,7 +559,7 @@ function RICPendaftaranContent() {
                               }
                             />
                             <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
-                              Kartu Identitas (KTM/KTP/Kartu Pelajar)
+                              Kartu Identitas (KTM/Kartu Pelajar)
                             </Label>
                             <Input
                               type='file'
@@ -609,7 +609,7 @@ function RICPendaftaranContent() {
                     {!isTeam && (
                       <>
                         <Label className='text-black font-bold pb-0 mb-1 text-xs'>
-                          Kartu Identitas (KTM/KTP/Kartu Pelajar)
+                          Kartu Identitas (KTM/Kartu Pelajar)
                         </Label>
                         <Input
                           type='file'
