@@ -18,7 +18,7 @@ const KEGIATAN_ITEMS = [
     desc: 'Ajang kompetisi bergengsi tingkat Jawa Timur dengan 6 cabang lomba: MHQ, MTQ, KTIQ, Dai, Poster, dan Sinematografi.',
     hasRegister: true,
     link: '/ric',
-    image: '/images/homepage/coming-soon-placeholder.png',
+    image: '/images/homepage/event-carousel/ric.png',
     registrationOpenDate: new Date('2026-01-18'),
   },
   {
