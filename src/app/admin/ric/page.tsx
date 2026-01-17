@@ -281,19 +281,19 @@ export default function AdminRicPage() {
       key: 'status',
       header: 'Status',
       render: (item) => {
-        const statusLower = item.status?.toLowerCase();
+        const statusUpper = item.status?.toUpperCase();
         return (
           <span
             className={cn(
               'inline-flex rounded-full px-3 py-1 text-xs font-medium',
-              statusLower === 'active' || statusLower === 'verified'
+              statusUpper === 'VERIFIED'
                 ? 'bg-green-100 text-green-700'
                 : 'bg-red-100 text-red-700',
             )}
           >
-            {statusLower === 'active' || statusLower === 'verified'
-              ? 'Aktif'
-              : 'Non-Aktif'}
+            {statusUpper === 'VERIFIED'
+              ? 'Terverifikasi'
+              : 'Belum Terverifikasi'}
           </span>
         );
       },
@@ -416,8 +416,8 @@ export default function AdminRicPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value='all'>Semua Status</SelectItem>
-            <SelectItem value='active'>Aktif</SelectItem>
-            <SelectItem value='inactive'>Non-Aktif</SelectItem>
+            <SelectItem value='VERIFIED'>Terverifikasi</SelectItem>
+            <SelectItem value='UNVERIFIED'>Belum Terverifikasi</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -452,8 +452,8 @@ export default function AdminRicPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='all'>Semua Status</SelectItem>
-              <SelectItem value='active'>Aktif</SelectItem>
-              <SelectItem value='inactive'>Non-Aktif</SelectItem>
+              <SelectItem value='VERIFIED'>Terverifikasi</SelectItem>
+              <SelectItem value='UNVERIFIED'>Belum Terverifikasi</SelectItem>
             </SelectContent>
           </Select>
 
