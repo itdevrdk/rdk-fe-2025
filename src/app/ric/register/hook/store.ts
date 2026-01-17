@@ -195,7 +195,50 @@ export const isTeamEvent = (eventType: EventKey | ''): boolean => {
   return EVENT_CONFIG[eventType as EventKey]?.type === 'team';
 };
 
-// Validation function
+// Validation function for Step 1
+export const validateStep1 = (form: RegistrationForm): string | null => {
+  if (!form.event_type) return 'Pilih cabang lomba terlebih dahulu.';
+  return null;
+};
+
+// Validation function for Step 2 (Biodata)
+export const validateStep2 = (
+  form: RegistrationForm,
+  isTeam: boolean,
+): string | null => {
+  if (isTeam) {
+    // Validate team fields
+    if (!form.team_name.trim()) return 'Nama tim wajib diisi.';
+    if (!form.supervisor_name.trim()) return 'Nama pendamping wajib diisi.';
+    if (!form.supervisor_phone.trim()) return 'Kontak pendamping wajib diisi.';
+
+    // Validate participants
+    for (let i = 0; i < form.participants.length; i++) {
+      const p = form.participants[i];
+      const label = i === 0 ? 'Ketua' : `Anggota ${i}`;
+      if (!p.fullname.trim()) return `Nama lengkap ${label} wajib diisi.`;
+      if (!p.email.trim()) return `Email ${label} wajib diisi.`;
+      if (!p.phone.trim()) return `No WhatsApp ${label} wajib diisi.`;
+      if (!p.province.trim()) return `Provinsi ${label} wajib diisi.`;
+      if (!p.city.trim()) return `Kota ${label} wajib diisi.`;
+      if (!p.institution.trim()) return `Asal instansi ${label} wajib diisi.`;
+      if (!p.identity_card) return `Kartu identitas ${label} wajib diunggah.`;
+    }
+  } else {
+    // Validate individual fields
+    if (!form.fullname.trim()) return 'Nama lengkap wajib diisi.';
+    if (!form.email.trim()) return 'Email wajib diisi.';
+    if (!form.phone.trim()) return 'No WhatsApp wajib diisi.';
+    if (!form.province.trim()) return 'Provinsi wajib diisi.';
+    if (!form.city.trim()) return 'Kota wajib diisi.';
+    if (!form.institution.trim()) return 'Asal instansi wajib diisi.';
+    if (!form.supervisor_name.trim()) return 'Nama pendamping wajib diisi.';
+    if (!form.supervisor_phone.trim()) return 'Kontak pendamping wajib diisi.';
+  }
+  return null;
+};
+
+// Validation function (for final submit)
 export const validateForm = (
   form: RegistrationForm,
   isTeam: boolean,
@@ -243,6 +286,8 @@ export const validateForm = (
     if (!form.province.trim()) return 'Provinsi wajib diisi.';
     if (!form.city.trim()) return 'Kota wajib diisi.';
     if (!form.institution.trim()) return 'Asal instansi wajib diisi.';
+    if (!form.supervisor_name.trim()) return 'Nama pendamping wajib diisi.';
+    if (!form.supervisor_phone.trim()) return 'Kontak pendamping wajib diisi.';
 
     // Validate identity_card for individual
     if (!form.identity_card) {

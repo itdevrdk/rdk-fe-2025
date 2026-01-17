@@ -26,7 +26,20 @@ import {
   Participant,
   useRegistrationStore,
   validateForm,
+  validateStep1,
+  validateStep2,
 } from './hook/store';
+import { useQuota } from '../hook/useQuota';
+
+// Event options data
+const EVENT_OPTIONS = [
+  { id: 'MHQ', label: 'MHQ (Individu)' },
+  { id: 'MTQ', label: 'MTQ (Individu)' },
+  { id: 'DAI', label: 'Dai (Individu)' },
+  { id: 'KTIQ', label: 'KTIQ (Tim)' },
+  { id: 'POSTER', label: 'Poster (Individu)' },
+  { id: 'VIDEOGRAFI', label: 'Videografi (Tim)' },
+] as const;
 
 // Helper function to update participant file
 const updateParticipantFile = (
@@ -57,6 +70,37 @@ function RICPendaftaranContent() {
   // TanStack Query mutation
   const registerMutation = useRegisterRIC();
   const isTeam = isTeamEvent(form.event_type);
+
+  // Fetch quota data
+  const { getQuotaByEventId, isLoading: isQuotaLoading } = useQuota();
+
+  // Filter available events (hide full quota)
+  const availableEvents = EVENT_OPTIONS.filter((event) => {
+    const quota = getQuotaByEventId(event.id);
+    if (!quota) return true; // Show if quota data not available yet
+    return quota.registered < quota.total;
+  });
+
+  // Handler untuk validasi dan pindah ke step berikutnya
+  const handleNextStep = (nextStep: number) => {
+    setErrorMessage(null);
+
+    if (step === 1) {
+      const error = validateStep1(form);
+      if (error) {
+        setErrorMessage(error);
+        return;
+      }
+    } else if (step === 2) {
+      const error = validateStep2(form, isTeam);
+      if (error) {
+        setErrorMessage(error);
+        return;
+      }
+    }
+
+    setStep(nextStep);
+  };
 
   // Handle URL query parameter for event selection
   useEffect(() => {
@@ -219,28 +263,58 @@ function RICPendaftaranContent() {
                         setErrorMessage(null);
                         setForm({ event_type: v });
                       }}
+                      disabled={isQuotaLoading}
                     >
                       <SelectTrigger className='w-full bg-white'>
-                        <SelectValue placeholder='Pilih cabang lomba' />
+                        <SelectValue
+                          placeholder={
+                            isQuotaLoading
+                              ? 'Memuat data kuota...'
+                              : 'Pilih cabang lomba'
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value='MHQ'>MHQ (Individu)</SelectItem>
-                        <SelectItem value='MTQ'>MTQ (Individu)</SelectItem>
-                        <SelectItem value='DAI'>Dai (Individu)</SelectItem>
-                        <SelectItem value='KTIQ'>KTIQ (Tim)</SelectItem>
-                        <SelectItem value='POSTER'>
-                          Poster (Individu)
-                        </SelectItem>
-                        <SelectItem value='VIDEOGRAFI'>
-                          Videografi (Tim)
-                        </SelectItem>
+                        {availableEvents.length === 0 ? (
+                          <div className='px-2 py-4 text-center text-sm text-gray-500'>
+                            Semua kuota lomba sudah penuh
+                          </div>
+                        ) : (
+                          availableEvents.map((event) => {
+                            const quota = getQuotaByEventId(event.id);
+                            const remaining = quota
+                              ? quota.total - quota.registered
+                              : null;
+                            return (
+                              <SelectItem key={event.id} value={event.id}>
+                                <div className='flex items-center justify-between w-full gap-2'>
+                                  <span>{event.label}</span>
+                                  {remaining !== null && (
+                                    <span
+                                      className={`text-xs ${remaining <= 5 ? 'text-orange-500' : 'text-green-600'}`}
+                                    >
+                                      (Sisa: {remaining})
+                                    </span>
+                                  )}
+                                </div>
+                              </SelectItem>
+                            );
+                          })
+                        )}
                       </SelectContent>
                     </Select>
+
+                    {/* Error message display */}
+                    {errorMessage && (
+                      <div className='mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg'>
+                        {errorMessage}
+                      </div>
+                    )}
 
                     <Button
                       className='mt-6 w-full bg-[#7A1E1E]'
                       disabled={!form.event_type}
-                      onClick={() => setStep(2)}
+                      onClick={() => handleNextStep(2)}
                     >
                       Selanjutnya
                     </Button>
@@ -306,10 +380,46 @@ function RICPendaftaranContent() {
                       onChange={(e) => setForm({ institution: e.target.value })}
                     />
 
+                    {/* Informasi Pendamping */}
+                    <div className='mt-6 p-4 bg-white/30 rounded-lg'>
+                      <h3 className='text-lg font-bold text-[#7A1E1E] mb-4'>
+                        Informasi Pendamping
+                      </h3>
+                      <Label className='text-black font-bold pb-0 mb-1 text-xs'>
+                        Nama Pendamping
+                      </Label>
+                      <Input
+                        className='bg-white'
+                        placeholder='Nama Pendamping'
+                        value={form.supervisor_name}
+                        onChange={(e) =>
+                          setForm({ supervisor_name: e.target.value })
+                        }
+                      />
+                      <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
+                        No WhatsApp Pendamping
+                      </Label>
+                      <Input
+                        className='bg-white'
+                        placeholder='No WhatsApp Pendamping'
+                        value={form.supervisor_phone}
+                        onChange={(e) =>
+                          setForm({ supervisor_phone: e.target.value })
+                        }
+                      />
+                    </div>
+
+                    {/* Error message display */}
+                    {errorMessage && (
+                      <div className='mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg'>
+                        {errorMessage}
+                      </div>
+                    )}
+
                     <div className='mt-6 flex gap-3'>
                       <Button
                         className='w-full bg-[#7A1E1E]'
-                        onClick={() => setStep(3)}
+                        onClick={() => handleNextStep(3)}
                       >
                         Selanjutnya
                       </Button>
@@ -584,10 +694,17 @@ function RICPendaftaranContent() {
                         ))}
                     </div>
 
+                    {/* Error message display */}
+                    {errorMessage && (
+                      <div className='mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg'>
+                        {errorMessage}
+                      </div>
+                    )}
+
                     <div className='mt-6 flex gap-3'>
                       <Button
                         className='w-full bg-[#7A1E1E]'
-                        onClick={() => setStep(3)}
+                        onClick={() => handleNextStep(3)}
                       >
                         Selanjutnya
                       </Button>

@@ -1,6 +1,15 @@
 'use client';
 
-import { Database, FileText, Home, LogOut, Menu, User, X } from 'lucide-react';
+import {
+  ChevronDown,
+  Database,
+  FileText,
+  Home,
+  LogOut,
+  Menu,
+  User,
+  X,
+} from 'lucide-react';
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -16,7 +25,17 @@ import useAuthStore from '@/stores/useAuthStore';
 const navItems = [
   { name: 'Beranda', href: '/admin', icon: Home },
   { name: 'Laporan Keuangan', href: '/admin/laporan-keuangan', icon: FileText },
-  { name: 'Data', href: '/admin/data', icon: Database },
+  {
+    name: 'Data',
+    href: '/admin/data',
+    icon: Database,
+    subItems: [
+      { name: 'RIC', href: '/admin/ric' },
+      { name: 'Event RIC', href: '/admin/ric-event' },
+      { name: 'Nuzulul Quran', href: '/admin/nuzulul-quran' },
+      { name: 'Khataman Akbar', href: '/admin/khataman-akbar' },
+    ],
+  },
 ];
 
 type AdminUser = {
@@ -31,20 +50,29 @@ type AdminSidebarProps = {
 
 export default function AdminSidebar({ user, children }: AdminSidebarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>('Data');
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAuthStore.useLogout();
 
-  // Determine active page based on pathname
-  const getActivePage = () => {
-    const activeItem = navItems.find((item) => item.href === pathname);
-    return activeItem?.name || 'Beranda';
+  // Check if current path is active or is a child of a nav item
+  const isItemActive = (item: (typeof navItems)[0]) => {
+    if (pathname === item.href) return true;
+    if (item.subItems) {
+      return item.subItems.some((sub) => pathname === sub.href);
+    }
+    return false;
   };
 
   // Handle logout
   const handleLogout = () => {
     logout();
     router.push('/login');
+  };
+
+  // Toggle expanded menu
+  const toggleMenu = (name: string) => {
+    setExpandedMenu(expandedMenu === name ? null : name);
   };
 
   return (
@@ -141,7 +169,74 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
         <nav className='flex flex-col gap-1 px-4 py-4'>
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = getActivePage() === item.name;
+            const isActive = isItemActive(item);
+            const hasSubItems = item.subItems && item.subItems.length > 0;
+            const isExpanded = expandedMenu === item.name;
+
+            if (hasSubItems) {
+              return (
+                <div key={item.name}>
+                  <button
+                    onClick={() => toggleMenu(item.name)}
+                    className={cn(
+                      'flex w-full items-center justify-between rounded-lg px-3 py-2.5 transition-colors',
+                      isActive
+                        ? 'bg-primary-100/10 text-primary-100'
+                        : 'text-gray-600 hover:bg-gray-100',
+                    )}
+                  >
+                    <div className='flex items-center gap-3'>
+                      <Icon size={18} />
+                      <Typography
+                        as='span'
+                        font='zabal'
+                        weight={isActive ? 'medium' : 'regular'}
+                        className='text-sm'
+                      >
+                        {item.name}
+                      </Typography>
+                    </div>
+                    <ChevronDown
+                      size={16}
+                      className={cn(
+                        'transition-transform',
+                        isExpanded && 'rotate-180',
+                      )}
+                    />
+                  </button>
+                  {isExpanded && (
+                    <div className='ml-6 mt-1 flex flex-col gap-1 border-l border-gray-200 pl-3'>
+                      {item.subItems?.map((subItem) => {
+                        const isSubActive = pathname === subItem.href;
+                        return (
+                          <Link
+                            key={subItem.name}
+                            href={subItem.href}
+                            onClick={() => setSidebarOpen(false)}
+                            className={cn(
+                              'rounded-lg px-3 py-2 text-sm transition-colors',
+                              isSubActive
+                                ? 'bg-primary-100/10 font-medium text-primary-100'
+                                : 'text-gray-600 hover:bg-gray-100',
+                            )}
+                          >
+                            <Typography
+                              as='span'
+                              font='zabal'
+                              weight={isSubActive ? 'medium' : 'regular'}
+                              className='text-sm'
+                            >
+                              {subItem.name}
+                            </Typography>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.name}

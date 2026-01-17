@@ -8,8 +8,11 @@ import { FaWhatsapp } from 'react-icons/fa';
 
 import Button from '@/components/buttons/Button';
 import Layout from '@/components/layouts/Layout';
+import Skeleton from '@/components/Skeleton';
 import { showToast, WARNING_TOAST } from '@/components/Toast';
 import Typography from '@/components/Typography';
+
+import { useQuota } from './hook/useQuota';
 
 // Tanggal pembukaan pendaftaran RIC (null jika belum ditentukan)
 const RIC_REGISTRATION_OPEN_DATE: Date | null = new Date('2026-01-18');
@@ -95,6 +98,9 @@ export default function RICLandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [visibleItems, setVisibleItems] = useState(3);
+
+  // Fetch quota data from API
+  const { getQuotaByEventId, isLoading: isQuotaLoading } = useQuota();
 
   // Handler untuk klik tombol pendaftaran
   const handleRegisterClick = (link: string) => {
@@ -326,37 +332,118 @@ export default function RICLandingPage() {
           </Typography>
 
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8'>
-            {EVENTS.map((event) => (
-              <div
-                key={event.id}
-                className='bg-[#FFE9B5] rounded-2xl p-6 md:p-8 flex flex-col items-center justify-between text-center hover:shadow-lg transition-shadow cursor-pointer h-full'
-              >
-                <Typography
-                  as='h3'
-                  weight='bold'
-                  className='text-[#681819] text-sm lg:text-3xl mb-4'
-                >
-                  {event.title}
-                </Typography>
+            {EVENTS.map((event) => {
+              const quota = getQuotaByEventId(event.id);
+              const registered = quota?.registered ?? 0;
+              const total = quota?.total ?? 0;
+              const isUnlimited = total === 9999;
+              const remaining = total - registered;
+              const isFull = quota ? !isUnlimited && remaining <= 0 : false;
+              const isAlmostFull = quota
+                ? !isUnlimited && remaining > 0 && remaining <= 5
+                : false;
 
-                <div className='w-20 h-20 md:w-32 md:h-32 mb-4 relative'>
-                  <NextImage
-                    src={event.icon}
-                    alt={event.title}
-                    width={96}
-                    height={96}
-                    className='w-full h-full object-contain'
-                  />
+              return (
+                <div
+                  key={event.id}
+                  className='bg-[#FFE9B5] rounded-2xl p-6 md:p-8 flex flex-col items-center justify-between text-center hover:shadow-lg transition-shadow cursor-pointer h-full'
+                >
+                  <Typography
+                    as='h3'
+                    weight='bold'
+                    className='text-[#681819] text-sm lg:text-3xl mb-4'
+                  >
+                    {event.title}
+                  </Typography>
+
+                  <div className='w-20 h-20 md:w-32 md:h-32 mb-4 relative'>
+                    <NextImage
+                      src={event.icon}
+                      alt={event.title}
+                      width={96}
+                      height={96}
+                      className='w-full h-full object-contain'
+                    />
+                  </div>
+
+                  {/* Quota Display */}
+                  <div className='w-full mb-4'>
+                    <div className='flex justify-between items-center mb-2'>
+                      <Typography
+                        as='span'
+                        className='text-xs md:text-sm text-[#681819]'
+                      >
+                        {isUnlimited ? 'Kuota' : 'Sisa Kuota'}
+                      </Typography>
+                      {isQuotaLoading ? (
+                        <Skeleton className='w-16 h-4' />
+                      ) : (
+                        <Typography
+                          as='span'
+                          weight='bold'
+                          className={`text-xs md:text-sm ${
+                            isUnlimited
+                              ? 'text-blue-600'
+                              : isFull
+                                ? 'text-red-600'
+                                : isAlmostFull
+                                  ? 'text-orange-500'
+                                  : 'text-green-600'
+                          }`}
+                        >
+                          {!quota
+                            ? '-'
+                            : isUnlimited
+                              ? 'Tidak Terbatas'
+                              : isFull
+                                ? 'Penuh'
+                                : `${remaining}/${total}`}
+                        </Typography>
+                      )}
+                    </div>
+                    {isQuotaLoading ? (
+                      <Skeleton className='w-full h-2.5 rounded-full' />
+                    ) : isUnlimited ? (
+                      <div className='w-full bg-blue-200 rounded-full h-2.5'>
+                        <div
+                          className='h-2.5 rounded-full bg-blue-600 transition-all'
+                          style={{ width: '100%' }}
+                        />
+                      </div>
+                    ) : (
+                      <div className='w-full bg-[#D9D9D9] rounded-full h-2.5'>
+                        <div
+                          className={`h-2.5 rounded-full transition-all ${
+                            isFull
+                              ? 'bg-red-600'
+                              : isAlmostFull
+                                ? 'bg-orange-500'
+                                : 'bg-green-600'
+                          }`}
+                          style={{
+                            width: quota
+                              ? `${Math.min((registered / total) * 100, 100)}%`
+                              : '0%',
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    className={`font-bold py-2 px-6 rounded-lg text-xs md:text-sm transition-colors w-full ${
+                      isFull
+                        ? 'bg-gray-400 cursor-not-allowed text-white'
+                        : 'bg-[#681819] hover:bg-[#5A1415] text-white'
+                    }`}
+                    onClick={() => !isFull && handleRegisterClick(event.link)}
+                    disabled={isFull}
+                  >
+                    {isFull ? 'Kuota Penuh' : 'Daftar'}
+                  </button>
                 </div>
-
-                <button
-                  className='bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-2 px-6 rounded-lg text-xs md:text-sm transition-colors w-full'
-                  onClick={() => handleRegisterClick(event.link)}
-                >
-                  Daftar
-                </button>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
