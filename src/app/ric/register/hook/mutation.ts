@@ -28,24 +28,28 @@ const registerRIC = async (
     formData.append('team_name', form.team_name);
     formData.append('supervisor_name', form.supervisor_name);
     formData.append('supervisor_phone', form.supervisor_phone);
-    formData.append('result_link', form.result_link);
 
-    // Append participants without identity_card (will be sent separately)
-    const participantsData = form.participants.map((p) => ({
-      fullname: p.fullname,
-      email: p.email,
-      phone: p.phone,
-      province: p.province,
-      city: p.city,
-      institution: p.institution,
-      role: p.role,
-    }));
-    formData.append('participants', JSON.stringify(participantsData));
+    // KTIQ uses file upload, VIDEOGRAFI uses link
+    if (form.event_type === 'KTIQ' && form.result_file) {
+      formData.append('result_file', form.result_file);
+    } else if (form.event_type === 'VIDEOGRAFI') {
+      formData.append('result_link', form.result_link);
+    }
 
-    // Append identity cards for each participant
+    // Append participants as structured form fields
     form.participants.forEach((p, index) => {
+      formData.append(`participants[${index}][fullname]`, p.fullname);
+      formData.append(`participants[${index}][email]`, p.email);
+      formData.append(`participants[${index}][phone]`, p.phone);
+      formData.append(`participants[${index}][province]`, p.province);
+      formData.append(`participants[${index}][city]`, p.city);
+      formData.append(`participants[${index}][institution]`, p.institution);
+      formData.append(`participants[${index}][role]`, p.role);
       if (p.identity_card) {
-        formData.append(`identity_card_${index}`, p.identity_card);
+        formData.append(
+          `participants[${index}][identity_card]`,
+          p.identity_card,
+        );
       }
     });
 

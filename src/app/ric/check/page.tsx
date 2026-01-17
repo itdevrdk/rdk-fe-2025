@@ -47,22 +47,22 @@ const STATUS_CONFIG: Record<
   RegistrationStatus,
   { icon: React.ReactNode; color: string; bgColor: string }
 > = {
-  pending: {
+  UNVERIFIED: {
     icon: <FaHourglassHalf className='text-xl' />,
     color: 'text-yellow-600',
     bgColor: 'bg-yellow-100',
   },
-  verified: {
+  VERIFIED: {
     icon: <FaCheckCircle className='text-xl' />,
     color: 'text-green-600',
     bgColor: 'bg-green-100',
   },
-  rejected: {
+  REJECTED: {
     icon: <FaTimesCircle className='text-xl' />,
     color: 'text-red-600',
     bgColor: 'bg-red-100',
   },
-  revision_needed: {
+  REVISION_NEEDED: {
     icon: <FaExclamationCircle className='text-xl' />,
     color: 'text-orange-600',
     bgColor: 'bg-orange-100',
@@ -133,7 +133,16 @@ const RegistrationResult = ({
   data: RegistrationData;
   onReset: () => void;
 }) => {
-  const statusConfig = STATUS_CONFIG[data.status];
+  // Normalize status to uppercase to handle potential case mismatches (e.g. 'pending' vs 'UNVERIFIED' or 'verified' vs 'VERIFIED')
+  // Map 'PENDING' to 'UNVERIFIED' if needed, or just rely on the keys.
+  const rawStatus = data.status?.toUpperCase() || 'UNVERIFIED';
+
+  // Handle specific mapping if backend sends 'PENDING' but we expect 'UNVERIFIED'
+  const normalizedStatus: RegistrationStatus =
+    rawStatus === 'PENDING' ? 'UNVERIFIED' : (rawStatus as RegistrationStatus);
+
+  const statusConfig =
+    STATUS_CONFIG[normalizedStatus] || STATUS_CONFIG['UNVERIFIED'];
 
   return (
     <div className='bg-white rounded-2xl p-6 md:p-8 shadow-lg w-full'>
@@ -265,34 +274,35 @@ const RegistrationResult = ({
       )}
 
       {/* Rejection Reason or Notes */}
-      {(data.rejection_reason || data.notes) && (
-        <div
-          className={`mb-6 p-4 rounded-lg ${
-            data.status === 'rejected' || data.status === 'revision_needed'
-              ? 'bg-red-50 border border-red-200'
-              : 'bg-blue-50 border border-blue-200'
-          }`}
-        >
-          <h3
-            className={`font-semibold mb-2 ${
-              data.status === 'rejected' || data.status === 'revision_needed'
-                ? 'text-red-700'
-                : 'text-blue-700'
-            }`}
-          >
-            {data.rejection_reason ? 'Alasan Penolakan' : 'Catatan'}
-          </h3>
-          <p
-            className={`text-sm ${
-              data.status === 'rejected' || data.status === 'revision_needed'
-                ? 'text-red-600'
-                : 'text-blue-600'
-            }`}
-          >
-            {data.rejection_reason || data.notes}
-          </p>
-        </div>
-      )}
+      {(data.status === 'REJECTED' || data.status === 'REVISION_NEEDED') &&
+        data.rejection_reason && (
+          <div className='mb-6 p-4 rounded-lg bg-red-50 border border-red-200'>
+            <h3 className='font-semibold text-red-700 mb-2'>
+              {data.status === 'REVISION_NEEDED'
+                ? 'Perlu Revisi'
+                : 'Pendaftaran Ditolak'}
+            </h3>
+            <p className='text-sm text-red-600'>
+              {data.status === 'REVISION_NEEDED'
+                ? 'Maaf, pendaftaran Anda perlu revisi. Alasan: '
+                : 'Maaf, pendaftaran Anda ditolak. Alasan: '}
+              <span className='font-medium'>{data.rejection_reason}</span>
+            </p>
+          </div>
+        )}
+
+      {/* Internal Notes (only if needed/safe to show, per user request 'display it as Catatan Panitia if relevant') */}
+      {/* Assuming notes might be internal but user said 'you may chose to display it'. Let's display it separately from rejection reason if present and not rejected/revision to avoid clutter, or just always below if it exists. */}
+      {data.notes &&
+        data.status !== 'REJECTED' &&
+        data.status !== 'REVISION_NEEDED' && (
+          <div className='mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200'>
+            <h3 className='font-semibold text-blue-700 mb-2'>
+              Catatan Panitia
+            </h3>
+            <p className='text-sm text-blue-600'>{data.notes}</p>
+          </div>
+        )}
 
       {/* Reset Button */}
       <button

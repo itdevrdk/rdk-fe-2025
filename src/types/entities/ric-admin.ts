@@ -1,5 +1,9 @@
 // Admin RIC Registration Types
-export type RicRegistrationStatus = 'VERIFIED' | 'UNVERIFIED';
+export type RicRegistrationStatus =
+  | 'VERIFIED'
+  | 'UNVERIFIED'
+  | 'REJECTED'
+  | 'REVISION_NEEDED';
 
 export type RicEventType =
   | 'MHQ'
@@ -35,6 +39,8 @@ export interface RicRegistration {
   event_type: RicEventType | string;
   institution: string;
   status: RicRegistrationStatus | string;
+  notes?: string;
+  rejection_reason?: string;
   created_at: string;
   updated_at?: string;
   // Leader/participant fields
@@ -49,6 +55,8 @@ export interface RicRegistration {
   // Detail view fields
   participants?: RicParticipant[];
   documents?: RicDocuments;
+  result_link?: string;
+  poster_link?: string;
 }
 
 export interface RicRegistrationFormData {
@@ -56,6 +64,8 @@ export interface RicRegistrationFormData {
   event_type: string;
   institution: string;
   status: RicRegistrationStatus;
+  notes?: string;
+  rejection_reason?: string;
   leader_name: string;
   leader_email: string;
   leader_phone: string;

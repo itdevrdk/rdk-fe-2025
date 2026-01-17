@@ -752,8 +752,19 @@ function RICPendaftaranContent() {
                     ) && (
                       <>
                         <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
-                          Unggah Surat Pernyataan (Format: PDF)
+                          Unggah Surat Pernyataan Komitmen (Format: PDF)
                         </Label>
+                        <p className='text-xs text-gray-600 mb-2'>
+                          Template dapat diunduh{' '}
+                          <a
+                            href='https://drive.google.com/drive/folders/1o4dOtE_uG3j1Oxh2reQ0D5_qyG_hqhoW'
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='text-blue-600 underline hover:text-blue-800'
+                          >
+                            di sini
+                          </a>
+                        </p>
                         <Input
                           type='file'
                           accept='.pdf'
@@ -832,8 +843,32 @@ function RICPendaftaranContent() {
                       </>
                     )}
 
-                    {/* Result link for KTIQ and VIDEOGRAFI (Team) */}
-                    {['KTIQ', 'VIDEOGRAFI'].includes(form.event_type) && (
+                    {/* Result file for KTIQ (Team) */}
+                    {form.event_type === 'KTIQ' && (
+                      <>
+                        <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
+                          Unggah File Karya (Format: PDF, Maks: 10MB)
+                        </Label>
+                        <Input
+                          type='file'
+                          accept='.pdf'
+                          className='bg-white'
+                          onChange={(e) =>
+                            setForm({
+                              result_file: e.target.files?.[0] ?? null,
+                            })
+                          }
+                        />
+                        {form.result_file && (
+                          <p className='text-sm text-green-600 mt-1'>
+                            File terpilih: {form.result_file.name}
+                          </p>
+                        )}
+                      </>
+                    )}
+
+                    {/* Result link for VIDEOGRAFI (Team) */}
+                    {form.event_type === 'VIDEOGRAFI' && (
                       <>
                         <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
                           Link Unggah Karya (Google Drive/YouTube)

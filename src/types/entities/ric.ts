@@ -1,8 +1,8 @@
 export type RegistrationStatus =
-  | 'pending'
-  | 'verified'
-  | 'rejected'
-  | 'revision_needed';
+  | 'UNVERIFIED'
+  | 'VERIFIED'
+  | 'REJECTED'
+  | 'REVISION_NEEDED';
 
 export type EventKey = 'MHQ' | 'MTQ' | 'DAI' | 'KTIQ' | 'POSTER' | 'VIDEOGRAFI';
 

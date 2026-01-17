@@ -45,6 +45,8 @@ const eventTypes = [
 const statusOptions: { value: RicRegistrationStatus; label: string }[] = [
   { value: 'VERIFIED', label: 'Terverifikasi' },
   { value: 'UNVERIFIED', label: 'Belum Terverifikasi' },
+  { value: 'REJECTED', label: 'Ditolak' },
+  { value: 'REVISION_NEEDED', label: 'Perlu Revisi' },
 ];
 
 export default function RicModal({
@@ -60,6 +62,8 @@ export default function RicModal({
     event_type: '',
     institution: '',
     status: 'UNVERIFIED',
+    notes: '',
+    rejection_reason: '',
     leader_name: '',
     leader_email: '',
     leader_phone: '',
@@ -77,6 +81,8 @@ export default function RicModal({
         event_type: data.event_type || '',
         institution: data.institution || '',
         status: (data.status as RicRegistrationStatus) || 'UNVERIFIED',
+        notes: data.notes || '',
+        rejection_reason: data.rejection_reason || '',
         leader_name: data.leader_name || '',
         leader_email: data.leader_email || '',
         leader_phone: data.leader_phone || '',
@@ -91,6 +97,8 @@ export default function RicModal({
         event_type: '',
         institution: '',
         status: 'UNVERIFIED',
+        notes: '',
+        rejection_reason: '',
         leader_name: '',
         leader_email: '',
         leader_phone: '',
@@ -228,6 +236,78 @@ export default function RicModal({
                 />
               </div>
 
+              {/* Status */}
+              <div className='sm:col-span-2'>
+                <label className='mb-1.5 block text-sm font-medium text-gray-700'>
+                  Status
+                </label>
+                {isReadOnly ? (
+                  <Input
+                    value={
+                      statusOptions.find((s) => s.value === formData.status)
+                        ?.label || formData.status
+                    }
+                    disabled
+                    className='w-full'
+                  />
+                ) : (
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) =>
+                      handleChange('status', value as RicRegistrationStatus)
+                    }
+                  >
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder='Pilih Status' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((status) => (
+                        <SelectItem key={status.value} value={status.value}>
+                          {status.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+
+              {/* Rejection Reason (Conditional) */}
+              {(formData.status === 'REJECTED' ||
+                formData.status === 'REVISION_NEEDED') && (
+                <div className='sm:col-span-2'>
+                  <label className='mb-1.5 block text-sm font-medium text-gray-700'>
+                    Alasan Penolakan / Revisi{' '}
+                    <span className='text-red-500'>*</span>
+                  </label>
+                  <textarea
+                    value={formData.rejection_reason}
+                    onChange={(e) =>
+                      handleChange('rejection_reason', e.target.value)
+                    }
+                    placeholder='Jelaskan alasan penolakan atau revisi yang harus dilakukan peserta...'
+                    disabled={isReadOnly}
+                    rows={3}
+                    className='w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
+                    required
+                  />
+                </div>
+              )}
+
+              {/* Internal Notes */}
+              <div className='sm:col-span-2'>
+                <label className='mb-1.5 block text-sm font-medium text-gray-700'>
+                  Catatan Internal (Untuk Admin)
+                </label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => handleChange('notes', e.target.value)}
+                  placeholder='Catatan internal, tidak terlihat oleh peserta...'
+                  disabled={isReadOnly}
+                  rows={2}
+                  className='w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50'
+                />
+              </div>
+
               {/* Nama Ketua */}
               <div>
                 <label className='mb-1.5 block text-sm font-medium text-gray-700'>
@@ -297,41 +377,6 @@ export default function RicModal({
                   disabled={isReadOnly}
                   className='w-full'
                 />
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  Status
-                </label>
-                {isReadOnly ? (
-                  <Input
-                    value={
-                      statusOptions.find((s) => s.value === formData.status)
-                        ?.label || formData.status
-                    }
-                    disabled
-                    className='w-full'
-                  />
-                ) : (
-                  <Select
-                    value={formData.status}
-                    onValueChange={(value) =>
-                      handleChange('status', value as RicRegistrationStatus)
-                    }
-                  >
-                    <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='Pilih Status' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {statusOptions.map((status) => (
-                        <SelectItem key={status.value} value={status.value}>
-                          {status.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
               </div>
 
               {/* Nama Pembimbing */}
@@ -433,75 +478,135 @@ export default function RicModal({
               )}
 
             {/* Documents Section (View Mode Only) */}
-            {isReadOnly && data?.documents && (
+            {isReadOnly && (
               <div className='mt-6'>
                 <Typography as='h3' variant='h6' className='mb-3 text-gray-900'>
-                  Dokumen
+                  Dokumen & Karya
                 </Typography>
                 <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
                   {/* Identity Card */}
-                  <div
-                    className={cn(
-                      'flex items-center justify-between rounded-lg border p-3',
-                      data.documents.identity_card?.uploaded
-                        ? 'border-green-200 bg-green-50'
-                        : 'border-gray-200 bg-gray-50',
-                    )}
-                  >
-                    <div className='flex items-center gap-2'>
-                      {data.documents.identity_card?.uploaded ? (
-                        <FileCheck size={18} className='text-green-600' />
-                      ) : (
-                        <FileX size={18} className='text-gray-400' />
+                  {data?.documents?.identity_card && (
+                    <div
+                      className={cn(
+                        'flex items-center justify-between rounded-lg border p-3',
+                        data.documents.identity_card.uploaded
+                          ? 'border-green-200 bg-green-50'
+                          : 'border-gray-200 bg-gray-50',
                       )}
-                      <span className='text-sm text-gray-700'>
-                        Kartu Identitas
-                      </span>
+                    >
+                      <div className='flex items-center gap-2'>
+                        {data.documents.identity_card.uploaded ? (
+                          <FileCheck size={18} className='text-green-600' />
+                        ) : (
+                          <FileX size={18} className='text-gray-400' />
+                        )}
+                        <span className='text-sm text-gray-700'>
+                          Kartu Identitas
+                        </span>
+                      </div>
+                      {data.documents.identity_card.uploaded &&
+                        data.documents.identity_card.url && (
+                          <a
+                            href={data.documents.identity_card.url}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='flex items-center gap-1 text-sm text-blue-600 hover:underline'
+                          >
+                            Lihat <ExternalLink size={14} />
+                          </a>
+                        )}
                     </div>
-                    {data.documents.identity_card?.uploaded &&
-                      data.documents.identity_card?.url && (
-                        <a
-                          href={data.documents.identity_card.url}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='flex items-center gap-1 text-sm text-blue-600 hover:underline'
-                        >
-                          Lihat <ExternalLink size={14} />
-                        </a>
-                      )}
-                  </div>
+                  )}
 
                   {/* Statement Letter */}
-                  <div
-                    className={cn(
-                      'flex items-center justify-between rounded-lg border p-3',
-                      data.documents.statement_letter?.uploaded
-                        ? 'border-green-200 bg-green-50'
-                        : 'border-gray-200 bg-gray-50',
-                    )}
-                  >
-                    <div className='flex items-center gap-2'>
-                      {data.documents.statement_letter?.uploaded ? (
-                        <FileCheck size={18} className='text-green-600' />
-                      ) : (
-                        <FileX size={18} className='text-gray-400' />
+                  {data?.documents?.statement_letter && (
+                    <div
+                      className={cn(
+                        'flex items-center justify-between rounded-lg border p-3',
+                        data.documents.statement_letter.uploaded
+                          ? 'border-green-200 bg-green-50'
+                          : 'border-gray-200 bg-gray-50',
                       )}
-                      <span className='text-sm text-gray-700'>
-                        Surat Pernyataan
-                      </span>
+                    >
+                      <div className='flex items-center gap-2'>
+                        {data.documents.statement_letter.uploaded ? (
+                          <FileCheck size={18} className='text-green-600' />
+                        ) : (
+                          <FileX size={18} className='text-gray-400' />
+                        )}
+                        <span className='text-sm text-gray-700'>
+                          Surat Pernyataan
+                        </span>
+                      </div>
+                      {data.documents.statement_letter.uploaded &&
+                        data.documents.statement_letter.url && (
+                          <a
+                            href={data.documents.statement_letter.url}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='flex items-center gap-1 text-sm text-blue-600 hover:underline'
+                          >
+                            Lihat <ExternalLink size={14} />
+                          </a>
+                        )}
                     </div>
-                    {data.documents.statement_letter?.uploaded &&
-                      data.documents.statement_letter?.url && (
-                        <a
-                          href={data.documents.statement_letter.url}
-                          target='_blank'
-                          rel='noopener noreferrer'
-                          className='flex items-center gap-1 text-sm text-blue-600 hover:underline'
-                        >
-                          Lihat <ExternalLink size={14} />
-                        </a>
-                      )}
-                  </div>
+                  )}
+
+                  {/* KTIQ: Plagiarism Statement */}
+                  {data?.event_type === 'KTIQ' &&
+                    data?.documents?.statement_letter && // TODO: Backend should map this correctly, assuming reusing statement_letter or adding new mapping
+                    // If plagiarism is separate, we might need to check how backend sends it.
+                    // For now, based on previous convo, KTIQ might have multiple docs.
+                    // Let's rely on result_link for the Work.
+                    // If plagiarism is a separate field in backend (plagiarism_statement), we need it mapped.
+                    // Assuming it's in a similar document structure if added.
+                    // Since user said result_link is mapped to file, let's focus on result_link.
+                    null}
+
+                  {/* Result Link / File (KTIQ, Videografi) */}
+                  {data?.result_link && (
+                    <div className='flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-3'>
+                      <div className='flex items-center gap-2'>
+                        <FileCheck size={18} className='text-blue-600' />
+                        <span className='text-sm text-gray-700'>
+                          {data.event_type === 'KTIQ'
+                            ? 'File Karya (KTIQ)'
+                            : data.event_type === 'VIDEOGRAFI'
+                              ? 'Link Video'
+                              : 'Hasil Karya'}
+                        </span>
+                      </div>
+                      <a
+                        href={data.result_link}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='flex items-center gap-1 text-sm text-blue-600 hover:underline'
+                      >
+                        {data.event_type === 'VIDEOGRAFI' ? 'Buka' : 'Lihat'}{' '}
+                        <ExternalLink size={14} />
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Poster Link */}
+                  {data?.poster_link && (
+                    <div className='flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-3'>
+                      <div className='flex items-center gap-2'>
+                        <FileCheck size={18} className='text-blue-600' />
+                        <span className='text-sm text-gray-700'>
+                          File Poster
+                        </span>
+                      </div>
+                      <a
+                        href={data.poster_link}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='flex items-center gap-1 text-sm text-blue-600 hover:underline'
+                      >
+                        Lihat <ExternalLink size={14} />
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

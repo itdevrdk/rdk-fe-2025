@@ -46,7 +46,8 @@ export type RegistrationForm = {
   poster_link: File | null;
   identity_card: File | null;
   plagiarism_statement: File | null;
-  result_link: string;
+  result_file: File | null; // For KTIQ
+  result_link: string; // For VIDEOGRAFI
   agree_data_usage: boolean;
   agree_guidebook: boolean;
 };
@@ -118,6 +119,7 @@ const initialForm: RegistrationForm = {
   poster_link: null,
   identity_card: null,
   plagiarism_statement: null,
+  result_file: null,
   result_link: '',
   agree_data_usage: false,
   agree_guidebook: false,
@@ -177,6 +179,7 @@ export const useRegistrationStore = create<RegistrationState>()(
           poster_link: null,
           identity_card: null,
           plagiarism_statement: null,
+          result_file: null,
           // Clear identity_card from participants as well
           participants: state.form.participants.map((p) => ({
             ...p,
@@ -266,8 +269,15 @@ export const validateForm = (
       if (!p.identity_card) return `Kartu identitas ${p.role} wajib diunggah.`;
     }
 
-    // Validate result_link for KTIQ and VIDEOGRAFI
-    if (!form.result_link.trim()) return 'Link unggah karya wajib diisi.';
+    // Validate result_file for KTIQ
+    if (form.event_type === 'KTIQ' && !form.result_file) {
+      return 'File karya wajib diunggah.';
+    }
+
+    // Validate result_link for VIDEOGRAFI
+    if (form.event_type === 'VIDEOGRAFI' && !form.result_link.trim()) {
+      return 'Link unggah karya wajib diisi.';
+    }
 
     // Validate statement_link for KTIQ
     if (form.event_type === 'KTIQ' && !form.statement_link) {

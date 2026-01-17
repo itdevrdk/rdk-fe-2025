@@ -288,12 +288,20 @@ export default function AdminRicPage() {
               'inline-flex rounded-full px-3 py-1 text-xs font-medium',
               statusUpper === 'VERIFIED'
                 ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700',
+                : statusUpper === 'REJECTED'
+                  ? 'bg-red-100 text-red-700'
+                  : statusUpper === 'REVISION_NEEDED'
+                    ? 'bg-orange-100 text-orange-700'
+                    : 'bg-gray-100 text-gray-700',
             )}
           >
             {statusUpper === 'VERIFIED'
               ? 'Terverifikasi'
-              : 'Belum Terverifikasi'}
+              : statusUpper === 'REJECTED'
+                ? 'Ditolak'
+                : statusUpper === 'REVISION_NEEDED'
+                  ? 'Perlu Revisi'
+                  : 'Belum Terverifikasi'}
           </span>
         );
       },
@@ -418,6 +426,8 @@ export default function AdminRicPage() {
             <SelectItem value='all'>Semua Status</SelectItem>
             <SelectItem value='VERIFIED'>Terverifikasi</SelectItem>
             <SelectItem value='UNVERIFIED'>Belum Terverifikasi</SelectItem>
+            <SelectItem value='REVISION_NEEDED'>Perlu Revisi</SelectItem>
+            <SelectItem value='REJECTED'>Ditolak</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -454,6 +464,8 @@ export default function AdminRicPage() {
               <SelectItem value='all'>Semua Status</SelectItem>
               <SelectItem value='VERIFIED'>Terverifikasi</SelectItem>
               <SelectItem value='UNVERIFIED'>Belum Terverifikasi</SelectItem>
+              <SelectItem value='REVISION_NEEDED'>Perlu Revisi</SelectItem>
+              <SelectItem value='REJECTED'>Ditolak</SelectItem>
             </SelectContent>
           </Select>
 
