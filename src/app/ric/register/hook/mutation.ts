@@ -64,6 +64,8 @@ const registerRIC = async (
     formData.append('province', form.province);
     formData.append('city', form.city);
     formData.append('institution', form.institution);
+    formData.append('supervisor_name', form.supervisor_name);
+    formData.append('supervisor_phone', form.supervisor_phone);
 
     if (form.identity_card) {
       formData.append('identity_card', form.identity_card);
