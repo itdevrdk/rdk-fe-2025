@@ -1,5 +1,5 @@
 // Admin RIC Registration Types
-export type RicRegistrationStatus = 'active' | 'inactive';
+export type RicRegistrationStatus = 'VERIFIED' | 'UNVERIFIED';
 
 export type RicEventType =
   | 'MHQ'

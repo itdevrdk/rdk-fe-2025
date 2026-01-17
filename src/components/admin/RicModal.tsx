@@ -43,8 +43,8 @@ const eventTypes = [
 ];
 
 const statusOptions: { value: RicRegistrationStatus; label: string }[] = [
-  { value: 'active', label: 'Aktif' },
-  { value: 'inactive', label: 'Non-Aktif' },
+  { value: 'VERIFIED', label: 'Terverifikasi' },
+  { value: 'UNVERIFIED', label: 'Belum Terverifikasi' },
 ];
 
 export default function RicModal({
@@ -59,7 +59,7 @@ export default function RicModal({
     team_name: '',
     event_type: '',
     institution: '',
-    status: 'active',
+    status: 'UNVERIFIED',
     leader_name: '',
     leader_email: '',
     leader_phone: '',
@@ -76,7 +76,7 @@ export default function RicModal({
         team_name: data.team_name || '',
         event_type: data.event_type || '',
         institution: data.institution || '',
-        status: (data.status as RicRegistrationStatus) || 'active',
+        status: (data.status as RicRegistrationStatus) || 'UNVERIFIED',
         leader_name: data.leader_name || '',
         leader_email: data.leader_email || '',
         leader_phone: data.leader_phone || '',
@@ -90,7 +90,7 @@ export default function RicModal({
         team_name: '',
         event_type: '',
         institution: '',
-        status: 'active',
+        status: 'UNVERIFIED',
         leader_name: '',
         leader_email: '',
         leader_phone: '',
