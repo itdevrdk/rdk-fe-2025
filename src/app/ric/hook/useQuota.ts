@@ -36,7 +36,7 @@ export const useQuota = (): UseQuotaReturn => {
     setError(null);
 
     try {
-      const response = await api.get<QuotaResponse>('/v1/ric/events/quota');
+      const response = await api.get<QuotaResponse>('/ric/events/quota');
 
       if (response.data.success) {
         setQuotaData(response.data.data);

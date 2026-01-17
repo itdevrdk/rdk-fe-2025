@@ -33,7 +33,7 @@ export const useCheckRegistration = (): UseCheckRegistrationReturn => {
 
       try {
         const response = await api.get<CheckRegistrationResponse>(
-          '/v1/ric/registrations/check',
+          '/ric/registrations/check',
           {
             params: {
               query: params.query,
