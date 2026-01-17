@@ -259,8 +259,13 @@ export default function AdminRicPage() {
     },
     {
       key: 'team_name',
-      header: 'Nama Tim',
-      render: (item) => item.team_name || '-',
+      header: 'Nama Tim / Peserta',
+      render: (item) => {
+        const isIndividual = ['MHQ', 'MTQ', 'DAI', 'POSTER'].includes(
+          item.event_type,
+        );
+        return isIndividual ? item.leader_name || '-' : item.team_name || '-';
+      },
     },
     {
       key: 'event_type',
