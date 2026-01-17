@@ -243,28 +243,22 @@ const RegistrationResult = ({
                 {isTeamDocumentStatus(doc) ? (
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${
-                      doc.verified === doc.total
+                      doc.uploaded === doc.total
                         ? 'bg-green-100 text-green-600'
-                        : 'bg-yellow-100 text-yellow-600'
+                        : 'bg-red-100 text-red-600'
                     }`}
                   >
-                    {doc.verified}/{doc.total} Terverifikasi
+                    {doc.uploaded}/{doc.total} Diunggah
                   </span>
                 ) : (
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${
-                      doc.verified
+                      doc.uploaded
                         ? 'bg-green-100 text-green-600'
-                        : doc.uploaded
-                          ? 'bg-yellow-100 text-yellow-600'
-                          : 'bg-red-100 text-red-600'
+                        : 'bg-red-100 text-red-600'
                     }`}
                   >
-                    {doc.verified
-                      ? 'Terverifikasi'
-                      : doc.uploaded
-                        ? 'Menunggu Verifikasi'
-                        : 'Belum Diunggah'}
+                    {doc.uploaded ? 'Sudah Diunggah' : 'Belum Diunggah'}
                   </span>
                 )}
               </div>
