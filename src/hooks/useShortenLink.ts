@@ -1,18 +1,20 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { api } from '@/lib/api';
 
-import { ApiResponse, PaginatedApiResponse } from '@/types/api';
+import { ApiResponse } from '@/types/api';
 import {
   CreateShortenLinkRequest,
   ShortenLink,
+  ShortenLinkListResponse,
+  ShortenLinkQuery,
   UpdateShortenLinkRequest,
 } from '@/types/shortenLink';
 
 export const useShortenLink = () => {
   const [loading, setLoading] = useState(false);
 
-  const getShortenLinkBySlug = async (slug: string) => {
+  const getShortenLinkBySlug = useCallback(async (slug: string) => {
     try {
       setLoading(true);
       const res = await api.get<ApiResponse<ShortenLink>>(
@@ -24,16 +26,12 @@ export const useShortenLink = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const getAllShortenLinks = async (params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-  }) => {
+  const getAllShortenLinks = useCallback(async (params?: ShortenLinkQuery) => {
     try {
       setLoading(true);
-      const res = await api.get<PaginatedApiResponse<ShortenLink[]>>(
+      const res = await api.get<ShortenLinkListResponse>(
         '/admin/shorten-link',
         { params },
       );
@@ -41,38 +39,41 @@ export const useShortenLink = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const createShortenLink = async (data: CreateShortenLinkRequest) => {
-    try {
-      setLoading(true);
-      const res = await api.post<ApiResponse<ShortenLink>>(
-        '/admin/shorten-link',
-        data,
-      );
-      return res.data.data;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const createShortenLink = useCallback(
+    async (data: CreateShortenLinkRequest) => {
+      try {
+        setLoading(true);
+        const res = await api.post<ApiResponse<ShortenLink>>(
+          '/admin/shorten-link',
+          data,
+        );
+        return res.data.data;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
-  const updateShortenLink = async (
-    id: string,
-    data: UpdateShortenLinkRequest,
-  ) => {
-    try {
-      setLoading(true);
-      const res = await api.put<ApiResponse<ShortenLink>>(
-        `/admin/shorten-link/${id}`,
-        data,
-      );
-      return res.data.data;
-    } finally {
-      setLoading(false);
-    }
-  };
+  const updateShortenLink = useCallback(
+    async (id: string, data: UpdateShortenLinkRequest) => {
+      try {
+        setLoading(true);
+        const res = await api.put<ApiResponse<ShortenLink>>(
+          `/admin/shorten-link/${id}`,
+          data,
+        );
+        return res.data.data;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
-  const deleteShortenLink = async (id: string) => {
+  const deleteShortenLink = useCallback(async (id: string) => {
     try {
       setLoading(true);
       const res = await api.delete<ApiResponse<null>>(
@@ -82,7 +83,7 @@ export const useShortenLink = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   return {
     loading,

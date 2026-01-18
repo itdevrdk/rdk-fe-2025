@@ -85,8 +85,8 @@ export default function AdminFinancePage() {
   const updateMutation = useUpdateFinanceReport();
   const deleteMutation = useDeleteFinanceReport();
 
-  // Extract data from response
-  const reports = reportsData?.data ?? [];
+  // Extract data from response - reportsData is FinanceReportListResponse with data and meta at root level
+  const reports: FinanceReport[] = reportsData?.data ?? [];
   const totalPages = reportsData?.meta?.total_page ?? 1;
 
   // Reset to page 1 on search

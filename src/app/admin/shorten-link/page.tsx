@@ -59,12 +59,14 @@ export default function AdminShortenLinkPage() {
         limit: itemsPerPage,
         search: debouncedSearch,
       });
-      setLinks(res.data.data);
-      setTotalPages(res.data.meta.total_page);
+      // res is ShortenLinkListResponse with data and meta at root level
+      setLinks(res?.data ?? []);
+      setTotalPages(res?.meta?.total_page ?? 1);
     } catch (error) {
       toast.error('Gagal memuat data shorten link');
     }
-  }, [getAllShortenLinks, currentPage, debouncedSearch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, debouncedSearch]);
 
   useEffect(() => {
     fetchLinks();
