@@ -9,8 +9,12 @@ import * as React from 'react';
 import Button from '@/components/buttons/Button';
 import Layout from '@/components/layouts/Layout';
 import NextImageCustom from '@/components/NextImage';
-import { showToast, WARNING_TOAST } from '@/components/Toast';
+import { showToast, SUCCESS_TOAST, WARNING_TOAST } from '@/components/Toast';
 import Typography from '@/components/Typography';
+
+import { useCreateSuggestion } from '@/app/homepage/hook/useCreateSuggestion';
+
+import { CreateSuggestionRequest } from '@/types/entities/suggestion';
 
 const KEGIATAN_ITEMS = [
   {
@@ -1445,24 +1449,61 @@ export default function HomeSection() {
             </Typography>
           </div>
 
-          <div className='space-y-4'>
-            <input
-              placeholder='Nama'
-              className='w-full rounded border px-4 py-2'
-            />
-            <textarea
-              placeholder='Kritik dan Saran'
-              className='w-full rounded border px-4 py-2'
-            />
-            <Button
-              variant='primary'
-              className='bg-primary-200 hover:bg-primary-300'
-            >
-              Kirim
-            </Button>
-          </div>
+          <SuggestionForm />
         </div>
       </section>
     </Layout>
+  );
+}
+
+function SuggestionForm() {
+  const mutation = useCreateSuggestion();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const name = formData.get('name') as string;
+    const suggestion = formData.get('suggestion') as string;
+
+    if (!name || !suggestion) {
+      showToast('Mohon lengkapi semua field', WARNING_TOAST);
+      return;
+    }
+
+    try {
+      const data: CreateSuggestionRequest = { name, suggestion };
+      await mutation.mutateAsync(data);
+      showToast('Terima kasih atas masukan Anda!', SUCCESS_TOAST);
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
+      showToast('Gagal mengirim masukan. Silakan coba lagi.', WARNING_TOAST);
+    }
+  };
+
+  return (
+    <form className='space-y-4' onSubmit={handleSubmit}>
+      <input
+        name='name'
+        placeholder='Nama'
+        className='w-full rounded border px-4 py-2'
+        required
+        disabled={mutation.isPending}
+      />
+      <textarea
+        name='suggestion'
+        placeholder='Kritik dan Saran'
+        className='w-full rounded border px-4 py-2'
+        required
+        disabled={mutation.isPending}
+      />
+      <Button
+        type='submit'
+        variant='primary'
+        className='bg-primary-200 hover:bg-primary-300'
+        isLoading={mutation.isPending}
+      >
+        Kirim
+      </Button>
+    </form>
   );
 }

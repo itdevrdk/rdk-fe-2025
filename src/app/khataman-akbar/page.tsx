@@ -45,8 +45,15 @@ export default function KhatamanAkbarPage() {
           />
 
           <div className='relative z-10 mx-auto max-w-7xl px-6 py-20'>
-            {/* Placeholder banner */}
-            <div className='mb-12 h-[260px] md:h-[320px] rounded-3xl bg-gray-300' />
+            {/* Banner */}
+            <div className='relative mb-12 h-[260px] w-full overflow-hidden rounded-3xl md:h-[320px]'>
+              <NextImage
+                src='/images/nuzulul-quran/coming-soon-placeholder.png'
+                alt='Khataman Akbar Banner'
+                fill
+                className='object-cover'
+              />
+            </div>
 
             <Typography
               as='h1'

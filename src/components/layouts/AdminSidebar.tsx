@@ -25,6 +25,7 @@ import useAuthStore from '@/stores/useAuthStore';
 const navItems = [
   { name: 'Beranda', href: '/admin', icon: Home },
   { name: 'Laporan Keuangan', href: '/admin/laporan-keuangan', icon: FileText },
+  { name: 'Masukan', href: '/admin/suggestions', icon: FileText },
   {
     name: 'Data',
     href: '/admin/data',

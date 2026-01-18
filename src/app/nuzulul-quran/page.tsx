@@ -35,7 +35,7 @@ export default function NuzululQuranPage() {
         <div className='relative mx-auto max-w-7xl px-4 md:px-6'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center'>
             {/* LEFT CONTENT */}
-            <div className='order-2 lg:order-1 max-w-lg gap-2 flex flex-col gap-4'>
+            <div className='order-2 lg:order-1 max-w-lg gap-2 flex flex-col md:gap-4'>
               <Typography
                 as='h1'
                 variant='h2'
@@ -137,7 +137,7 @@ export default function NuzululQuranPage() {
             {/* RIGHT POSTER */}
             <div className='order-1 lg:order-2 flex justify-center md:justify-end '>
               <NextImage
-                src='/images/nuzulul-quran/poster.png'
+                src='/images/nuzulul-quran/coming-soon-placeholder.png'
                 alt='Ornament'
                 width={477}
                 height={462}
