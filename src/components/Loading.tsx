@@ -8,7 +8,7 @@ import Typography from '@/components/Typography';
 
 export default function LoadingPage() {
   return (
-    <main className='relative min-h-screen w-full max-w-[480px] mx-auto shadow-2xl overflow-hidden bg-gradient-to-b from-[#FFF8ED] via-[#FFE5B8] to-[#E5D7C4]'>
+    <main className='relative min-h-screen w-full mx-auto shadow-2xl overflow-hidden bg-gradient-to-b from-[#FFF8ED] via-[#FFE5B8] to-[#E5D7C4]'>
       {/* Stars - Right */}
       <div className='absolute right-12 top-2 w-10 animate-[blink-zero_4s_ease-in-out_infinite,scale-up_5s_ease-in-out_infinite]'>
         <NextImage
