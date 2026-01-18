@@ -59,8 +59,8 @@ export default function AdminShortenLinkPage() {
         limit: itemsPerPage,
         search: debouncedSearch,
       });
-      setLinks(res.data.data_per_page);
-      setTotalPages(res.data.meta.max_page);
+      setLinks(res.data.data);
+      setTotalPages(res.data.meta.total_page);
     } catch (error) {
       toast.error('Gagal memuat data shorten link');
     }

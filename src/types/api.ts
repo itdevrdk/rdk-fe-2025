@@ -1,12 +1,15 @@
 export type PaginateData<Data> = {
-  data_per_page: Data;
+  data: Data;
   meta: {
     page: number;
-    max_page: number;
+    limit: number;
+    total_data: number;
+    total_page: number;
   };
 };
 
 export interface PaginatedApiResponse<DataType> {
+  code: number;
   status: boolean;
   message: string;
   data: PaginateData<DataType>;

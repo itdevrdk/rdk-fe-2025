@@ -90,10 +90,10 @@ export interface RicRegistrationListParams {
 }
 
 export interface RicRegistrationMeta {
-  current_page: number;
-  total_pages: number;
-  total_items: number;
-  items_per_page: number;
+  page: number;
+  limit: number;
+  total_data: number;
+  total_page: number;
 }
 
 export interface RicRegistrationListResponse {

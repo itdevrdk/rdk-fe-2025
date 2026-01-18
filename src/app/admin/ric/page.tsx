@@ -135,7 +135,7 @@ export default function AdminRicPage() {
     [registrationsData?.data],
   );
   const meta = registrationsData?.meta;
-  const totalPages = meta?.total_pages || 1;
+  const totalPages = meta?.total_page || 1;
 
   // Get selected data for modal (from detail or list)
   const selectedData = React.useMemo(() => {

@@ -19,3 +19,24 @@ export interface UpdateFinanceReportForm {
   expenses?: number;
   target?: number;
 }
+
+// Pagination types
+export interface FinanceReportMeta {
+  page: number;
+  limit: number;
+  total_data: number;
+  total_page: number;
+}
+
+export interface FinanceReportQuery {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export interface FinanceReportListResponse {
+  status: boolean;
+  message: string;
+  data: FinanceReport[];
+  meta: FinanceReportMeta;
+}

@@ -3,24 +3,33 @@
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
-
-import { useFinanceReport } from '@/hooks/useFinanceReport';
 
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import FinanceModal from '@/components/admin/FinanceModal';
 import Button from '@/components/buttons/Button';
 import AdminSidebar from '@/components/layouts/AdminSidebar';
 import Loading from '@/components/Loading';
+import { DANGER_TOAST, SUCCESS_TOAST } from '@/components/Toast';
 import Typography from '@/components/Typography';
 import { Input } from '@/components/ui/input';
 
 import { formatIDR } from '@/utils/format';
 
+import {
+  useCreateFinanceReport,
+  useDeleteFinanceReport,
+  useGetFinanceReports,
+  useUpdateFinanceReport,
+} from './hook/useFinanceAdmin';
 import { useGetMe } from '../hook/getMe';
 
-import { CreateFinanceReportForm, FinanceReport } from '@/types/finance';
+import {
+  CreateFinanceReportForm,
+  FinanceReport,
+  FinanceReportQuery,
+} from '@/types/finance';
 
 // Debounce hook for search
 function useDebounce<T>(value: T, delay: number): T {
@@ -40,15 +49,6 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 export default function AdminFinancePage() {
-  const {
-    reports,
-    loading: isReportsLoading,
-    fetchReports,
-    createReport,
-    updateReport,
-    deleteReport,
-  } = useFinanceReport();
-
   const { user, isLoading: isUserLoading } = useGetMe();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,30 +63,36 @@ export default function AdminFinancePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  useEffect(() => {
-    fetchReports();
-  }, [fetchReports]);
+  // Build query params
+  const queryParams: FinanceReportQuery = React.useMemo(
+    () => ({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: debouncedSearch || undefined,
+    }),
+    [currentPage, debouncedSearch],
+  );
+
+  // Data fetching with React Query
+  const {
+    data: reportsData,
+    isLoading: isReportsLoading,
+    isError,
+  } = useGetFinanceReports(queryParams);
+
+  // Mutations
+  const createMutation = useCreateFinanceReport();
+  const updateMutation = useUpdateFinanceReport();
+  const deleteMutation = useDeleteFinanceReport();
+
+  // Extract data from response
+  const reports = reportsData?.data ?? [];
+  const totalPages = reportsData?.meta?.total_page ?? 1;
 
   // Reset to page 1 on search
   useEffect(() => {
     setCurrentPage(1);
   }, [debouncedSearch]);
-
-  const filteredReports = useMemo(() => {
-    if (!debouncedSearch) return reports;
-
-    const lowerQuery = debouncedSearch.toLowerCase();
-    return reports.filter((report) => {
-      const dateStr = format(new Date(report.created_at), 'dd MMM yyyy', {
-        locale: id,
-      }).toLowerCase();
-      // Search by ID (if meaningful) or Date string
-      return (
-        report.id_report.toLowerCase().includes(lowerQuery) ||
-        dateStr.includes(lowerQuery)
-      );
-    });
-  }, [reports, debouncedSearch]);
 
   const handleOpenCreateModal = () => {
     setIsEditMode(false);
@@ -108,41 +114,43 @@ export default function AdminFinancePage() {
   const handleSubmit = async (data: CreateFinanceReportForm) => {
     try {
       if (isEditMode && selectedReport) {
-        await updateReport(selectedReport.id_report, data);
-        toast.success('Laporan berhasil diperbarui');
+        await updateMutation.mutateAsync({
+          id: selectedReport.id_report,
+          data,
+        });
+        toast('Laporan berhasil diperbarui', SUCCESS_TOAST);
       } else {
-        await createReport(data);
-        toast.success('Laporan berhasil ditambahkan');
+        await createMutation.mutateAsync(data);
+        toast('Laporan berhasil ditambahkan', SUCCESS_TOAST);
       }
       handleCloseModal();
     } catch (error) {
-      toast.error('Terjadi kesalahan');
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || 'Terjadi kesalahan';
+      toast(errorMessage, DANGER_TOAST);
     }
   };
 
   const handleDelete = async (id_report: string) => {
     if (confirm('Apakah Anda yakin ingin menghapus laporan ini?')) {
       try {
-        await deleteReport(id_report);
-        toast.success('Laporan berhasil dihapus');
+        await deleteMutation.mutateAsync(id_report);
+        toast('Laporan berhasil dihapus', SUCCESS_TOAST);
       } catch (error) {
-        toast.error('Gagal menghapus laporan');
+        const errorMessage =
+          (error as { response?: { data?: { message?: string } } })?.response
+            ?.data?.message || 'Gagal menghapus laporan';
+        toast(errorMessage, DANGER_TOAST);
       }
     }
   };
 
   // Data preparation for AdminTable
-  const paginatedReports = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    return filteredReports
-      .slice(startIndex, startIndex + itemsPerPage)
-      .map((report) => ({
-        ...report,
-        id: report.id_report, // Map id_report to id for AdminTable
-      }));
-  }, [filteredReports, currentPage]);
-
-  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
+  const tableData = reports.map((report) => ({
+    ...report,
+    id: report.id_report, // Map id_report to id for AdminTable
+  }));
 
   const columns: TableColumn<FinanceReport & { id: string }>[] = [
     {
@@ -274,9 +282,16 @@ export default function AdminFinancePage() {
         </Button>
       </div>
 
+      {/* Error State */}
+      {isError && (
+        <div className='mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-center'>
+          <p className='text-red-600'>Gagal memuat data. Silakan coba lagi.</p>
+        </div>
+      )}
+
       <AdminTable
         columns={columns}
-        data={paginatedReports}
+        data={tableData}
         isLoading={isReportsLoading}
         currentPage={currentPage}
         totalPages={totalPages}
