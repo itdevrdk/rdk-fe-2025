@@ -23,7 +23,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { usePresence, usePresenceList } from '../hook/usePresence';
+import {
+  useCreatePresence,
+  useDeletePresence,
+  useGetCommitteesForDropdown,
+  useGetEventsForDropdown,
+  useGetPresences,
+  useUpdatePresence,
+} from '../hook/usePresence';
 import { useGetMe } from '../../hook/getMe';
 
 import {
@@ -79,15 +86,12 @@ export default function PresencePage() {
   // Fetch user data
   const { user, isLoading: isUserLoading, isError } = useGetMe();
 
-  // Hooks
+  // Hooks - Fetch presences list
   const {
-    createPresence,
-    updatePresence,
-    deletePresence,
-    getCommitteesForDropdown,
-    getEventsForDropdown,
-  } = usePresence();
-  const { data, meta, refetch } = usePresenceList({
+    data: presencesData,
+    refetch,
+    isLoading: _isPresencesLoading,
+  } = useGetPresences({
     page: currentPage,
     limit: itemsPerPage,
     search: debouncedSearch || undefined,
@@ -95,14 +99,18 @@ export default function PresencePage() {
     status: statusFilter,
   });
 
-  const committees = React.useMemo(
-    () => getCommitteesForDropdown(),
-    [getCommitteesForDropdown],
-  );
-  const events = React.useMemo(
-    () => getEventsForDropdown(),
-    [getEventsForDropdown],
-  );
+  // Extract data and meta from response
+  const data = presencesData?.data || [];
+  const meta = presencesData?.meta;
+
+  // Mutations
+  const createPresenceMutation = useCreatePresence();
+  const updatePresenceMutation = useUpdatePresence();
+  const deletePresenceMutation = useDeletePresence();
+
+  // Dropdown data
+  const { data: committees = [] } = useGetCommitteesForDropdown();
+  const { data: events = [] } = useGetEventsForDropdown();
 
   const totalPages = meta?.total_page || 1;
 
@@ -149,10 +157,13 @@ export default function PresencePage() {
     try {
       setIsMutating(true);
       if (modalMode === 'create') {
-        await createPresence(formData);
+        await createPresenceMutation.mutateAsync(formData);
         toast('Presensi berhasil ditambahkan', SUCCESS_TOAST);
       } else if (modalMode === 'edit' && selectedData) {
-        await updatePresence(selectedData.id, { status: formData.status });
+        await updatePresenceMutation.mutateAsync({
+          id: selectedData.id,
+          data: { status: formData.status },
+        });
         toast('Presensi berhasil diperbarui', SUCCESS_TOAST);
       }
       handleModalClose();
@@ -169,7 +180,7 @@ export default function PresencePage() {
 
     try {
       setIsMutating(true);
-      await deletePresence(deleteTarget.id);
+      await deletePresenceMutation.mutateAsync(deleteTarget.id);
       toast('Presensi berhasil dihapus', SUCCESS_TOAST);
       handleDeleteModalClose();
       refetch();
@@ -310,7 +321,7 @@ export default function PresencePage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value='all'>Semua Event</SelectItem>
-              {events.map((e) => (
+              {events.map((e: { id: string; name: string }) => (
                 <SelectItem key={e.id} value={e.id}>
                   {e.name}
                 </SelectItem>
