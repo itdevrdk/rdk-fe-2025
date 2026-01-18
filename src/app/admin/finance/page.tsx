@@ -3,13 +3,15 @@
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { Pencil, Plus, Trash } from 'lucide-react';
-import { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { useFinanceReport } from '@/hooks/useFinanceReport';
 
+import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import FinanceModal from '@/components/admin/FinanceModal';
 import Button from '@/components/buttons/Button';
+import Typography from '@/components/Typography';
 
 import { CreateFinanceReportRequest, FinanceReport } from '@/types/finance';
 
@@ -22,6 +24,10 @@ export default function AdminFinancePage() {
   const [selectedReport, setSelectedReport] = useState<FinanceReport | null>(
     null,
   );
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const handleOpenCreateModal = () => {
     setIsEditMode(false);
@@ -75,10 +81,107 @@ export default function AdminFinancePage() {
     }).format(value);
   };
 
+  // Data preparation for AdminTable
+  const paginatedReports = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return reports
+      .slice(startIndex, startIndex + itemsPerPage)
+      .map((report) => ({
+        ...report,
+        id: report.id_report, // Map id_report to id for AdminTable
+      }));
+  }, [reports, currentPage]);
+
+  const totalPages = Math.ceil(reports.length / itemsPerPage);
+
+  const columns: TableColumn<FinanceReport & { id: string }>[] = [
+    {
+      key: 'created_at',
+      header: 'Tanggal',
+      render: (item) =>
+        format(new Date(item.created_at), 'dd MMMM yyyy HH:mm', { locale: id }),
+    },
+    {
+      key: 'income',
+      header: 'Pemasukan',
+      className: 'font-medium text-green-600',
+      render: (item) => formatRupiah(item.income),
+    },
+    {
+      key: 'expenses',
+      header: 'Pengeluaran',
+      className: 'font-medium text-red-600',
+      render: (item) => formatRupiah(item.expenses),
+    },
+    {
+      key: 'balance',
+      header: 'Saldo',
+      className: 'font-medium text-blue-600',
+      render: (item) => formatRupiah(item.balance),
+    },
+    {
+      key: 'target',
+      header: 'Target',
+      render: (item) => formatRupiah(item.target),
+    },
+    {
+      key: 'shortfall',
+      header: 'Kekurangan',
+      render: (item) => {
+        const shortfall = item.target - item.income;
+        const isShortfallData = shortfall > 0;
+        return (
+          <span
+            className={`font-medium ${
+              isShortfallData ? 'text-orange-600' : 'text-green-600'
+            }`}
+          >
+            {isShortfallData ? formatRupiah(shortfall) : 'Tercapai'}
+          </span>
+        );
+      },
+    },
+    {
+      key: 'actions',
+      header: 'Aksi',
+      className: 'text-center',
+      render: (item) => (
+        <div className='flex justify-center gap-2'>
+          <button
+            onClick={() => handleOpenEditModal(item)}
+            className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
+            title='Edit'
+          >
+            <Pencil size={16} />
+          </button>
+          <button
+            onClick={() => handleDelete(item.id_report)}
+            className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
+            title='Hapus'
+          >
+            <Trash size={16} />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className='p-6'>
+      {/* Page Title */}
+      <Typography
+        as='h1'
+        font='marquisette'
+        variant='h4'
+        className='mb-6 text-primary-100'
+      >
+        Manajemen Keuangan
+      </Typography>
+
       <div className='mb-6 flex items-center justify-between'>
-        <h1 className='text-2xl font-bold text-gray-800'>Manajemen Keuangan</h1>
+        {/* Placeholder for left side toolbar if needed (search, etc.) */}
+        <div />
+
         <Button
           onClick={handleOpenCreateModal}
           variant='primary'
@@ -88,100 +191,15 @@ export default function AdminFinancePage() {
         </Button>
       </div>
 
-      <div className='overflow-x-auto rounded-lg bg-white shadow'>
-        <table className='min-w-full divide-y divide-gray-200'>
-          <thead className='bg-gray-50'>
-            <tr>
-              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500'>
-                Tanggal
-              </th>
-              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500'>
-                Pemasukan
-              </th>
-              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500'>
-                Pengeluaran
-              </th>
-              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500'>
-                Saldo
-              </th>
-              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500'>
-                Target
-              </th>
-              <th className='px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500'>
-                Kekurangan
-              </th>
-              <th className='px-6 py-3 text-center text-xs font-medium uppercase tracking-wider text-gray-500'>
-                Aksi
-              </th>
-            </tr>
-          </thead>
-          <tbody className='divide-y divide-gray-200 bg-white'>
-            {reports.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className='px-6 py-4 text-center text-sm text-gray-500'
-                >
-                  Belum ada data laporan keuangan.
-                </td>
-              </tr>
-            ) : (
-              reports.map((report) => {
-                // Determine shortfall: if target > income, shortfall is target - income. Else 0 (or covered)
-                const shortfall = report.target - report.income;
-                const isShortfallData = shortfall > 0;
-
-                return (
-                  <tr key={report.id_report} className='hover:bg-gray-50'>
-                    <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-900'>
-                      {format(
-                        new Date(report.created_at),
-                        'dd MMMM yyyy HH:mm',
-                        { locale: id },
-                      )}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4 text-sm font-medium text-green-600'>
-                      {formatRupiah(report.income)}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4 text-sm font-medium text-red-600'>
-                      {formatRupiah(report.expenses)}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4 text-sm font-medium text-blue-600'>
-                      {formatRupiah(report.balance)}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4 text-sm text-gray-900'>
-                      {formatRupiah(report.target)}
-                    </td>
-                    <td
-                      className={`whitespace-nowrap px-6 py-4 text-sm font-medium ${isShortfallData ? 'text-orange-600' : 'text-green-600'}`}
-                    >
-                      {isShortfallData ? formatRupiah(shortfall) : 'Tercapai'}
-                    </td>
-                    <td className='whitespace-nowrap px-6 py-4 text-center text-sm font-medium'>
-                      <div className='flex justify-center gap-2'>
-                        <button
-                          onClick={() => handleOpenEditModal(report)}
-                          className='rounded-full bg-yellow-100 p-2 text-yellow-600 hover:bg-yellow-200 transition-colors'
-                          title='Edit'
-                        >
-                          <Pencil size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(report.id_report)}
-                          className='rounded-full bg-red-100 p-2 text-red-600 hover:bg-red-200 transition-colors'
-                          title='Hapus'
-                        >
-                          <Trash size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
+      <AdminTable
+        columns={columns}
+        data={paginatedReports}
+        isLoading={false} // Mock data
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        emptyMessage='Belum ada data laporan keuangan.'
+      />
 
       <FinanceModal
         isOpen={isModalOpen}

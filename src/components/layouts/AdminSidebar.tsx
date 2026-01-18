@@ -5,6 +5,7 @@ import {
   Database,
   FileText,
   Home,
+  Link as LinkIcon,
   LogOut,
   Menu,
   User,
@@ -25,6 +26,7 @@ import useAuthStore from '@/stores/useAuthStore';
 const navItems = [
   { name: 'Beranda', href: '/admin', icon: Home },
   { name: 'Laporan Keuangan', href: '/admin/finance', icon: FileText },
+  { name: 'Shorten Link', href: '/admin/shorten-link', icon: LinkIcon },
   { name: 'Masukan', href: '/admin/suggestions', icon: FileText },
   {
     name: 'Data',
