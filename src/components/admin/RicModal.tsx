@@ -456,10 +456,13 @@ export default function RicModal({
                             Nama
                           </th>
                           <th className='px-4 py-2 text-left font-medium text-gray-600'>
-                            Email
+                            Kontak
                           </th>
                           <th className='px-4 py-2 text-left font-medium text-gray-600'>
-                            Telepon
+                            Institusi & Lokasi
+                          </th>
+                          <th className='px-4 py-2 text-left font-medium text-gray-600'>
+                            Identitas
                           </th>
                         </tr>
                       </thead>
@@ -469,7 +472,7 @@ export default function RicModal({
                             key={participant.id}
                             className='border-t border-gray-100'
                           >
-                            <td className='px-4 py-2'>
+                            <td className='px-4 py-2 align-top'>
                               <span
                                 className={cn(
                                   'inline-flex rounded-full px-2 py-0.5 text-xs font-medium',
@@ -481,14 +484,44 @@ export default function RicModal({
                                 {participant.role}
                               </span>
                             </td>
-                            <td className='px-4 py-2 text-gray-900'>
+                            <td className='px-4 py-2 align-top text-gray-900'>
                               {participant.fullname}
                             </td>
-                            <td className='px-4 py-2 text-gray-600'>
-                              {participant.email}
+                            <td className='px-4 py-2 align-top text-gray-600'>
+                              <div className='flex flex-col text-xs'>
+                                <span>{participant.email}</span>
+                                <span>{participant.phone}</span>
+                              </div>
                             </td>
-                            <td className='px-4 py-2 text-gray-600'>
-                              {participant.phone}
+                            <td className='px-4 py-2 align-top text-gray-600'>
+                              <div className='flex flex-col text-xs'>
+                                {participant.institution && (
+                                  <span className='font-medium text-gray-900'>
+                                    {participant.institution}
+                                  </span>
+                                )}
+                                {(participant.province || participant.city) && (
+                                  <span>
+                                    {[participant.city, participant.province]
+                                      .filter(Boolean)
+                                      .join(', ')}
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className='px-4 py-2 align-top'>
+                              {participant.identity_card_link ? (
+                                <a
+                                  href={participant.identity_card_link}
+                                  target='_blank'
+                                  rel='noopener noreferrer'
+                                  className='inline-flex items-center gap-1 rounded bg-blue-50 px-2 py-1 text-xs text-blue-600 hover:underline'
+                                >
+                                  Kartu Identitas <ExternalLink size={10} />
+                                </a>
+                              ) : (
+                                <span className='text-xs text-gray-400'>-</span>
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -563,6 +596,40 @@ export default function RicModal({
                         data.documents.statement_letter.url && (
                           <a
                             href={data.documents.statement_letter.url}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                            className='flex items-center gap-1 text-sm text-blue-600 hover:underline'
+                          >
+                            Lihat <ExternalLink size={14} />
+                          </a>
+                        )}
+                    </div>
+                  )}
+
+                  {/* Plagiarism Statement (KTIQ) */}
+                  {data?.documents?.plagiarism_statement && (
+                    <div
+                      className={cn(
+                        'flex items-center justify-between rounded-lg border p-3',
+                        data.documents.plagiarism_statement.uploaded
+                          ? 'border-green-200 bg-green-50'
+                          : 'border-gray-200 bg-gray-50',
+                      )}
+                    >
+                      <div className='flex items-center gap-2'>
+                        {data.documents.plagiarism_statement.uploaded ? (
+                          <FileCheck size={18} className='text-green-600' />
+                        ) : (
+                          <FileX size={18} className='text-gray-400' />
+                        )}
+                        <span className='text-sm text-gray-700'>
+                          Lembar Orisinalitas
+                        </span>
+                      </div>
+                      {data.documents.plagiarism_statement.uploaded &&
+                        data.documents.plagiarism_statement.url && (
+                          <a
+                            href={data.documents.plagiarism_statement.url}
                             target='_blank'
                             rel='noopener noreferrer'
                             className='flex items-center gap-1 text-sm text-blue-600 hover:underline'

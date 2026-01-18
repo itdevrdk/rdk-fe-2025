@@ -19,16 +19,23 @@ export interface RicParticipant {
   fullname: string;
   email: string;
   phone: string;
+  institution?: string;
+  province?: string;
+  city?: string;
+  identity_card_link?: string;
 }
 
 export interface RicDocument {
   uploaded: boolean;
+  verified: boolean;
   url: string;
 }
 
 export interface RicDocuments {
   identity_card: RicDocument;
   statement_letter: RicDocument;
+  plagiarism_statement?: RicDocument;
+  result_link?: RicDocument;
 }
 
 export interface RicRegistration {
