@@ -47,8 +47,8 @@ export default function RicEventModal({
   errorMessage = null,
 }: RicEventModalProps) {
   const [formData, setFormData] = React.useState<RicEventFormData>({
-    event_type: '',
-    quota: 100,
+    event_type: data?.event_type || '',
+    quota: data?.quota || 100,
   });
 
   // Reset form when modal opens or data changes

@@ -336,11 +336,17 @@ export default function RICLandingPage() {
               const quota = getQuotaByEventId(event.id);
               const registered = quota?.registered ?? 0;
               const total = quota?.total ?? 0;
+              const isNotOpened = !!quota && total === 0;
               const isUnlimited = total === 9999;
               const remaining = total - registered;
-              const isFull = quota ? !isUnlimited && remaining <= 0 : false;
+              const isFull = quota
+                ? !isUnlimited && !isNotOpened && remaining <= 0
+                : false;
               const isAlmostFull = quota
-                ? !isUnlimited && remaining > 0 && remaining <= 5
+                ? !isUnlimited &&
+                  !isNotOpened &&
+                  remaining > 0 &&
+                  remaining <= 5
                 : false;
 
               return (
@@ -373,7 +379,7 @@ export default function RICLandingPage() {
                         as='span'
                         className='text-xs md:text-sm text-[#681819]'
                       >
-                        {isUnlimited ? 'Kuota' : 'Sisa Kuota'}
+                        {isUnlimited || isNotOpened ? 'Kuota' : 'Sisa Kuota'}
                       </Typography>
                       {isQuotaLoading ? (
                         <Skeleton className='w-16 h-4' />
@@ -384,20 +390,24 @@ export default function RICLandingPage() {
                           className={`text-xs md:text-sm ${
                             isUnlimited
                               ? 'text-blue-600'
-                              : isFull
-                                ? 'text-red-600'
-                                : isAlmostFull
-                                  ? 'text-orange-500'
-                                  : 'text-green-600'
+                              : isNotOpened
+                                ? 'text-gray-600'
+                                : isFull
+                                  ? 'text-red-600'
+                                  : isAlmostFull
+                                    ? 'text-orange-500'
+                                    : 'text-green-600'
                           }`}
                         >
                           {!quota
                             ? '-'
-                            : isUnlimited
-                              ? 'Tidak Terbatas'
-                              : isFull
-                                ? 'Penuh'
-                                : `${remaining}/${total}`}
+                            : isNotOpened
+                              ? 'Belum Dibuka'
+                              : isUnlimited
+                                ? 'Tidak Terbatas'
+                                : isFull
+                                  ? 'Penuh'
+                                  : `${remaining}/${total}`}
                         </Typography>
                       )}
                     </div>
@@ -414,16 +424,19 @@ export default function RICLandingPage() {
                       <div className='w-full bg-[#D9D9D9] rounded-full h-2.5'>
                         <div
                           className={`h-2.5 rounded-full transition-all ${
-                            isFull
-                              ? 'bg-red-600'
-                              : isAlmostFull
-                                ? 'bg-orange-500'
-                                : 'bg-green-600'
+                            isNotOpened
+                              ? 'bg-gray-400'
+                              : isFull
+                                ? 'bg-red-600'
+                                : isAlmostFull
+                                  ? 'bg-orange-500'
+                                  : 'bg-green-600'
                           }`}
                           style={{
-                            width: quota
-                              ? `${Math.min((registered / total) * 100, 100)}%`
-                              : '0%',
+                            width:
+                              quota && total > 0
+                                ? `${Math.min((registered / total) * 100, 100)}%`
+                                : '0%',
                           }}
                         />
                       </div>
@@ -432,14 +445,20 @@ export default function RICLandingPage() {
 
                   <button
                     className={`font-bold py-2 px-6 rounded-lg text-xs md:text-sm transition-colors w-full ${
-                      isFull
+                      isFull || isNotOpened
                         ? 'bg-gray-400 cursor-not-allowed text-white'
                         : 'bg-[#681819] hover:bg-[#5A1415] text-white'
                     }`}
-                    onClick={() => !isFull && handleRegisterClick(event.link)}
-                    disabled={isFull}
+                    onClick={() =>
+                      !isFull && !isNotOpened && handleRegisterClick(event.link)
+                    }
+                    disabled={isFull || isNotOpened}
                   >
-                    {isFull ? 'Kuota Penuh' : 'Daftar'}
+                    {isNotOpened
+                      ? 'Belum Dibuka'
+                      : isFull
+                        ? 'Kuota Penuh'
+                        : 'Daftar'}
                   </button>
                 </div>
               );

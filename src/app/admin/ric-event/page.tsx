@@ -23,6 +23,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import { useQuota } from '@/app/ric/hook/useQuota';
+
 import {
   getErrorMessage,
   useCreateRicEvent,
@@ -79,6 +81,9 @@ export default function AdminRicEventPage() {
     isLoading: isEventsLoading,
     isError: isEventsError,
   } = useGetRicEvents(queryParams);
+
+  // Fetch real-time quota data
+  const { getQuotaByEventId, isLoading: isQuotaLoading } = useQuota();
 
   // Mutations
   const createMutation = useCreateRicEvent();
@@ -207,20 +212,30 @@ export default function AdminRicEventPage() {
     {
       key: 'quota',
       header: 'Kuota',
-      render: (item) => (
-        <div className='flex items-center gap-1 text-sm'>
-          <Users size={14} className='text-gray-500' />
-          <span
-            className={cn(
-              (item.registration_count || 0) >= item.quota
-                ? 'text-red-600 font-medium'
-                : 'text-gray-600',
+      render: (item) => {
+        const quotaData = getQuotaByEventId(item.event_type);
+        const registeredCount =
+          quotaData?.registered ?? item.registration_count ?? 0;
+
+        return (
+          <div className='flex items-center gap-1 text-sm'>
+            <Users size={14} className='text-gray-500' />
+            {isQuotaLoading ? (
+              <span className='text-gray-400'>Loading...</span>
+            ) : (
+              <span
+                className={cn(
+                  registeredCount >= item.quota
+                    ? 'text-red-600 font-medium'
+                    : 'text-gray-600',
+                )}
+              >
+                {registeredCount}/{item.quota}
+              </span>
             )}
-          >
-            {item.registration_count || 0}/{item.quota}
-          </span>
-        </div>
-      ),
+          </div>
+        );
+      },
     },
     {
       key: 'created_at',
@@ -413,6 +428,7 @@ export default function AdminRicEventPage() {
 
       {/* Create/Edit/View Modal */}
       <RicEventModal
+        key={selectedData?.id || modalMode}
         isOpen={modalOpen}
         onClose={handleModalClose}
         mode={modalMode}
