@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import * as React from 'react';
 
+import { useFinanceReport } from '@/hooks/useFinanceReport';
+
 import Button from '@/components/buttons/Button';
 import Layout from '@/components/layouts/Layout';
 import NextImageCustom from '@/components/NextImage';
@@ -513,6 +515,18 @@ export default function HomeSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [visibleItems, setVisibleItems] = useState(3);
+
+  const { getLatestReport } = useFinanceReport();
+  const latestReport = getLatestReport();
+
+  // Helper to format currency
+  const formatRupiah = (value: bigint | number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(Number(value));
+  };
 
   // Responsive visible items
   useEffect(() => {
@@ -1365,11 +1379,39 @@ export default function HomeSection() {
               weight='bold'
               className='mt-2'
             >
-              Coming Soon
+              {latestReport ? formatRupiah(latestReport.income) : 'Rp 0'}
             </Typography>
             <Typography className='text-sm text-gray-500'>
               Dana Kebaikan Terkumpul
             </Typography>
+
+            <div className='flex gap-6 justify-center md:justify-end mt-6'>
+              <div className='text-center md:text-end'>
+                <Typography weight='bold' className='text-[#681819]'>
+                  {latestReport
+                    ? formatRupiah(
+                        Math.max(
+                          0,
+                          Number(latestReport.target) -
+                            Number(latestReport.income),
+                        ),
+                      )
+                    : 'Rp 0'}
+                </Typography>
+                <Typography className='text-xs text-gray-500'>
+                  Kekurangan
+                </Typography>
+              </div>
+              <div className='h-auto w-[1px] bg-gray-300' />
+              <div className='text-center md:text-end'>
+                <Typography weight='bold' className='text-[#681819]'>
+                  {latestReport ? formatRupiah(latestReport.target) : 'Rp 0'}
+                </Typography>
+                <Typography className='text-xs text-gray-500'>
+                  Target Donasi
+                </Typography>
+              </div>
+            </div>
 
             <div className='mt-6 flex flex-col gap-4 md:flex-row md:justify-end'>
               <Button

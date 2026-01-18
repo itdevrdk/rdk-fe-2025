@@ -24,7 +24,7 @@ import useAuthStore from '@/stores/useAuthStore';
 // Sidebar navigation items
 const navItems = [
   { name: 'Beranda', href: '/admin', icon: Home },
-  { name: 'Laporan Keuangan', href: '/admin/laporan-keuangan', icon: FileText },
+  { name: 'Laporan Keuangan', href: '/admin/finance', icon: FileText },
   { name: 'Masukan', href: '/admin/suggestions', icon: FileText },
   {
     name: 'Data',
