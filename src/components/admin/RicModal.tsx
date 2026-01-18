@@ -137,6 +137,20 @@ export default function RicModal({
 
   const isReadOnly = mode === 'view';
 
+  // Determine if it's an individual event
+  const isIndividualEvent = ['MHQ', 'MTQ', 'DAI', 'POSTER'].includes(
+    formData.event_type,
+  );
+
+  // Labels based on event type
+  const labels = {
+    teamName: isIndividualEvent ? 'Nama Peserta' : 'Nama Tim', // Not used for individual
+    institution: 'Asal Sekolah / Institusi',
+    leaderName: isIndividualEvent ? 'Nama Peserta' : 'Nama Ketua',
+    leaderEmail: isIndividualEvent ? 'Email' : 'Email Ketua',
+    leaderPhone: isIndividualEvent ? 'No. Telepon' : 'No. Telepon Ketua',
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -175,22 +189,8 @@ export default function RicModal({
           {/* Form */}
           <form onSubmit={handleSubmit} className='p-6'>
             <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-              {/* Nama Tim */}
-              <div>
-                <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  Nama Tim
-                </label>
-                <Input
-                  value={formData.team_name}
-                  onChange={(e) => handleChange('team_name', e.target.value)}
-                  placeholder='Nama Tim'
-                  disabled={isReadOnly}
-                  className='w-full'
-                />
-              </div>
-
               {/* Jenis Lomba */}
-              <div>
+              <div className='sm:col-span-2'>
                 <label className='mb-1.5 block text-sm font-medium text-gray-700'>
                   Jenis Lomba
                 </label>
@@ -222,15 +222,31 @@ export default function RicModal({
                 )}
               </div>
 
+              {/* Nama Tim (Only for Team Events) */}
+              {!isIndividualEvent && (
+                <div className='sm:col-span-2'>
+                  <label className='mb-1.5 block text-sm font-medium text-gray-700'>
+                    {labels.teamName}
+                  </label>
+                  <Input
+                    value={formData.team_name}
+                    onChange={(e) => handleChange('team_name', e.target.value)}
+                    placeholder={labels.teamName}
+                    disabled={isReadOnly}
+                    className='w-full'
+                  />
+                </div>
+              )}
+
               {/* Institusi */}
               <div className='sm:col-span-2'>
                 <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  Institusi
+                  {labels.institution}
                 </label>
                 <Input
                   value={formData.institution}
                   onChange={(e) => handleChange('institution', e.target.value)}
-                  placeholder='Institusi'
+                  placeholder={labels.institution}
                   disabled={isReadOnly}
                   className='w-full'
                 />
@@ -308,44 +324,44 @@ export default function RicModal({
                 />
               </div>
 
-              {/* Nama Ketua */}
+              {/* Nama Ketua / Peserta */}
               <div>
                 <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  Nama Ketua
+                  {labels.leaderName}
                 </label>
                 <Input
                   value={formData.leader_name}
                   onChange={(e) => handleChange('leader_name', e.target.value)}
-                  placeholder='Nama Ketua'
+                  placeholder={labels.leaderName}
                   disabled={isReadOnly}
                   className='w-full'
                 />
               </div>
 
-              {/* Email Ketua */}
+              {/* Email */}
               <div>
                 <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  Email Ketua
+                  {labels.leaderEmail}
                 </label>
                 <Input
                   type='email'
                   value={formData.leader_email}
                   onChange={(e) => handleChange('leader_email', e.target.value)}
-                  placeholder='Email Ketua'
+                  placeholder={labels.leaderEmail}
                   disabled={isReadOnly}
                   className='w-full'
                 />
               </div>
 
-              {/* No. Telepon Ketua */}
+              {/* No. Telepon */}
               <div>
                 <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  No. Telepon Ketua
+                  {labels.leaderPhone}
                 </label>
                 <Input
                   value={formData.leader_phone}
                   onChange={(e) => handleChange('leader_phone', e.target.value)}
-                  placeholder='No. Telepon Ketua'
+                  placeholder={labels.leaderPhone}
                   disabled={isReadOnly}
                   className='w-full'
                 />
@@ -380,40 +396,45 @@ export default function RicModal({
               </div>
 
               {/* Nama Pembimbing */}
-              <div>
-                <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  Nama Pembimbing
-                </label>
-                <Input
-                  value={formData.supervisor_name}
-                  onChange={(e) =>
-                    handleChange('supervisor_name', e.target.value)
-                  }
-                  placeholder='Nama Pembimbing'
-                  disabled={isReadOnly}
-                  className='w-full'
-                />
-              </div>
+              {!isIndividualEvent && (
+                <>
+                  <div>
+                    <label className='mb-1.5 block text-sm font-medium text-gray-700'>
+                      Nama Pembimbing
+                    </label>
+                    <Input
+                      value={formData.supervisor_name}
+                      onChange={(e) =>
+                        handleChange('supervisor_name', e.target.value)
+                      }
+                      placeholder='Nama Pembimbing'
+                      disabled={isReadOnly}
+                      className='w-full'
+                    />
+                  </div>
 
-              {/* No. Telepon Pembimbing */}
-              <div>
-                <label className='mb-1.5 block text-sm font-medium text-gray-700'>
-                  No. Telepon Pembimbing
-                </label>
-                <Input
-                  value={formData.supervisor_phone}
-                  onChange={(e) =>
-                    handleChange('supervisor_phone', e.target.value)
-                  }
-                  placeholder='No. Telepon Pembimbing'
-                  disabled={isReadOnly}
-                  className='w-full'
-                />
-              </div>
+                  {/* No. Telepon Pembimbing */}
+                  <div>
+                    <label className='mb-1.5 block text-sm font-medium text-gray-700'>
+                      No. Telepon Pembimbing
+                    </label>
+                    <Input
+                      value={formData.supervisor_phone}
+                      onChange={(e) =>
+                        handleChange('supervisor_phone', e.target.value)
+                      }
+                      placeholder='No. Telepon Pembimbing'
+                      disabled={isReadOnly}
+                      className='w-full'
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
-            {/* Participants Section (View Mode Only) */}
-            {isReadOnly &&
+            {/* Participants Section (Show if team event) */}
+            {/* Show in View OR Edit mode if there is data */}
+            {!isIndividualEvent &&
               data?.participants &&
               data.participants.length > 0 && (
                 <div className='mt-6'>
@@ -422,7 +443,7 @@ export default function RicModal({
                     variant='h6'
                     className='mb-3 text-gray-900'
                   >
-                    Peserta ({data.participants.length})
+                    Peserta / Anggota ({data.participants.length})
                   </Typography>
                   <div className='overflow-x-auto rounded-lg border border-gray-200'>
                     <table className='w-full text-sm'>
@@ -501,7 +522,7 @@ export default function RicModal({
                           <FileX size={18} className='text-gray-400' />
                         )}
                         <span className='text-sm text-gray-700'>
-                          Kartu Identitas
+                          Kartu Identitas {isIndividualEvent ? '' : '(Ketua)'}
                         </span>
                       </div>
                       {data.documents.identity_card.uploaded &&
@@ -551,17 +572,6 @@ export default function RicModal({
                         )}
                     </div>
                   )}
-
-                  {/* KTIQ: Plagiarism Statement */}
-                  {data?.event_type === 'KTIQ' &&
-                    data?.documents?.statement_letter && // TODO: Backend should map this correctly, assuming reusing statement_letter or adding new mapping
-                    // If plagiarism is separate, we might need to check how backend sends it.
-                    // For now, based on previous convo, KTIQ might have multiple docs.
-                    // Let's rely on result_link for the Work.
-                    // If plagiarism is a separate field in backend (plagiarism_statement), we need it mapped.
-                    // Assuming it's in a similar document structure if added.
-                    // Since user said result_link is mapped to file, let's focus on result_link.
-                    null}
 
                   {/* Result Link / File (KTIQ, Videografi) */}
                   {data?.result_link && (
