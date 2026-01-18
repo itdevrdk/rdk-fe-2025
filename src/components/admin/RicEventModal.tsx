@@ -55,7 +55,7 @@ export default function RicEventModal({
   React.useEffect(() => {
     if (isOpen && data && (mode === 'edit' || mode === 'view')) {
       setFormData({
-        event_type: data.event_type || '',
+        event_type: data.event_type,
         quota: data.quota || 100,
       });
     } else if (isOpen && mode === 'create') {

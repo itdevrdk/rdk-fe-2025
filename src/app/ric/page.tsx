@@ -334,8 +334,8 @@ export default function RICLandingPage() {
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8'>
             {EVENTS.map((event) => {
               const quota = getQuotaByEventId(event.id);
-              const registered = quota?.registered ?? 0;
-              const total = quota?.total ?? 0;
+              const registered = Number(quota?.registered ?? 0);
+              const total = Number(quota?.total ?? 0);
               const isNotOpened = !!quota && total === 0;
               const isUnlimited = total === 9999;
               const remaining = total - registered;
@@ -632,7 +632,6 @@ export default function RICLandingPage() {
               >
                 Contact Person
               </Typography>
-
               <div className='space-y-3'>
                 {[
                   { name: 'CP MHQ 🧕Nasywaa', phone: '0895405759422' },

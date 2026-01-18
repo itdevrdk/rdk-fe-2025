@@ -621,7 +621,7 @@ export default function HomeSection() {
           alt='Ornament'
           width={100}
           height={100}
-          className='absolute left-20 top-0 h-auto w-32 md:w-32 w-20'
+          className='absolute left-20 top-0 h-auto w-20 md:w-32'
         />
 
         <div className='relative mx-auto grid max-w-7xl grid-cols-1 items-center px-12 pt-36 md:grid-cols-2'>

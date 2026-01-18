@@ -410,7 +410,7 @@ export default function RICCheckPage() {
           alt='Top Right Decoration'
           width={147}
           height={243}
-          className='absolute top-0 right-0 z-10 right-6 lg:right-32 w-18'
+          className='absolute top-0 z-10 right-6 lg:right-32 w-18'
         />
 
         {/* Bottom Left Decoration */}

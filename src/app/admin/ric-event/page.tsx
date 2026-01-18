@@ -214,8 +214,9 @@ export default function AdminRicEventPage() {
       header: 'Kuota',
       render: (item) => {
         const quotaData = getQuotaByEventId(item.event_type);
-        const registeredCount =
-          quotaData?.registered ?? item.registration_count ?? 0;
+        const registeredCount = Number(
+          quotaData?.registered ?? item.registration_count ?? 0,
+        );
 
         return (
           <div className='flex items-center gap-1 text-sm'>
@@ -225,7 +226,7 @@ export default function AdminRicEventPage() {
             ) : (
               <span
                 className={cn(
-                  registeredCount >= item.quota
+                  registeredCount >= Number(item.quota)
                     ? 'text-red-600 font-medium'
                     : 'text-gray-600',
                 )}
