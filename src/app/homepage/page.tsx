@@ -15,8 +15,10 @@ import { showToast, SUCCESS_TOAST, WARNING_TOAST } from '@/components/Toast';
 import Typography from '@/components/Typography';
 
 import { useCreateSuggestion } from '@/app/homepage/hook/useCreateSuggestion';
+import { formatIDR } from '@/utils/format';
 
 import { CreateSuggestionRequest } from '@/types/entities/suggestion';
+import { FinanceReport } from '@/types/finance';
 
 const KEGIATAN_ITEMS = [
   {
@@ -517,16 +519,11 @@ export default function HomeSection() {
   const [visibleItems, setVisibleItems] = useState(3);
 
   const { getLatestReport } = useFinanceReport();
-  const latestReport = getLatestReport();
+  const [latestReport, setLatestReport] = useState<FinanceReport | null>(null);
 
-  // Helper to format currency
-  const formatRupiah = (value: bigint | number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(Number(value));
-  };
+  useEffect(() => {
+    getLatestReport().then(setLatestReport);
+  }, [getLatestReport]);
 
   // Responsive visible items
   useEffect(() => {
@@ -1379,7 +1376,7 @@ export default function HomeSection() {
               weight='bold'
               className='mt-2'
             >
-              {latestReport ? formatRupiah(latestReport.income) : 'Rp 0'}
+              {latestReport ? formatIDR(latestReport.income) : 'Rp 0'}
             </Typography>
             <Typography className='text-sm text-gray-500'>
               Dana Kebaikan Terkumpul
@@ -1389,7 +1386,7 @@ export default function HomeSection() {
               <div className='text-center md:text-end'>
                 <Typography weight='bold' className='text-[#681819]'>
                   {latestReport
-                    ? formatRupiah(
+                    ? formatIDR(
                         Math.max(
                           0,
                           Number(latestReport.target) -
@@ -1405,7 +1402,7 @@ export default function HomeSection() {
               <div className='h-auto w-[1px] bg-gray-300' />
               <div className='text-center md:text-end'>
                 <Typography weight='bold' className='text-[#681819]'>
-                  {latestReport ? formatRupiah(latestReport.target) : 'Rp 0'}
+                  {latestReport ? formatIDR(latestReport.target) : 'Rp 0'}
                 </Typography>
                 <Typography className='text-xs text-gray-500'>
                   Target Donasi

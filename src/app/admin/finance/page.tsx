@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { Pencil, Plus, Trash } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 import { useFinanceReport } from '@/hooks/useFinanceReport';
@@ -13,11 +13,19 @@ import FinanceModal from '@/components/admin/FinanceModal';
 import Button from '@/components/buttons/Button';
 import Typography from '@/components/Typography';
 
-import { CreateFinanceReportRequest, FinanceReport } from '@/types/finance';
+import { formatIDR } from '@/utils/format';
+
+import { CreateFinanceReportForm, FinanceReport } from '@/types/finance';
 
 export default function AdminFinancePage() {
-  const { reports, createReport, updateReport, deleteReport } =
-    useFinanceReport();
+  const {
+    reports,
+    loading,
+    fetchReports,
+    createReport,
+    updateReport,
+    deleteReport,
+  } = useFinanceReport();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -28,6 +36,10 @@ export default function AdminFinancePage() {
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   const handleOpenCreateModal = () => {
     setIsEditMode(false);
@@ -46,7 +58,7 @@ export default function AdminFinancePage() {
     setSelectedReport(null);
   };
 
-  const handleSubmit = async (data: CreateFinanceReportRequest) => {
+  const handleSubmit = async (data: CreateFinanceReportForm) => {
     try {
       if (isEditMode && selectedReport) {
         await updateReport(selectedReport.id_report, data);
@@ -72,15 +84,6 @@ export default function AdminFinancePage() {
     }
   };
 
-  // Format currency helper
-  const formatRupiah = (value: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
-
   // Data preparation for AdminTable
   const paginatedReports = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -99,47 +102,30 @@ export default function AdminFinancePage() {
       key: 'created_at',
       header: 'Tanggal',
       render: (item) =>
-        format(new Date(item.created_at), 'dd MMMM yyyy HH:mm', { locale: id }),
+        format(new Date(item.created_at), 'dd MMM yyyy', { locale: id }),
     },
     {
       key: 'income',
       header: 'Pemasukan',
       className: 'font-medium text-green-600',
-      render: (item) => formatRupiah(item.income),
+      render: (item) => formatIDR(item.income),
     },
     {
       key: 'expenses',
       header: 'Pengeluaran',
       className: 'font-medium text-red-600',
-      render: (item) => formatRupiah(item.expenses),
+      render: (item) => formatIDR(item.expenses),
     },
     {
       key: 'balance',
       header: 'Saldo',
       className: 'font-medium text-blue-600',
-      render: (item) => formatRupiah(item.balance),
+      render: (item) => formatIDR(item.balance),
     },
     {
       key: 'target',
       header: 'Target',
-      render: (item) => formatRupiah(item.target),
-    },
-    {
-      key: 'shortfall',
-      header: 'Kekurangan',
-      render: (item) => {
-        const shortfall = item.target - item.income;
-        const isShortfallData = shortfall > 0;
-        return (
-          <span
-            className={`font-medium ${
-              isShortfallData ? 'text-orange-600' : 'text-green-600'
-            }`}
-          >
-            {isShortfallData ? formatRupiah(shortfall) : 'Tercapai'}
-          </span>
-        );
-      },
+      render: (item) => formatIDR(item.target),
     },
     {
       key: 'actions',
@@ -194,7 +180,7 @@ export default function AdminFinancePage() {
       <AdminTable
         columns={columns}
         data={paginatedReports}
-        isLoading={false} // Mock data
+        isLoading={loading}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}

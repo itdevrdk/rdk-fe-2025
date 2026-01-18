@@ -1,15 +1,21 @@
 export interface FinanceReport {
-  id_report: string;
-  income: number;
-  expenses: number;
-  balance: number;
-  target: number;
-  created_at: string;
-  updated_at: string;
+  id_report: string; // UUID
+  income: number; // IDR
+  expenses: number; // IDR
+  balance: number; // Calculated server-side (Income - Expenses)
+  target: number; // IDR
+  created_at: string; // ISO Date String
+  updated_at: string; // ISO Date String
 }
 
-export type CreateFinanceReportRequest = Omit<
-  FinanceReport,
-  'id_report' | 'created_at' | 'updated_at' | 'balance'
->;
-export type UpdateFinanceReportRequest = Partial<CreateFinanceReportRequest>;
+export interface CreateFinanceReportForm {
+  income: number;
+  expenses: number;
+  target: number;
+}
+
+export interface UpdateFinanceReportForm {
+  income?: number;
+  expenses?: number;
+  target?: number;
+}

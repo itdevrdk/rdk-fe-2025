@@ -5,14 +5,16 @@ import { toast } from 'react-hot-toast';
 
 import Button from '@/components/buttons/Button';
 
-import { CreateFinanceReportRequest, FinanceReport } from '@/types/finance';
+import { formatIDR } from '@/utils/format';
+
+import { CreateFinanceReportForm, FinanceReport } from '@/types/finance';
 
 interface FinanceModalProps {
   isOpen: boolean;
   closeModal: () => void;
   isEdit?: boolean;
   data?: FinanceReport | null;
-  onSubmit: (data: CreateFinanceReportRequest) => Promise<void>;
+  onSubmit: (data: CreateFinanceReportForm) => Promise<void>;
 }
 
 export default function FinanceModal({
@@ -30,7 +32,7 @@ export default function FinanceModal({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<CreateFinanceReportRequest>();
+  } = useForm<CreateFinanceReportForm>();
 
   const income = watch('income');
   const expenses = watch('expenses');
@@ -47,10 +49,10 @@ export default function FinanceModal({
     }
   }, [isEdit, data, setValue, reset]);
 
-  const onFormSubmit = async (formData: CreateFinanceReportRequest) => {
+  const onFormSubmit = async (formData: CreateFinanceReportForm) => {
     setIsLoading(true);
     try {
-      const payload: CreateFinanceReportRequest = {
+      const payload: CreateFinanceReportForm = {
         income: Number(formData.income),
         expenses: Number(formData.expenses),
         target: Number(formData.target),
@@ -185,13 +187,13 @@ export default function FinanceModal({
                     <p className='text-sm text-gray-600'>
                       Estimasi Balance:{' '}
                       <span className='font-bold'>
-                        Rp {calculateBalance().toLocaleString('id-ID')}
+                        {formatIDR(calculateBalance())}
                       </span>
                     </p>
                     <p className='text-sm text-gray-600'>
                       Kekurangan Target:{' '}
                       <span className='font-bold text-red-500'>
-                        Rp {calculateShortfall().toLocaleString('id-ID')}
+                        {formatIDR(calculateShortfall())}
                       </span>
                     </p>
                   </div>
