@@ -12,9 +12,9 @@ export default function ForbiddenPage() {
   const router = useRouter();
 
   return (
-    <main className='relative min-h-screen overflow-hidden bg-gradient-to-b from-[#FFF8ED] via-[#FFE5B8] to-[#E5D7C4]'>
+    <main className='relative min-h-screen w-full max-w-[480px] mx-auto shadow-2xl overflow-hidden bg-gradient-to-b from-[#FFF8ED] via-[#FFE5B8] to-[#E5D7C4]'>
       {/* Stars - Right */}
-      <div className='absolute right-12 top-2 w-10 md:right-56 md:top-8 animate-[blink-zero_4s_ease-in-out_infinite,scale-up_5s_ease-in-out_infinite]'>
+      <div className='absolute right-12 top-2 w-10 animate-[blink-zero_4s_ease-in-out_infinite,scale-up_5s_ease-in-out_infinite]'>
         <NextImage
           src='/images/countdown/bintang.png'
           alt='Stars decoration right'
@@ -26,7 +26,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Stars - Left */}
-      <div className='absolute left-12 top-4 w-10 md:left-56 md:top-12 animate-[blink-zero_3s_ease-in-out_infinite,scale-up_7s_ease-in-out_infinite]'>
+      <div className='absolute left-12 top-4 w-10 animate-[blink-zero_3s_ease-in-out_infinite,scale-up_7s_ease-in-out_infinite]'>
         <NextImage
           src='/images/countdown/bintang.png'
           alt='Stars decoration left'
@@ -38,7 +38,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Background Stars Pattern - Left */}
-      <div className='absolute left-0 top-1/2 w-1/3 md:w-1/6 pt-16 md:pt-42 md:top-1/4 lg:pt-10'>
+      <div className='absolute left-0 top-1/2 w-1/3 pt-16'>
         <NextImage
           src='/images/countdown/bintang-kiri.png'
           alt='Stars pattern left'
@@ -50,7 +50,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Background Stars Pattern - Right */}
-      <div className='absolute right-0 top-1/2 w-1/3 md:w-1/6 pt-10 md:pt-32 md:top-1/4 lg:pt-4'>
+      <div className='absolute right-0 top-1/2 w-1/3 pt-10'>
         <NextImage
           src='/images/countdown/bintang-kanan.png'
           alt='Stars pattern right'
@@ -62,7 +62,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Cloud Left */}
-      <div className='absolute left-0 top-16 w-2/5 sm:top-20 md:w-1/3 md:top-8 lg:top-0 lg:w-1/4'>
+      <div className='absolute left-0 top-16 w-2/5 sm:top-20'>
         <NextImage
           src='/images/countdown/awan-kiri.png'
           alt='Cloud decoration left'
@@ -74,7 +74,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Cloud Right */}
-      <div className='absolute right-0 top-8 w-1/3 sm:top-20 md:w-1/3 md:top-0 lg:top-0 lg:w-1/5'>
+      <div className='absolute right-0 top-8 w-1/3 sm:top-20'>
         <NextImage
           src='/images/countdown/awan-kanan.png'
           alt='Cloud decoration right'
@@ -86,7 +86,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Left Flower */}
-      <div className='absolute left-1/2 top-1/2 -translate-x-[140px] -translate-y-24 sm:-translate-x-[220px] md:-translate-x-[256px] lg:-translate-x-[300px] md:-translate-y-32 w-4 md:w-8 animate-[spin_10s_linear_infinite]'>
+      <div className='absolute left-1/2 top-1/2 -translate-x-[140px] -translate-y-24 sm:-translate-x-[220px] w-4 animate-[spin_10s_linear_infinite]'>
         <NextImage
           src='/images/countdown/bunga-kiri.png'
           alt='Decorative flower left'
@@ -97,7 +97,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Right Flower */}
-      <div className='absolute right-1/2 top-1/2 translate-x-[160px] -translate-y-24 sm:translate-x-[220px] md:translate-x-[256px] lg:translate-x-[300px] md:-translate-y-28 w-8 md:w-12 animate-[spin_15s_linear_infinite]'>
+      <div className='absolute right-1/2 top-1/2 translate-x-[160px] -translate-y-24 sm:translate-x-[220px] w-8 animate-[spin_15s_linear_infinite]'>
         <NextImage
           src='/images/countdown/bunga-kanan.png'
           alt='Decorative flower right'
@@ -112,7 +112,7 @@ export default function ForbiddenPage() {
         <div className='flex flex-col items-center text-center px-4'>
           {/* Forbidden Icon */}
           <div className='mb-4 flex items-center justify-center'>
-            <ShieldX className='h-16 w-16 text-primary-100 sm:h-20 sm:w-20 md:h-24 md:w-24' />
+            <ShieldX className='h-16 w-16 text-primary-100 sm:h-20 sm:w-20' />
           </div>
 
           {/* Error Code */}
@@ -121,7 +121,7 @@ export default function ForbiddenPage() {
             variant='h1'
             font='marquisette'
             weight='regular'
-            className='text-[64px] leading-none text-primary-100 sm:text-[80px] md:text-[100px] lg:text-[120px]'
+            className='text-[64px] leading-none text-primary-100 sm:text-[80px]'
           >
             403
           </Typography>
@@ -132,7 +132,7 @@ export default function ForbiddenPage() {
             variant='h2'
             font='marquisette'
             weight='regular'
-            className='mb-4 text-[24px] text-primary-100 sm:text-[32px] md:text-[40px]'
+            className='mb-4 text-[24px] text-primary-100 sm:text-[32px]'
           >
             Akses Ditolak
           </Typography>
@@ -143,7 +143,7 @@ export default function ForbiddenPage() {
             variant='body'
             font='zabal'
             weight='regular'
-            className='mb-6 max-w-md text-primary-100 sm:mb-8 md:text-lg lg:text-xl'
+            className='mb-6 max-w-md text-primary-100 sm:mb-8'
           >
             Maaf, Anda tidak memiliki izin untuk
             <br className='block sm:hidden' /> mengakses halaman ini.
@@ -163,7 +163,7 @@ export default function ForbiddenPage() {
       </section>
 
       {/* Ship Left */}
-      <div className='absolute bottom-0 left-0 w-1/3 sm:w-1/4 md:w-1/5 z-30'>
+      <div className='absolute bottom-0 left-0 w-1/3 sm:w-1/4 z-30'>
         <NextImage
           src='/images/countdown/kapal-kiri.png'
           alt='Ship decoration left'
@@ -175,7 +175,7 @@ export default function ForbiddenPage() {
       </div>
 
       {/* Ship Right */}
-      <div className='absolute bottom-0 right-0 w-1/3 sm:w-1/4 md:w-1/5 z-30'>
+      <div className='absolute bottom-0 right-0 w-1/3 sm:w-1/4 z-30'>
         <NextImage
           src='/images/countdown/kapal-kanan.png'
           alt='Ship decoration right'

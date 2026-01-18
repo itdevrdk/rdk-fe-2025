@@ -11,21 +11,39 @@ import Typography from '@/components/Typography';
 type EventKey = 'MHQ' | 'MTQ' | 'DAI' | 'KTIQ' | 'POSTER' | 'VIDEOGRAFI';
 
 const WA_GROUP_LINK: Record<EventKey, string> = {
-  MHQ: 'https://chat.whatsapp.com/MHQ_GROUP',
-  MTQ: 'https://chat.whatsapp.com/MTQ_GROUP',
-  DAI: 'https://chat.whatsapp.com/DAI_GROUP',
-  KTIQ: 'https://chat.whatsapp.com/KTIQ_GROUP',
-  POSTER: 'https://chat.whatsapp.com/POSTER_GROUP',
-  VIDEOGRAFI: 'https://chat.whatsapp.com/VIDEOGRAFI_GROUP',
+  MHQ: 'https://chat.whatsapp.com/K7oWbcTYs9NDB7NG4sgtf7',
+  MTQ: 'https://chat.whatsapp.com/FK6Bc8OgMU3Cqr4OPLmpjo',
+  DAI: 'https://chat.whatsapp.com/DuqUnCAzH0V3RH9vWui78X',
+  KTIQ: 'https://chat.whatsapp.com/JhCUQnCW01K9jc1vrnw1Oo',
+  POSTER: 'https://chat.whatsapp.com/CMCXKyqVlfr5LEDBYe2UED',
+  VIDEOGRAFI: 'https://chat.whatsapp.com/Hza0vYATHRwJqrNyxT5JxQ',
 };
 
-const CONTACT_PERSON: Record<EventKey, { name: string; phone: string }> = {
-  MHQ: { name: 'CP MHQ', phone: '6281234567890' },
-  MTQ: { name: 'CP MTQ', phone: '6281234567891' },
-  DAI: { name: 'CP DAI', phone: '6281234567892' },
-  KTIQ: { name: 'CP KTIQ', phone: '6281234567893' },
-  POSTER: { name: 'CP POSTER', phone: '6281234567894' },
-  VIDEOGRAFI: { name: 'CP VIDEOGRAFI', phone: '6281234567895' },
+const CONTACT_PERSON: Record<EventKey, { name: string; phone: string }[]> = {
+  MHQ: [
+    { name: 'CP MHQ 🧕Nasywaa', phone: '0895405759422' },
+    { name: 'CP MHQ 🤵Zuhdi', phone: '083110471600' },
+  ],
+  MTQ: [
+    { name: 'CP MTQ 🤵Rafly', phone: '085608272676' },
+    { name: 'CP MTQ 🧕Dinda', phone: '082338045098' },
+  ],
+  DAI: [
+    { name: 'CP DAI 🤵Aufa', phone: '081217042575' },
+    { name: 'CP DAI 🤵Naufal', phone: '08980442427' },
+  ],
+  KTIQ: [
+    { name: 'CP KTIQ 🤵Nadhif', phone: '081290233045' },
+    { name: 'CP KTIQ 🤵Salwa', phone: '082131711572' },
+  ],
+  POSTER: [
+    { name: 'CP POSTER 🧕Nasywa', phone: '081265281067' },
+    { name: 'CP POSTER 🤵Sofyan', phone: '081232265003' },
+  ],
+  VIDEOGRAFI: [
+    { name: 'CP VIDEOGRAFI 🧕Khosyi', phone: '087739030500' },
+    { name: 'CP VIDEOGRAFI 🤵Sofyan', phone: '081232265003' },
+  ],
 };
 
 const EVENT_LABEL: Record<EventKey, string> = {
@@ -44,21 +62,21 @@ function RICSuccessContent() {
   const eventParam = (searchParams.get('event') || '').toUpperCase();
   const eventKey = isEventKey(eventParam) ? eventParam : null;
 
-  const contactPerson = eventKey
-    ? {
-        name: CONTACT_PERSON[eventKey].name,
-        phone: CONTACT_PERSON[eventKey].phone.startsWith('62')
-          ? `0${CONTACT_PERSON[eventKey].phone.slice(2)}`
-          : CONTACT_PERSON[eventKey].phone,
-        waLink: `https://wa.me/${CONTACT_PERSON[eventKey].phone}`,
-        label: EVENT_LABEL[eventKey],
-      }
-    : {
-        name: 'Panitia RIC',
-        phone: '08123456789',
-        waLink: 'https://wa.me/6281234567890',
-        label: 'Cabang lomba',
-      };
+  const contactPersons = eventKey
+    ? CONTACT_PERSON[eventKey].map((cp) => ({
+        name: cp.name,
+        phone: cp.phone,
+        waLink: `https://wa.me/62${cp.phone.replace(/^0+/, '')}`,
+      }))
+    : [
+        {
+          name: 'Panitia RIC',
+          phone: '08123456789',
+          waLink: 'https://wa.me/6281234567890',
+        },
+      ];
+
+  const contactLabel = eventKey ? EVENT_LABEL[eventKey] : 'Cabang lomba';
 
   const waGroupLink = eventKey
     ? WA_GROUP_LINK[eventKey]
@@ -134,7 +152,7 @@ function RICSuccessContent() {
                 className='text-[#681819] text-center text-sm md:text-base leading-relaxed'
               >
                 Cabang lomba kamu:{' '}
-                <span className='font-semibold'>{contactPerson.label}</span>
+                <span className='font-semibold'>{contactLabel}</span>
               </Typography>
             </div>
 
@@ -159,19 +177,23 @@ function RICSuccessContent() {
               weight='bold'
               className='text-[#681819] text-center mb-6 text-xl md:text-2xl'
             >
-              Contact Person • {contactPerson.label}
+              Contact Person • {contactLabel}
             </Typography>
 
-            <div className='flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-8'>
-              <div className='flex items-center gap-3'>
-                <FaWhatsapp className='text-2xl text-[#681819]' />
-                <a
-                  href={contactPerson.waLink}
-                  className='text-[#681819] font-semibold hover:text-[#5A1415] transition-colors text-sm md:text-base'
-                >
-                  {contactPerson.phone} ({contactPerson.name})
-                </a>
-              </div>
+            <div className='flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 flex-wrap'>
+              {contactPersons.map((cp, index) => (
+                <div key={index} className='flex items-center gap-3'>
+                  <FaWhatsapp className='text-2xl text-[#681819]' />
+                  <a
+                    href={cp.waLink}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-[#681819] font-semibold hover:text-[#5A1415] transition-colors text-sm md:text-base'
+                  >
+                    {cp.phone} ({cp.name})
+                  </a>
+                </div>
+              ))}
             </div>
           </div>
         </div>

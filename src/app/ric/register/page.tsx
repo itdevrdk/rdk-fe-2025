@@ -291,9 +291,15 @@ function RICPendaftaranContent() {
                                   <span>{event.label}</span>
                                   {remaining !== null && (
                                     <span
-                                      className={`text-xs ${remaining <= 5 ? 'text-orange-500' : 'text-green-600'}`}
+                                      className={`text-xs ${
+                                        remaining <= 5 && quota?.total !== 9999
+                                          ? 'text-orange-500'
+                                          : 'text-green-600'
+                                      }`}
                                     >
-                                      (Sisa: {remaining})
+                                      {quota?.total === 9999
+                                        ? '(Tidak Terbatas)'
+                                        : `(Sisa: ${remaining})`}
                                     </span>
                                   )}
                                 </div>

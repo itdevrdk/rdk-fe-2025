@@ -616,7 +616,7 @@ export default function RICLandingPage() {
 
               <div className='space-y-3'>
                 {[
-                  { name: 'CP MHQ 🧕Nasywa', phone: '0895405759422' },
+                  { name: 'CP MHQ 🧕Nasywaa', phone: '0895405759422' },
                   { name: 'CP MHQ 🤵Zuhdi', phone: '083110471600' },
                   { name: 'CP MTQ 🤵Rafly', phone: '085608272676' },
                   { name: 'CP MTQ 🧕Dinda', phone: '082338045098' },

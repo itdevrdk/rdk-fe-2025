@@ -51,10 +51,10 @@ import {
 const eventTypeLabels: Record<string, string> = {
   MHQ: 'Musabaqah Hifdzil Quran',
   MTQ: 'Musabaqah Tilawatil Quran',
-  DAI: "Da'i Muda",
-  KTIQ: 'Kaligrafi & Tashih Quran',
-  POSTER: 'Lomba Poster',
-  VIDEOGRAFI: 'Lomba Videografi',
+  DAI: "Da'i",
+  KTIQ: 'Karya Tulis Ilmiah Quran',
+  POSTER: 'Poster',
+  VIDEOGRAFI: 'Videografi',
 };
 
 // Debounce hook for search

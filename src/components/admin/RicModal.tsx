@@ -36,10 +36,10 @@ interface RicModalProps {
 const eventTypes = [
   { value: 'MHQ', label: 'Musabaqah Hifdzil Quran' },
   { value: 'MTQ', label: 'Musabaqah Tilawatil Quran' },
-  { value: 'DAI', label: "Da'i Muda" },
-  { value: 'KTIQ', label: 'Kaligrafi & Tashih Quran' },
-  { value: 'POSTER', label: 'Lomba Poster' },
-  { value: 'VIDEOGRAFI', label: 'Lomba Videografi' },
+  { value: 'DAI', label: "Da'i" },
+  { value: 'KTIQ', label: 'Karya Tulis Ilmiah Quran' },
+  { value: 'POSTER', label: 'Poster' },
+  { value: 'VIDEOGRAFI', label: 'Videografi' },
 ];
 
 const statusOptions: { value: RicRegistrationStatus; label: string }[] = [

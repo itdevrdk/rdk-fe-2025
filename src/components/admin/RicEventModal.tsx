@@ -32,9 +32,9 @@ const eventTypes = [
   { value: 'MHQ', label: 'Musabaqah Hifdzil Quran' },
   { value: 'MTQ', label: 'Musabaqah Tilawatil Quran' },
   { value: 'DAI', label: "Da'i Muda" },
-  { value: 'KTIQ', label: 'Kaligrafi & Tashih Quran' },
-  { value: 'POSTER', label: 'Lomba Poster' },
-  { value: 'VIDEOGRAFI', label: 'Lomba Videografi' },
+  { value: 'KTIQ', label: 'Karya Tulis Ilmiah Quran' },
+  { value: 'POSTER', label: 'Poster' },
+  { value: 'VIDEOGRAFI', label: 'Videografi' },
 ];
 
 export default function RicEventModal({
@@ -178,8 +178,8 @@ export default function RicEventModal({
                   placeholder='Kuota Peserta'
                   disabled={isReadOnly}
                   className='w-full'
-                  min={1}
-                  max={1000}
+                  min={0}
+                  max={9999}
                 />
                 {mode === 'edit' && data && data.registration_count > 0 && (
                   <p className='mt-1 text-xs text-gray-500'>

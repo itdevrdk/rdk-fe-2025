@@ -264,7 +264,7 @@ function ComingSoonPopup({ onClose }: { onClose: () => void }) {
   });
 
   const calculateTimeLeft = React.useCallback(() => {
-    const targetDate = new Date('2026-02-18T17:55:00');
+    const targetDate = new Date('2026-02-17T17:55:00');
     const now = new Date().getTime();
     const distance = targetDate.getTime() - now;
 
