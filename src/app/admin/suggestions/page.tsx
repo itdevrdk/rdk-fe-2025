@@ -26,13 +26,20 @@ import {
   useUpdateSuggestionStatus,
 } from '@/app/admin/suggestions/hook/useSuggestion';
 
-import { SuggestionQuery, SuggestionStatus } from '@/types/entities/suggestion';
+import {
+  Suggestion,
+  SuggestionQuery,
+  SuggestionStatus,
+} from '@/types/entities/suggestion';
 
 const statusColors: Record<SuggestionStatus, string> = {
   [SuggestionStatus.NEW]: 'bg-blue-100 text-blue-700',
   [SuggestionStatus.READ]: 'bg-yellow-100 text-yellow-700',
   [SuggestionStatus.SOLVED]: 'bg-green-100 text-green-700',
 };
+
+// Type for table data with id field added
+type SuggestionTableData = Suggestion & { id: string };
 
 export default function AdminSuggestionsPage() {
   // State
@@ -83,8 +90,7 @@ export default function AdminSuggestionsPage() {
   };
 
   // Columns
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const columns: TableColumn<any>[] = [
+  const columns: TableColumn<SuggestionTableData>[] = [
     {
       key: 'no',
       header: 'No',

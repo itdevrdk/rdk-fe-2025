@@ -2,6 +2,7 @@
 
 import {
   ChevronDown,
+  ClipboardList,
   Database,
   FileText,
   Home,
@@ -37,6 +38,17 @@ const navItems = [
       { name: 'Event RIC', href: '/admin/ric-event' },
       { name: 'Nuzulul Quran', href: '/admin/nuzulul-quran' },
       { name: 'Khataman Akbar', href: '/admin/khataman-akbar' },
+    ],
+  },
+  {
+    name: 'Presence System',
+    href: '/admin/presence',
+    icon: ClipboardList,
+    subItems: [
+      { name: 'Check Presensi', href: '/admin/presence/check' },
+      { name: 'Data Presensi', href: '/admin/presence' },
+      { name: 'Data Panitia', href: '/admin/committe' },
+      { name: 'Data Event', href: '/admin/committe-event' },
     ],
   },
 ];

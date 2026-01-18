@@ -65,8 +65,7 @@ export default function AdminShortenLinkPage() {
     } catch (error) {
       toast.error('Gagal memuat data shorten link');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, debouncedSearch]);
+  }, [currentPage, debouncedSearch, getAllShortenLinks]);
 
   useEffect(() => {
     fetchLinks();

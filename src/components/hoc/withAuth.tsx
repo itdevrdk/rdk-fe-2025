@@ -87,8 +87,10 @@ export default function withAuth<T extends WithAuthProps>(
       }
 
       if (!token) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        isAuthed && logout();
+        // Logout if user was previously authenticated
+        if (isAuthed) {
+          logout();
+        }
         stopLoading();
         return;
       }
@@ -106,8 +108,8 @@ export default function withAuth<T extends WithAuthProps>(
           };
 
           login(userData);
-          // eslint-disable-next-line unused-imports/no-unused-vars
-        } catch (_err) {
+        } catch (_error) {
+          // Error during user load - logout and clear token
           logout();
           removeToken();
         } finally {
