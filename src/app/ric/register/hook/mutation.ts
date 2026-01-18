@@ -80,6 +80,9 @@ const registerRIC = async (
     if (form.poster_link) {
       formData.append('poster_link', form.poster_link);
     }
+    if (form.event_type === 'POSTER' && form.instagram_link) {
+      formData.append('instagram_link', form.instagram_link);
+    }
   }
 
   const response = await api.post<ApiResponse<RegistrationData>>(

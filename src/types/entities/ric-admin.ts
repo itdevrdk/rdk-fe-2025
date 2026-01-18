@@ -64,6 +64,7 @@ export interface RicRegistration {
   documents?: RicDocuments;
   result_link?: string;
   poster_link?: string;
+  instagram_link?: string; // Link postingan Instagram (POSTER)
 }
 
 export interface RicRegistrationFormData {

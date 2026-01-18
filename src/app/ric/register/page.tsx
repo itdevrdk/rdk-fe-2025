@@ -846,6 +846,22 @@ function RICPendaftaranContent() {
                             File terpilih: {form.poster_link.name}
                           </p>
                         )}
+
+                        <Label className='mt-4 text-black font-bold pb-0 mb-1 text-xs'>
+                          Link Postingan Instagram
+                        </Label>
+                        <p className='text-xs text-gray-600 mb-2'>
+                          Masukkan link postingan Instagram yang berisi poster
+                          yang telah diunggah
+                        </p>
+                        <Input
+                          className='bg-white'
+                          placeholder='https://instagram.com/p/...'
+                          value={form.instagram_link}
+                          onChange={(e) =>
+                            setForm({ instagram_link: e.target.value })
+                          }
+                        />
                       </>
                     )}
 

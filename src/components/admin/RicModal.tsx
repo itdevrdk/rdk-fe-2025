@@ -684,6 +684,26 @@ export default function RicModal({
                       </a>
                     </div>
                   )}
+
+                  {/* Instagram Link (POSTER) */}
+                  {data?.instagram_link && (
+                    <div className='flex items-center justify-between rounded-lg border border-pink-200 bg-pink-50 p-3'>
+                      <div className='flex items-center gap-2'>
+                        <ExternalLink size={18} className='text-pink-600' />
+                        <span className='text-sm text-gray-700'>
+                          Link Instagram
+                        </span>
+                      </div>
+                      <a
+                        href={data.instagram_link}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='flex items-center gap-1 text-sm text-pink-600 hover:underline'
+                      >
+                        Buka <ExternalLink size={14} />
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

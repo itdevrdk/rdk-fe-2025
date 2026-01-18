@@ -75,6 +75,8 @@ const DOCUMENT_LABELS: Record<string, string> = {
   statement_link: 'Surat Pernyataan',
   payment_proof: 'Bukti Pembayaran',
   portfolio: 'Portofolio',
+  poster_link: 'File Poster',
+  instagram_link: 'Link Instagram',
 };
 
 const isTeamDocumentStatus = (
@@ -240,7 +242,17 @@ const RegistrationResult = ({
                 <span className='text-sm text-gray-700'>
                   {DOCUMENT_LABELS[key] || key}
                 </span>
-                {isTeamDocumentStatus(doc) ? (
+                {/* Instagram link - show as clickable link */}
+                {key === 'instagram_link' && 'url' in doc && doc.url ? (
+                  <a
+                    href={doc.url}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-xs text-pink-600 hover:underline truncate max-w-[150px]'
+                  >
+                    Lihat Post
+                  </a>
+                ) : isTeamDocumentStatus(doc) ? (
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${
                       doc.uploaded === doc.total

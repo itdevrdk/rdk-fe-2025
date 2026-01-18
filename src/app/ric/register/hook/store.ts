@@ -48,6 +48,7 @@ export type RegistrationForm = {
   plagiarism_statement: File | null;
   result_file: File | null; // For KTIQ
   result_link: string; // For VIDEOGRAFI
+  instagram_link: string; // For POSTER - link postingan Instagram
   agree_data_usage: boolean;
   agree_guidebook: boolean;
 };
@@ -121,6 +122,7 @@ const initialForm: RegistrationForm = {
   plagiarism_statement: null,
   result_file: null,
   result_link: '',
+  instagram_link: '',
   agree_data_usage: false,
   agree_guidebook: false,
 };
@@ -313,6 +315,16 @@ export const validateForm = (
     }
     if (form.event_type === 'POSTER' && !form.poster_link) {
       return 'File poster wajib diunggah.';
+    }
+    if (form.event_type === 'POSTER' && !form.instagram_link.trim()) {
+      return 'Link postingan Instagram wajib diisi.';
+    }
+    // Validate URL format for Instagram link
+    if (form.event_type === 'POSTER' && form.instagram_link.trim()) {
+      const link = form.instagram_link.trim();
+      if (!link.startsWith('http://') && !link.startsWith('https://')) {
+        return 'Link Instagram harus berupa URL yang valid (dimulai dengan http:// atau https://).';
+      }
     }
   }
 
