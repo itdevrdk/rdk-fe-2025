@@ -34,7 +34,7 @@ export const useShortenLink = () => {
     try {
       setLoading(true);
       const res = await api.get<PaginatedApiResponse<ShortenLink[]>>(
-        '/api/v1/admin/shorten-link',
+        '/admin/shorten-link',
         { params },
       );
       return res.data;
@@ -47,7 +47,7 @@ export const useShortenLink = () => {
     try {
       setLoading(true);
       const res = await api.post<ApiResponse<ShortenLink>>(
-        '/api/v1/admin/shorten-link',
+        '/admin/shorten-link',
         data,
       );
       return res.data.data;
@@ -63,7 +63,7 @@ export const useShortenLink = () => {
     try {
       setLoading(true);
       const res = await api.put<ApiResponse<ShortenLink>>(
-        `/api/v1/admin/shorten-link/${id}`,
+        `/admin/shorten-link/${id}`,
         data,
       );
       return res.data.data;
@@ -76,7 +76,7 @@ export const useShortenLink = () => {
     try {
       setLoading(true);
       const res = await api.delete<ApiResponse<null>>(
-        `/api/v1/admin/shorten-link/${id}`,
+        `/admin/shorten-link/${id}`,
       );
       return res.data;
     } finally {

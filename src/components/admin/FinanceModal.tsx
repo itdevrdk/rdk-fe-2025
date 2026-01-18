@@ -95,7 +95,6 @@ export default function FinanceModal({
         >
           <div className='fixed inset-0 bg-black/25' />
         </Transition.Child>
-
         <div className='fixed inset-0 overflow-y-auto'>
           <div className='flex min-h-full items-center justify-center p-4 text-center'>
             <Transition.Child
@@ -220,6 +219,7 @@ export default function FinanceModal({
             </Transition.Child>
           </div>
         </div>
+        g
       </Dialog>
     </Transition>
   );

@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Pencil, Plus, Trash } from 'lucide-react';
+import { Edit2, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -11,21 +11,45 @@ import { useFinanceReport } from '@/hooks/useFinanceReport';
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import FinanceModal from '@/components/admin/FinanceModal';
 import Button from '@/components/buttons/Button';
+import AdminSidebar from '@/components/layouts/AdminSidebar';
+import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
+import { Input } from '@/components/ui/input';
 
 import { formatIDR } from '@/utils/format';
 
+import { useGetMe } from '../hook/getMe';
+
 import { CreateFinanceReportForm, FinanceReport } from '@/types/finance';
+
+// Debounce hook for search
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 export default function AdminFinancePage() {
   const {
     reports,
-    loading,
+    loading: isReportsLoading,
     fetchReports,
     createReport,
     updateReport,
     deleteReport,
   } = useFinanceReport();
+
+  const { user, isLoading: isUserLoading } = useGetMe();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -33,13 +57,36 @@ export default function AdminFinancePage() {
     null,
   );
 
-  // Pagination
+  // Search & Pagination
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearch = useDebounce(searchQuery, 300);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   useEffect(() => {
     fetchReports();
   }, [fetchReports]);
+
+  // Reset to page 1 on search
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
+
+  const filteredReports = useMemo(() => {
+    if (!debouncedSearch) return reports;
+
+    const lowerQuery = debouncedSearch.toLowerCase();
+    return reports.filter((report) => {
+      const dateStr = format(new Date(report.created_at), 'dd MMM yyyy', {
+        locale: id,
+      }).toLowerCase();
+      // Search by ID (if meaningful) or Date string
+      return (
+        report.id_report.toLowerCase().includes(lowerQuery) ||
+        dateStr.includes(lowerQuery)
+      );
+    });
+  }, [reports, debouncedSearch]);
 
   const handleOpenCreateModal = () => {
     setIsEditMode(false);
@@ -87,15 +134,15 @@ export default function AdminFinancePage() {
   // Data preparation for AdminTable
   const paginatedReports = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
-    return reports
+    return filteredReports
       .slice(startIndex, startIndex + itemsPerPage)
       .map((report) => ({
         ...report,
         id: report.id_report, // Map id_report to id for AdminTable
       }));
-  }, [reports, currentPage]);
+  }, [filteredReports, currentPage]);
 
-  const totalPages = Math.ceil(reports.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
 
   const columns: TableColumn<FinanceReport & { id: string }>[] = [
     {
@@ -130,30 +177,42 @@ export default function AdminFinancePage() {
     {
       key: 'actions',
       header: 'Aksi',
-      className: 'text-center',
+      className: 'w-28',
       render: (item) => (
-        <div className='flex justify-center gap-2'>
+        <div className='flex items-center gap-2'>
           <button
             onClick={() => handleOpenEditModal(item)}
             className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
-            title='Edit'
+            aria-label='Edit'
           >
-            <Pencil size={16} />
+            <Edit2 size={16} />
           </button>
           <button
             onClick={() => handleDelete(item.id_report)}
             className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
-            title='Hapus'
+            aria-label='Delete'
           >
-            <Trash size={16} />
+            <Trash2 size={16} />
           </button>
         </div>
       ),
     },
   ];
 
+  if (isUserLoading) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div className='p-6'>
+    <AdminSidebar user={user}>
       {/* Page Title */}
       <Typography
         as='h1'
@@ -164,10 +223,48 @@ export default function AdminFinancePage() {
         Manajemen Keuangan
       </Typography>
 
-      <div className='mb-6 flex items-center justify-between'>
-        {/* Placeholder for left side toolbar if needed (search, etc.) */}
-        <div />
+      {/* Toolbar - Mobile */}
+      <div className='mb-4 flex flex-col gap-3 lg:hidden'>
+        <Button
+          variant='primary'
+          leftIcon={Plus}
+          onClick={handleOpenCreateModal}
+          className='w-full'
+        >
+          Tambah
+        </Button>
 
+        <div className='relative'>
+          <Search
+            size={18}
+            className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+          />
+          <Input
+            placeholder='Cari berdasarkan tanggal'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className='pl-10'
+          />
+        </div>
+      </div>
+
+      {/* Toolbar - Desktop */}
+      <div className='mb-4 hidden items-center justify-between gap-4 lg:flex'>
+        {/* Search */}
+        <div className='relative flex-1 max-w-md'>
+          <Search
+            size={18}
+            className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+          />
+          <Input
+            placeholder='Cari berdasarkan tanggal'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className='pl-10'
+          />
+        </div>
+
+        {/* Right side actions */}
         <Button
           onClick={handleOpenCreateModal}
           variant='primary'
@@ -180,11 +277,15 @@ export default function AdminFinancePage() {
       <AdminTable
         columns={columns}
         data={paginatedReports}
-        isLoading={loading}
+        isLoading={isReportsLoading}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        emptyMessage='Belum ada data laporan keuangan.'
+        emptyMessage={
+          debouncedSearch
+            ? 'Tidak ada laporan yang cocok dengan pencarian'
+            : 'Belum ada data laporan keuangan.'
+        }
       />
 
       <FinanceModal
@@ -194,6 +295,6 @@ export default function AdminFinancePage() {
         data={selectedReport}
         onSubmit={handleSubmit}
       />
-    </div>
+    </AdminSidebar>
   );
 }

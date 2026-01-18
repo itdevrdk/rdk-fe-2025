@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { ExternalLink, Pencil, Plus, Search, Trash } from 'lucide-react';
+import { Edit2, ExternalLink, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -11,19 +11,25 @@ import { useShortenLink } from '@/hooks/useShortenLink';
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import ShortenLinkModal from '@/components/admin/ShortenLinkModal';
 import Button from '@/components/buttons/Button';
+import AdminSidebar from '@/components/layouts/AdminSidebar';
+import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
 import { Input } from '@/components/ui/input';
+
+import { useGetMe } from '../hook/getMe';
 
 import { CreateShortenLinkRequest, ShortenLink } from '@/types/shortenLink';
 
 export default function AdminShortenLinkPage() {
   const {
-    loading,
+    loading: isLinksLoading,
     getAllShortenLinks,
     createShortenLink,
     updateShortenLink,
     deleteShortenLink,
   } = useShortenLink();
+
+  const { user, isLoading: isUserLoading } = useGetMe();
 
   const [links, setLinks] = useState<ShortenLink[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,6 +69,12 @@ export default function AdminShortenLinkPage() {
   useEffect(() => {
     fetchLinks();
   }, [fetchLinks]);
+
+  // Reset page when search changes is handled by dependency in fetchLinks?
+  // Actually usually we should reset page when search *term* changes immediately to avoid showing page 2 of empty results.
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
 
   const handleOpenCreateModal = () => {
     setIsEditMode(false);
@@ -157,22 +169,22 @@ export default function AdminShortenLinkPage() {
     {
       key: 'actions',
       header: 'Aksi',
-      className: 'text-center',
+      className: 'w-28',
       render: (item) => (
-        <div className='flex justify-center gap-2'>
+        <div className='flex items-center gap-2'>
           <button
             onClick={() => handleOpenEditModal(item)}
             className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
-            title='Edit'
+            aria-label='Edit'
           >
-            <Pencil size={16} />
+            <Edit2 size={16} />
           </button>
           <button
             onClick={() => handleDelete(item.link_id)}
             className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
-            title='Hapus'
+            aria-label='Delete'
           >
-            <Trash size={16} />
+            <Trash2 size={16} />
           </button>
         </div>
       ),
@@ -184,8 +196,20 @@ export default function AdminShortenLinkPage() {
     id: link.link_id,
   }));
 
+  if (isUserLoading) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div className='p-6'>
+    <AdminSidebar user={user}>
       {/* Page Title */}
       <Typography
         as='h1'
@@ -196,10 +220,18 @@ export default function AdminShortenLinkPage() {
         Shorten Link
       </Typography>
 
-      {/* Toolbar */}
-      <div className='mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
-        {/* Search */}
-        <div className='relative max-w-md flex-1'>
+      {/* Toolbar - Mobile */}
+      <div className='mb-4 flex flex-col gap-3 lg:hidden'>
+        <Button
+          onClick={handleOpenCreateModal}
+          variant='primary'
+          leftIcon={Plus}
+          className='w-full'
+        >
+          Tambah Shorten Link
+        </Button>
+
+        <div className='relative'>
           <Search
             size={18}
             className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
@@ -207,15 +239,29 @@ export default function AdminShortenLinkPage() {
           <Input
             placeholder='Cari Short Link atau Original Link'
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className='pl-10'
+          />
+        </div>
+      </div>
+
+      {/* Toolbar - Desktop */}
+      <div className='mb-4 hidden items-center justify-between gap-4 lg:flex'>
+        {/* Search */}
+        <div className='relative flex-1 max-w-md'>
+          <Search
+            size={18}
+            className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+          />
+          <Input
+            placeholder='Cari Short Link atau Original Link'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className='pl-10'
           />
         </div>
 
-        {/* Add Button */}
+        {/* Right side actions */}
         <Button
           onClick={handleOpenCreateModal}
           variant='primary'
@@ -228,7 +274,7 @@ export default function AdminShortenLinkPage() {
       <AdminTable
         columns={columns}
         data={tableData}
-        isLoading={loading}
+        isLoading={isLinksLoading}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
@@ -242,6 +288,6 @@ export default function AdminShortenLinkPage() {
         data={selectedLink}
         onSubmit={handleSubmit}
       />
-    </div>
+    </AdminSidebar>
   );
 }
