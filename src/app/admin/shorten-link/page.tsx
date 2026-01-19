@@ -2,7 +2,7 @@
 
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Edit2, ExternalLink, Plus, Search, Trash2 } from 'lucide-react';
+import { Copy, Edit2, Plus, Search, Trash2 } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 
@@ -133,17 +133,28 @@ export default function AdminShortenLinkPage() {
     {
       key: 'shorten_link',
       header: 'Shorten Link',
-      render: (item) => (
-        <a
-          href={`/s/${item.shorten_link}`}
-          target='_blank'
-          rel='noreferrer'
-          className='flex items-center gap-1 font-medium text-primary-600 hover:underline'
-        >
-          {item.shorten_link}
-          <ExternalLink size={14} />
-        </a>
-      ),
+      render: (item) => {
+        const fullLink = `${window.location.origin}/s/${item.shorten_link}`;
+        const handleCopy = async () => {
+          try {
+            await navigator.clipboard.writeText(fullLink);
+            toast.success('Link berhasil disalin!');
+          } catch (error) {
+            toast.error('Gagal menyalin link');
+          }
+        };
+
+        return (
+          <button
+            onClick={handleCopy}
+            className='flex items-center gap-1 font-medium text-primary-600 hover:underline cursor-pointer'
+            title='Klik untuk menyalin link'
+          >
+            {item.shorten_link}
+            <Copy size={14} />
+          </button>
+        );
+      },
     },
     {
       key: 'original_link',

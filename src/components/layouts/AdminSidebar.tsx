@@ -15,7 +15,7 @@ import {
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -30,17 +30,6 @@ const navItems = [
   { name: 'Shorten Link', href: '/admin/shorten-link', icon: LinkIcon },
   { name: 'Masukan', href: '/admin/suggestions', icon: FileText },
   {
-    name: 'Data',
-    href: '/admin/data',
-    icon: Database,
-    subItems: [
-      { name: 'RIC', href: '/admin/ric' },
-      { name: 'Event RIC', href: '/admin/ric-event' },
-      { name: 'Nuzulul Quran', href: '/admin/nuzulul-quran' },
-      { name: 'Khataman Akbar', href: '/admin/khataman-akbar' },
-    ],
-  },
-  {
     name: 'Presence System',
     href: '/admin/presence',
     icon: ClipboardList,
@@ -49,6 +38,17 @@ const navItems = [
       { name: 'Data Presensi', href: '/admin/presence' },
       { name: 'Data Panitia', href: '/admin/committe' },
       { name: 'Data Event', href: '/admin/committe-event' },
+    ],
+  },
+  {
+    name: 'Data',
+    href: '/admin/data',
+    icon: Database,
+    subItems: [
+      { name: 'RIC', href: '/admin/ric' },
+      { name: 'Event RIC', href: '/admin/ric-event' },
+      { name: 'Nuzulul Quran', href: '/admin/nuzulul-quran' },
+      { name: 'Khataman Akbar', href: '/admin/khataman-akbar' },
     ],
   },
 ];
@@ -63,12 +63,32 @@ type AdminSidebarProps = {
   children: React.ReactNode;
 };
 
+// Helper function to determine which menu should be expanded based on pathname
+const getExpandedMenuFromPathname = (pathname: string): string | null => {
+  const menuItem = navItems.find((item) => {
+    if (!item.subItems) return false;
+    return item.subItems.some((sub) => pathname.startsWith(sub.href));
+  });
+  return menuItem ? menuItem.name : null;
+};
+
 export default function AdminSidebar({ user, children }: AdminSidebarProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [expandedMenu, setExpandedMenu] = useState<string | null>('Data');
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAuthStore.useLogout();
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedMenu, setExpandedMenu] = useState<string | null>(() =>
+    getExpandedMenuFromPathname(pathname),
+  );
+
+  // Update expanded menu when pathname changes
+  useEffect(() => {
+    const newExpandedMenu = getExpandedMenuFromPathname(pathname);
+    if (newExpandedMenu) {
+      setExpandedMenu(newExpandedMenu);
+    }
+  }, [pathname]);
 
   // Check if current path is active or is a child of a nav item
   const isItemActive = (item: (typeof navItems)[0]) => {
