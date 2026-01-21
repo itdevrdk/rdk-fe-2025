@@ -124,9 +124,9 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
       pathname,
       filteredNavItems,
     );
-    if (newExpandedMenu) {
-      setExpandedMenu(newExpandedMenu);
-    }
+    // Always update expanded menu state based on current pathname
+    // This ensures menu collapses when navigating away from submenus
+    setExpandedMenu(newExpandedMenu);
   }, [pathname, filteredNavItems]);
 
   // Check if current path is active or is a child of a nav item
