@@ -71,7 +71,7 @@ export default function PresencePage() {
   // Fetch events for dropdown
   const { data: events = [] } = useGetEventsForDropdown();
 
-  // Hooks - Fetch presences list for selected event
+  // Hooks - Fetch presences list for selected event (paginated for table)
   const {
     data: presencesData,
     refetch,
@@ -84,6 +84,15 @@ export default function PresencePage() {
     status: 'all',
   });
 
+  // Fetch ALL presences for summary counts (without pagination)
+  const { data: allPresencesData } = useGetPresences({
+    page: 1,
+    limit: 10000, // Large limit to get all data
+    search: undefined, // No search filter for total counts
+    event_id: selectedEventId || undefined,
+    status: 'all',
+  });
+
   // Extract data and meta from response (memoized to fix hook dependencies)
   const data = React.useMemo(
     () => presencesData?.data || [],
@@ -91,19 +100,25 @@ export default function PresencePage() {
   );
   const meta = presencesData?.meta;
 
+  // Extract all data for counts
+  const allData = React.useMemo(
+    () => allPresencesData?.data || [],
+    [allPresencesData?.data],
+  );
+
   // Mutations
   const updatePresenceMutation = useUpdatePresence();
 
   const totalPages = meta?.total_page || 1;
 
-  // Calculate summary counts
+  // Calculate summary counts from ALL data (not paginated)
   const totalPresent = React.useMemo(
-    () => data.filter((p) => p.status === 'attend').length,
-    [data],
+    () => allData.filter((p) => p.status === 'attend').length,
+    [allData],
   );
   const totalAbsent = React.useMemo(
-    () => data.filter((p) => p.status === 'skip').length,
-    [data],
+    () => allData.filter((p) => p.status === 'skip').length,
+    [allData],
   );
 
   // Get selected event info

@@ -25,7 +25,7 @@ export default function PresenceStatusBadge({
         className,
       )}
     >
-      {isPresent ? 'AKTIF' : 'NONAKTIF'}
+      {isPresent ? 'Hadir' : 'Tidak Hadir'}
     </span>
   );
 }
