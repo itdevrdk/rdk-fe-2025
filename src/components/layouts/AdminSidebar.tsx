@@ -23,16 +23,39 @@ import Typography from '@/components/Typography';
 
 import useAuthStore from '@/stores/useAuthStore';
 
-// Sidebar navigation items
+import { AdminRole } from '@/types/entities/user';
+
+// Sidebar navigation items with role-based access control
 const navItems = [
-  { name: 'Beranda', href: '/admin', icon: Home },
-  { name: 'Laporan Keuangan', href: '/admin/finance', icon: FileText },
-  { name: 'Shorten Link', href: '/admin/shorten-link', icon: LinkIcon },
-  { name: 'Masukan', href: '/admin/suggestions', icon: FileText },
+  {
+    name: 'Beranda',
+    href: '/admin',
+    icon: Home,
+    allowedRoles: ['admin', 'event', 'mentoring', 'publication'] as AdminRole[],
+  },
+  {
+    name: 'Laporan Keuangan',
+    href: '/admin/finance',
+    icon: FileText,
+    allowedRoles: ['admin'] as AdminRole[],
+  },
+  {
+    name: 'Shorten Link',
+    href: '/admin/shorten-link',
+    icon: LinkIcon,
+    allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
+  },
+  {
+    name: 'Masukan',
+    href: '/admin/suggestions',
+    icon: FileText,
+    allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
+  },
   {
     name: 'Presence System',
-    href: '/admin/presence',
+    href: '',
     icon: ClipboardList,
+    allowedRoles: ['admin'] as AdminRole[],
     subItems: [
       { name: 'Check Presensi', href: '/admin/presence/check' },
       { name: 'Data Presensi', href: '/admin/presence' },
@@ -41,14 +64,13 @@ const navItems = [
     ],
   },
   {
-    name: 'Data',
-    href: '/admin/data',
+    name: 'RIC',
+    href: '',
     icon: Database,
+    allowedRoles: ['admin', 'event'] as AdminRole[],
     subItems: [
-      { name: 'RIC', href: '/admin/ric' },
-      { name: 'Event RIC', href: '/admin/ric-event' },
-      { name: 'Nuzulul Quran', href: '/admin/nuzulul-quran' },
-      { name: 'Khataman Akbar', href: '/admin/khataman-akbar' },
+      { name: 'Data Peserta RIC', href: '/admin/ric' },
+      { name: 'Data Event RIC', href: '/admin/ric-event' },
     ],
   },
 ];
@@ -56,6 +78,7 @@ const navItems = [
 type AdminUser = {
   name: string;
   email: string;
+  role: string;
 };
 
 type AdminSidebarProps = {
@@ -63,9 +86,19 @@ type AdminSidebarProps = {
   children: React.ReactNode;
 };
 
+// Helper function to filter menu items based on user role
+const getFilteredNavItems = (userRole: string) => {
+  return navItems.filter((item) =>
+    item.allowedRoles.includes(userRole as AdminRole),
+  );
+};
+
 // Helper function to determine which menu should be expanded based on pathname
-const getExpandedMenuFromPathname = (pathname: string): string | null => {
-  const menuItem = navItems.find((item) => {
+const getExpandedMenuFromPathname = (
+  pathname: string,
+  filteredItems: typeof navItems,
+): string | null => {
+  const menuItem = filteredItems.find((item) => {
     if (!item.subItems) return false;
     return item.subItems.some((sub) => pathname.startsWith(sub.href));
   });
@@ -77,18 +110,24 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
   const router = useRouter();
   const logout = useAuthStore.useLogout();
 
+  // Filter navigation items based on user role
+  const filteredNavItems = getFilteredNavItems(user.role);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(() =>
-    getExpandedMenuFromPathname(pathname),
+    getExpandedMenuFromPathname(pathname, filteredNavItems),
   );
 
   // Update expanded menu when pathname changes
   useEffect(() => {
-    const newExpandedMenu = getExpandedMenuFromPathname(pathname);
+    const newExpandedMenu = getExpandedMenuFromPathname(
+      pathname,
+      filteredNavItems,
+    );
     if (newExpandedMenu) {
       setExpandedMenu(newExpandedMenu);
     }
-  }, [pathname]);
+  }, [pathname, filteredNavItems]);
 
   // Check if current path is active or is a child of a nav item
   const isItemActive = (item: (typeof navItems)[0]) => {
@@ -203,7 +242,7 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
 
         {/* Navigation - Scrollable Area */}
         <nav className='flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4'>
-          {navItems.map((item) => {
+          {filteredNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = isItemActive(item);
             const hasSubItems = item.subItems && item.subItems.length > 0;

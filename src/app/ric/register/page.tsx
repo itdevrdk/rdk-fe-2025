@@ -799,7 +799,7 @@ function RICPendaftaranContent() {
                         <p className='text-xs text-gray-600 mb-2'>
                           Template dapat diunduh{' '}
                           <a
-                            href='https://drive.google.com/file/d/1G5oyxCMwBB0QoEwUNkHIG1xXCx7PFIyS/view?usp=sharing'
+                            href='https://drive.google.com/drive/folders/1Pczk_VzwqDxUxNovOWNEWW14LSQp337i'
                             target='_blank'
                             rel='noopener noreferrer'
                             className='text-blue-600 underline hover:text-blue-800'

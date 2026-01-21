@@ -1,3 +1,5 @@
+export type AdminRole = 'admin' | 'event' | 'mentoring' | 'publication';
+
 export interface User {
   role: string;
   access_token: string;
