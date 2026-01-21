@@ -76,6 +76,7 @@ export default function PresenceModal({
 
   const statusLabels: Record<PresenceStatus, string> = {
     attend: 'Hadir',
+    permit: 'Izin',
     skip: 'Tidak Hadir',
   };
 
@@ -213,7 +214,9 @@ export default function PresenceModal({
                         className={`mt-1 inline-flex rounded-full px-3 py-1 text-xs font-medium ${
                           data?.status === 'attend'
                             ? 'bg-green-100 text-green-700'
-                            : 'bg-red-100 text-red-700'
+                            : data?.status === 'permit'
+                              ? 'bg-yellow-100 text-orange-700'
+                              : 'bg-red-100 text-red-700'
                         }`}
                       >
                         {data?.status ? statusLabels[data.status] : '-'}
@@ -233,6 +236,7 @@ export default function PresenceModal({
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value='attend'>Hadir</SelectItem>
+                              <SelectItem value='permit'>Izin</SelectItem>
                               <SelectItem value='skip'>Tidak Hadir</SelectItem>
                             </SelectContent>
                           </Select>
