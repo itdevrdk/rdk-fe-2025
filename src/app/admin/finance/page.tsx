@@ -94,6 +94,9 @@ export default function AdminFinancePage() {
     setCurrentPage(1);
   }, [debouncedSearch]);
 
+  // Get latest target from the most recent report
+  const latestTarget = reports.length > 0 ? reports[0].target : undefined;
+
   const handleOpenCreateModal = () => {
     setIsEditMode(false);
     setSelectedReport(null);
@@ -313,6 +316,7 @@ export default function AdminFinancePage() {
         isEdit={isEditMode}
         data={selectedReport}
         onSubmit={handleSubmit}
+        latestTarget={latestTarget}
       />
     </AdminSidebar>
   );

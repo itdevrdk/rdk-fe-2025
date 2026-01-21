@@ -15,6 +15,7 @@ interface FinanceModalProps {
   isEdit?: boolean;
   data?: FinanceReport | null;
   onSubmit: (data: CreateFinanceReportForm) => Promise<void>;
+  latestTarget?: number;
 }
 
 export default function FinanceModal({
@@ -23,6 +24,7 @@ export default function FinanceModal({
   isEdit = false,
   data,
   onSubmit,
+  latestTarget,
 }: FinanceModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -45,8 +47,12 @@ export default function FinanceModal({
       setValue('target', data.target);
     } else {
       reset();
+      // Auto-fill target with latest target value when creating new entry
+      if (latestTarget !== undefined && latestTarget > 0) {
+        setValue('target', latestTarget);
+      }
     }
-  }, [isEdit, data, setValue, reset]);
+  }, [isEdit, data, setValue, reset, latestTarget]);
 
   const onFormSubmit = async (formData: CreateFinanceReportForm) => {
     setIsLoading(true);
@@ -166,6 +172,13 @@ export default function FinanceModal({
                     <label className='block text-sm font-medium text-gray-700'>
                       Target Dana
                     </label>
+                    {!isEdit && latestTarget && latestTarget > 0 && (
+                      <p className='mt-1 text-xs text-blue-600'>
+                        Target terisi otomatis dari target sebelumnya (
+                        {formatIDR(latestTarget)}). Silakan diperbarui jika
+                        diperlukan.
+                      </p>
+                    )}
                     <input
                       type='number'
                       className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm'
