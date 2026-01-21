@@ -1,14 +1,12 @@
 'use client';
 
-import { Edit2, Eye, Plus, Search, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit2, Search } from 'lucide-react';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 
-import { cn } from '@/lib/utils';
-
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
-import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
-import PresenceModal from '@/components/admin/PresenceModal';
+import EditReasonModal from '@/components/admin/EditReasonModal';
+import PresenceStatusBadge from '@/components/admin/PresenceStatusBadge';
 import Button from '@/components/buttons/Button';
 import AdminSidebar from '@/components/layouts/AdminSidebar';
 import Loading from '@/components/Loading';
@@ -24,20 +22,13 @@ import {
 } from '@/components/ui/select';
 
 import {
-  useCreatePresence,
-  useDeletePresence,
-  useGetCommitteesForDropdown,
   useGetEventsForDropdown,
   useGetPresences,
   useUpdatePresence,
 } from '../hook/usePresence';
 import { useGetMe } from '../../hook/getMe';
 
-import {
-  CreatePresenceForm,
-  Presence,
-  PresenceStatus,
-} from '@/types/entities/presence';
+import { Presence, PresenceStatus } from '@/types/entities/presence';
 
 // Debounce hook for search
 function useDebounce<T>(value: T, delay: number): T {
@@ -59,10 +50,7 @@ function useDebounce<T>(value: T, delay: number): T {
 export default function PresencePage() {
   // State for search and filters
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [statusFilter, setStatusFilter] = React.useState<
-    PresenceStatus | 'all'
-  >('all');
-  const [eventFilter, setEventFilter] = React.useState<string>('all');
+  const [selectedEventId, setSelectedEventId] = React.useState<string>('');
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
 
@@ -70,15 +58,9 @@ export default function PresencePage() {
   const debouncedSearch = useDebounce(searchQuery, 300);
 
   // Modal states
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [modalMode, setModalMode] = React.useState<'create' | 'edit' | 'view'>(
-    'create',
-  );
-  const [selectedData, setSelectedData] = React.useState<Presence | null>(null);
-
-  // Delete modal
-  const [deleteModalOpen, setDeleteModalOpen] = React.useState(false);
-  const [deleteTarget, setDeleteTarget] = React.useState<Presence | null>(null);
+  const [editReasonModalOpen, setEditReasonModalOpen] = React.useState(false);
+  const [selectedPresence, setSelectedPresence] =
+    React.useState<Presence | null>(null);
 
   // Loading state for mutations
   const [isMutating, setIsMutating] = React.useState(false);
@@ -86,87 +68,79 @@ export default function PresencePage() {
   // Fetch user data
   const { user, isLoading: isUserLoading, isError } = useGetMe();
 
-  // Hooks - Fetch presences list
+  // Fetch events for dropdown
+  const { data: events = [] } = useGetEventsForDropdown();
+
+  // Hooks - Fetch presences list for selected event
   const {
     data: presencesData,
     refetch,
-    isLoading: _isPresencesLoading,
+    isLoading: isPresencesLoading,
   } = useGetPresences({
     page: currentPage,
     limit: itemsPerPage,
     search: debouncedSearch || undefined,
-    event_id: eventFilter !== 'all' ? eventFilter : undefined,
-    status: statusFilter,
+    event_id: selectedEventId || undefined,
+    status: 'all',
   });
 
-  // Extract data and meta from response
-  const data = presencesData?.data || [];
+  // Extract data and meta from response (memoized to fix hook dependencies)
+  const data = React.useMemo(
+    () => presencesData?.data || [],
+    [presencesData?.data],
+  );
   const meta = presencesData?.meta;
 
   // Mutations
-  const createPresenceMutation = useCreatePresence();
   const updatePresenceMutation = useUpdatePresence();
-  const deletePresenceMutation = useDeletePresence();
-
-  // Dropdown data
-  const { data: committees = [] } = useGetCommitteesForDropdown();
-  const { data: events = [] } = useGetEventsForDropdown();
 
   const totalPages = meta?.total_page || 1;
 
-  // Reset to page 1 when search or filter changes
+  // Calculate summary counts
+  const totalPresent = React.useMemo(
+    () => data.filter((p) => p.status === 'attend').length,
+    [data],
+  );
+  const totalAbsent = React.useMemo(
+    () => data.filter((p) => p.status === 'skip').length,
+    [data],
+  );
+
+  // Get selected event info
+  const selectedEvent = React.useMemo(
+    () => events.find((e) => e.id === selectedEventId),
+    [events, selectedEventId],
+  );
+
+  // Reset to page 1 when search or event changes
   React.useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, statusFilter, eventFilter]);
+  }, [debouncedSearch, selectedEventId]);
+
+  // Auto-select first event if none selected
+  React.useEffect(() => {
+    if (events.length > 0 && !selectedEventId) {
+      setSelectedEventId(events[0].id);
+    }
+  }, [events, selectedEventId]);
 
   // Handlers
-  const handleCreate = () => {
-    setSelectedData(null);
-    setModalMode('create');
-    setModalOpen(true);
+  const handleEditReason = (item: Presence) => {
+    setSelectedPresence(item);
+    setEditReasonModalOpen(true);
   };
 
-  const handleEdit = (item: Presence) => {
-    setSelectedData(item);
-    setModalMode('edit');
-    setModalOpen(true);
-  };
-
-  const handleView = (item: Presence) => {
-    setSelectedData(item);
-    setModalMode('view');
-    setModalOpen(true);
-  };
-
-  const handleDelete = (item: Presence) => {
-    setDeleteTarget(item);
-    setDeleteModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-    setSelectedData(null);
-  };
-
-  const handleDeleteModalClose = () => {
-    setDeleteModalOpen(false);
-    setDeleteTarget(null);
-  };
-
-  const handleSubmit = async (formData: CreatePresenceForm) => {
+  const handleStatusChange = async (
+    item: Presence,
+    newStatus: PresenceStatus,
+  ) => {
     try {
       setIsMutating(true);
-      if (modalMode === 'create') {
-        await createPresenceMutation.mutateAsync(formData);
-        toast('Presensi berhasil ditambahkan', SUCCESS_TOAST);
-      } else if (modalMode === 'edit' && selectedData) {
-        await updatePresenceMutation.mutateAsync({
-          id: selectedData.id,
-          data: { status: formData.status },
-        });
-        toast('Presensi berhasil diperbarui', SUCCESS_TOAST);
-      }
-      handleModalClose();
+      await updatePresenceMutation.mutateAsync({
+        id: item.id,
+        data: { status: newStatus },
+      });
+      toast('Status presensi berhasil diperbarui', SUCCESS_TOAST);
       refetch();
     } catch {
       toast('Terjadi kesalahan', DANGER_TOAST);
@@ -175,85 +149,107 @@ export default function PresencePage() {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    if (!deleteTarget) return;
+  const handleReasonSubmit = async (reason: string) => {
+    if (!selectedPresence) return;
 
     try {
       setIsMutating(true);
-      await deletePresenceMutation.mutateAsync(deleteTarget.id);
-      toast('Presensi berhasil dihapus', SUCCESS_TOAST);
-      handleDeleteModalClose();
+      await updatePresenceMutation.mutateAsync({
+        id: selectedPresence.id,
+        data: { reason },
+      });
+      toast('Alasan berhasil disimpan', SUCCESS_TOAST);
+      setEditReasonModalOpen(false);
       refetch();
     } catch {
-      toast('Terjadi kesalahan saat menghapus', DANGER_TOAST);
+      toast('Terjadi kesalahan', DANGER_TOAST);
     } finally {
       setIsMutating(false);
     }
+  };
+
+  // Format date for display
+  const formatDate = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString('id-ID', {
+      dateStyle: 'full',
+      timeStyle: 'short',
+    });
   };
 
   // Table columns
   const columns: TableColumn<Presence>[] = [
     {
       key: 'no',
-      header: 'No',
+      header: 'NO',
       className: 'w-16',
       render: (_, index) => (currentPage - 1) * itemsPerPage + index + 1,
     },
     {
-      key: 'committee',
-      header: 'Nama Panitia',
-      render: (item) => item.committee?.fullname || '-',
+      key: 'name',
+      header: 'Nama',
+      render: (item) => (
+        <div>
+          <div className='font-medium'>{item.committee?.fullname || '-'}</div>
+          {item.reason && (
+            <div className='text-xs text-gray-500 mt-1'>
+              Alasan: {item.reason}
+            </div>
+          )}
+        </div>
+      ),
     },
     {
-      key: 'event',
-      header: 'Event',
-      render: (item) => item.committee_event?.name || '-',
+      key: 'nrp',
+      header: 'NRP',
+      render: (item) => item.committee?.nrp || '-',
       className: 'hidden md:table-cell',
     },
     {
       key: 'status',
       header: 'Status',
       render: (item) => (
-        <span
-          className={cn(
-            'inline-flex rounded-full px-3 py-1 text-xs font-medium',
-            item.status === 'attend'
-              ? 'bg-green-100 text-green-700'
-              : 'bg-red-100 text-red-700',
-          )}
+        <Select
+          value={item.status}
+          onValueChange={(value) =>
+            handleStatusChange(item, value as PresenceStatus)
+          }
+          disabled={isMutating}
         >
-          {item.status === 'attend' ? 'Hadir' : 'Tidak Hadir'}
-        </span>
+          <SelectTrigger className='w-[140px]'>
+            <SelectValue>
+              <PresenceStatusBadge status={item.status} />
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='attend'>
+              <div className='flex items-center gap-2'>
+                <div className='w-3 h-3 rounded-full bg-green-500'></div>
+                <span>Hadir</span>
+              </div>
+            </SelectItem>
+            <SelectItem value='skip'>
+              <div className='flex items-center gap-2'>
+                <div className='w-3 h-3 rounded-full bg-red-500'></div>
+                <span>Tidak Hadir</span>
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
       ),
     },
     {
       key: 'actions',
-      header: 'Aksi',
-      className: 'w-28',
+      header: 'AKSI',
+      className: 'w-20',
       render: (item) => (
-        <div className='flex items-center gap-2'>
-          <button
-            onClick={() => handleView(item)}
-            className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
-            aria-label='View details'
-          >
-            <Eye size={16} />
-          </button>
-          <button
-            onClick={() => handleEdit(item)}
-            className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
-            aria-label='Edit'
-          >
-            <Edit2 size={16} />
-          </button>
-          <button
-            onClick={() => handleDelete(item)}
-            className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
-            aria-label='Delete'
-          >
-            <Trash2 size={16} />
-          </button>
-        </div>
+        <button
+          onClick={() => handleEditReason(item)}
+          className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100 transition-colors'
+          aria-label='Edit reason'
+        >
+          <Edit2 size={16} />
+        </button>
       ),
     },
   ];
@@ -274,171 +270,153 @@ export default function PresencePage() {
 
   return (
     <AdminSidebar user={user}>
-      {/* Page Title */}
-      <Typography
-        as='h1'
-        font='marquisette'
-        variant='h4'
-        className='mb-6 text-primary-100'
-      >
-        Data Presensi
-      </Typography>
-
-      {/* Toolbar - Mobile */}
-      <div className='mb-4 flex flex-col gap-3 lg:hidden'>
-        {/* Add Button */}
+      <div className='space-y-6'>
+        {/* Back Button */}
         <Button
-          variant='primary'
-          leftIcon={Plus}
-          onClick={handleCreate}
-          className='w-full'
+          variant='outline'
+          leftIcon={ArrowLeft}
+          onClick={() => window.history.back()}
+          className='mb-4'
         >
-          Tambah Presensi
+          Kembali
         </Button>
 
-        {/* Search */}
-        <div className='relative'>
-          <Search
-            size={18}
-            className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
-          />
-          <Input
-            placeholder='Cari nama panitia...'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='pl-10'
-          />
-        </div>
+        {/* Page Title */}
+        <Typography
+          as='h1'
+          font='marquisette'
+          variant='h4'
+          className='text-primary-100'
+        >
+          Sistem Presensi Panitia
+        </Typography>
 
-        {/* Filters */}
-        <div className='flex gap-2'>
-          <Select
-            value={eventFilter}
-            onValueChange={(value) => setEventFilter(value)}
-          >
-            <SelectTrigger className='flex-1'>
-              <SelectValue placeholder='Filter Event' />
+        {/* Event Selector */}
+        <div className='flex flex-col sm:flex-row gap-3'>
+          <Select value={selectedEventId} onValueChange={setSelectedEventId}>
+            <SelectTrigger className='w-full sm:w-[300px]'>
+              <SelectValue placeholder='Pilih Event' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value='all'>Semua Event</SelectItem>
-              {events.map((e: { id: string; name: string }) => (
-                <SelectItem key={e.id} value={e.id}>
-                  {e.name}
+              {events.map((event) => (
+                <SelectItem key={event.id} value={event.id}>
+                  {event.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-
-          <Select
-            value={statusFilter}
-            onValueChange={(value) =>
-              setStatusFilter(value as PresenceStatus | 'all')
-            }
-          >
-            <SelectTrigger className='flex-1'>
-              <SelectValue placeholder='Filter Status' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>Semua Status</SelectItem>
-              <SelectItem value='attend'>Hadir</SelectItem>
-              <SelectItem value='skip'>Tidak Hadir</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
+
+        {selectedEvent && (
+          <>
+            {/* Event Information Card */}
+            <div className='bg-white rounded-2xl border-2 border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow'>
+              <div className='space-y-3'>
+                <div>
+                  <Typography
+                    variant='body'
+                    className='text-gray-600 text-sm mb-1'
+                  >
+                    Nama Event:
+                  </Typography>
+                  <Typography
+                    variant='h6'
+                    className='font-semibold text-gray-900'
+                  >
+                    {selectedEvent.name}
+                  </Typography>
+                </div>
+                <div>
+                  <Typography
+                    variant='body'
+                    className='text-gray-600 text-sm mb-1'
+                  >
+                    Tanggal dan Waktu Pelaksanaan:
+                  </Typography>
+                  <Typography
+                    variant='body'
+                    className='font-medium text-gray-800'
+                  >
+                    {formatDate(selectedEvent.timestamp)}
+                  </Typography>
+                </div>
+              </div>
+            </div>
+
+            {/* Summary Cards */}
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+              {/* Present Card */}
+              <div className='bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1'>
+                <Typography
+                  variant='body'
+                  className='text-green-700 text-sm mb-2'
+                >
+                  Hadir
+                </Typography>
+                <Typography variant='h3' className='font-bold text-green-900'>
+                  {totalPresent}
+                </Typography>
+              </div>
+
+              {/* Absent Card */}
+              <div className='bg-gradient-to-br from-red-50 to-red-100 border-2 border-red-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1'>
+                <Typography
+                  variant='body'
+                  className='text-red-700 text-sm mb-2'
+                >
+                  Tidak Hadir
+                </Typography>
+                <Typography variant='h3' className='font-bold text-red-900'>
+                  {totalAbsent}
+                </Typography>
+              </div>
+            </div>
+
+            {/* Search Toolbar */}
+            <div className='flex flex-col sm:flex-row gap-3'>
+              <div className='relative flex-1'>
+                <Search
+                  size={18}
+                  className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+                />
+                <Input
+                  placeholder='Telusuri (nama atau NRP)...'
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className='pl-10'
+                />
+              </div>
+            </div>
+
+            {/* Table */}
+            <AdminTable
+              columns={columns}
+              data={data}
+              isLoading={isPresencesLoading}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              emptyMessage='Tidak ada data presensi untuk event ini'
+            />
+          </>
+        )}
+
+        {!selectedEvent && events.length === 0 && (
+          <div className='bg-yellow-50 border-2 border-yellow-200 rounded-2xl p-8 text-center'>
+            <Typography variant='body' className='text-yellow-800'>
+              Belum ada event yang tersedia. Silakan buat event terlebih dahulu.
+            </Typography>
+          </div>
+        )}
       </div>
 
-      {/* Toolbar - Desktop */}
-      <div className='mb-4 hidden items-center justify-between gap-4 lg:flex'>
-        {/* Search */}
-        <div className='relative flex-1 max-w-md'>
-          <Search
-            size={18}
-            className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
-          />
-          <Input
-            placeholder='Cari nama panitia...'
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className='pl-10'
-          />
-        </div>
-
-        {/* Right side actions */}
-        <div className='flex items-center gap-3'>
-          {/* Event Filter */}
-          <Select
-            value={eventFilter}
-            onValueChange={(value) => setEventFilter(value)}
-          >
-            <SelectTrigger className='w-[180px]'>
-              <SelectValue placeholder='Filter Event' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>Semua Event</SelectItem>
-              {events.map((e) => (
-                <SelectItem key={e.id} value={e.id}>
-                  {e.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Status Filter */}
-          <Select
-            value={statusFilter}
-            onValueChange={(value) =>
-              setStatusFilter(value as PresenceStatus | 'all')
-            }
-          >
-            <SelectTrigger className='w-[140px]'>
-              <SelectValue placeholder='Filter Status' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>Semua Status</SelectItem>
-              <SelectItem value='attend'>Hadir</SelectItem>
-              <SelectItem value='skip'>Tidak Hadir</SelectItem>
-            </SelectContent>
-          </Select>
-
-          {/* Add Button */}
-          <Button variant='primary' leftIcon={Plus} onClick={handleCreate}>
-            Tambah Presensi
-          </Button>
-        </div>
-      </div>
-
-      {/* Table */}
-      <AdminTable
-        columns={columns}
-        data={data}
-        isLoading={false}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        emptyMessage='Tidak ada data presensi'
-      />
-
-      {/* Create/Edit/View Modal */}
-      <PresenceModal
-        isOpen={modalOpen}
-        closeModal={handleModalClose}
-        isEdit={modalMode === 'edit'}
-        isView={modalMode === 'view'}
-        data={selectedData}
-        onSubmit={handleSubmit}
+      {/* Edit Reason Modal */}
+      <EditReasonModal
+        isOpen={editReasonModalOpen}
+        onClose={() => setEditReasonModalOpen(false)}
+        presence={selectedPresence}
+        onSubmit={handleReasonSubmit}
         isLoading={isMutating}
-        committees={committees}
-        events={events}
-      />
-
-      {/* Delete Confirmation Modal */}
-      <DeleteConfirmModal
-        isOpen={deleteModalOpen}
-        onClose={handleDeleteModalClose}
-        onConfirm={handleConfirmDelete}
-        isLoading={isMutating}
-        title='Hapus Presensi'
-        message='Apakah Anda yakin ingin menghapus data presensi ini? Tindakan ini tidak dapat dibatalkan.'
       />
     </AdminSidebar>
   );

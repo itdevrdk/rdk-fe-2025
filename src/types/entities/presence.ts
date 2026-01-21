@@ -67,6 +67,7 @@ export interface Presence {
   committee_event_id: string;
   status: PresenceStatus;
   timestamp: string;
+  reason?: string; // Alasan ketidakhadiran (optional)
   committee: PresenceInfo;
   committee_event: EventInfo;
 }
@@ -75,10 +76,21 @@ export interface CreatePresenceForm {
   committee_id: string;
   committee_event_id: string;
   status: PresenceStatus;
+  reason?: string;
 }
 
 export interface UpdatePresenceForm {
-  status: PresenceStatus;
+  status?: PresenceStatus;
+  reason?: string;
+}
+
+// Response for event-based presence summary
+export interface PresenceSummary {
+  event: EventInfo;
+  total_present: number; // Jumlah yang hadir
+  total_absent: number; // Jumlah yang tidak hadir
+  presences: Presence[];
+  meta: PaginationMeta;
 }
 
 export interface CheckPresenceRequest {
