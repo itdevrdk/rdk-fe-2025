@@ -223,7 +223,11 @@ export default function InfaqRamadhanPage() {
                 </Typography>
 
                 <div className='space-x-2 text-sm flex flex-row items-center '>
-                  <a href='wa.me/087817503128' target='_blank' rel='noreferrer'>
+                  <a
+                    href='https://wa.me/6287817503128'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
                     <Typography
                       variant='title'
                       className='mr-4 bg-gradient-to-r from-[#C33A3C] to-[#681819] bg-clip-text text-transparent'
@@ -233,7 +237,11 @@ export default function InfaqRamadhanPage() {
                       087817503128 (Fikri)
                     </Typography>
                   </a>
-                  <a href='wa.me/085239204463' target='_blank' rel='noreferrer'>
+                  <a
+                    href='https://wa.me/6285239204463'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
                     <Typography
                       variant='title'
                       className='bg-gradient-to-r from-[#C33A3C] to-[#681819] bg-clip-text text-transparent'

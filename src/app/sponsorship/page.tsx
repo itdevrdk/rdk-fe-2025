@@ -364,11 +364,23 @@ export default function SponsorPage() {
               <div className='flex flex-col md:flex-row justify-center gap-4'>
                 <Typography variant='label'>
                   <FaWhatsapp className='mr-1 inline w-4 h-4' />
-                  +62852-3775-6975 (Viqi)
+                  <a
+                    href='https://wa.me/6285237756975'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='hover:underline hover:text-[#C33A3C] transition-colors'
+                  >
+                    +62852-3775-6975 (Viqi)
+                  </a>
                 </Typography>
                 <Typography variant='label'>
                   <Mail className='mr-1 inline w-4 h-4' />
-                  rdkitssponsorship@gmail.com
+                  <a
+                    href='mailto:rdkitssponsorship@gmail.com'
+                    className='hover:underline hover:text-[#C33A3C] transition-colors'
+                  >
+                    rdkitssponsorship@gmail.com
+                  </a>
                 </Typography>
               </div>
               <Typography variant='label'>
