@@ -15,7 +15,7 @@ import {
 import NextImage from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -109,9 +109,13 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAuthStore.useLogout();
+  const prevPathnameRef = useRef(pathname);
 
-  // Filter navigation items based on user role
-  const filteredNavItems = getFilteredNavItems(user.role);
+  // Filter navigation items based on user role (memoized to prevent unnecessary recalculation)
+  const filteredNavItems = useMemo(
+    () => getFilteredNavItems(user.role),
+    [user.role],
+  );
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState<string | null>(() =>
@@ -120,13 +124,15 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
 
   // Update expanded menu when pathname changes
   useEffect(() => {
-    const newExpandedMenu = getExpandedMenuFromPathname(
-      pathname,
-      filteredNavItems,
-    );
-    // Always update expanded menu state based on current pathname
-    // This ensures menu collapses when navigating away from submenus
-    setExpandedMenu(newExpandedMenu);
+    // Only update if pathname actually changed (prevents override on manual toggle)
+    if (prevPathnameRef.current !== pathname) {
+      const newExpandedMenu = getExpandedMenuFromPathname(
+        pathname,
+        filteredNavItems,
+      );
+      setExpandedMenu(newExpandedMenu);
+      prevPathnameRef.current = pathname;
+    }
   }, [pathname, filteredNavItems]);
 
   // Check if current path is active or is a child of a nav item
