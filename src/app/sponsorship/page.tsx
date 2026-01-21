@@ -53,7 +53,15 @@ export default function SponsorPage() {
               </p>
 
               <div className='mb-10 flex justify-center md:justify-start'>
-                <Button className='bg-[#681819] text-white hover:bg-[#7a1c1d]'>
+                <Button
+                  className='bg-[#681819] text-white hover:bg-[#7a1c1d]'
+                  onClick={() =>
+                    window.open(
+                      'https://drive.google.com/drive/folders/12D_gfCaG23PRL8EEIJWExaJrAK_y5R1t?usp=sharing',
+                      '_blank',
+                    )
+                  }
+                >
                   Download Proposal (PDF)
                 </Button>
               </div>

@@ -40,3 +40,17 @@ export interface FinanceReportListResponse {
   data: FinanceReport[];
   meta: FinanceReportMeta;
 }
+
+// Finance Report Summary (Aggregated data for landing page)
+export interface FinanceReportSummary {
+  total_income: number; // Sum of all income records
+  total_expenses: number; // Sum of all expenses records
+  balance: number; // total_income - total_expenses
+  target: number; // Target from latest record
+}
+
+export interface FinanceReportSummaryResponse {
+  status: boolean;
+  message: string;
+  data: FinanceReportSummary;
+}

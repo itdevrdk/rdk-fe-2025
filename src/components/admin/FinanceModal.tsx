@@ -36,7 +36,6 @@ export default function FinanceModal({
 
   const income = watch('income');
   const expenses = watch('expenses');
-  const target = watch('target');
 
   // Set initial data for edit mode
   useEffect(() => {
@@ -74,13 +73,6 @@ export default function FinanceModal({
     return inc - exp;
   };
 
-  const calculateShortfall = () => {
-    const inc = Number(income || 0);
-    const tgt = Number(target || 0);
-    const shortfall = tgt - inc;
-    return shortfall > 0 ? shortfall : 0;
-  };
-
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as='div' className='relative z-50' onClose={closeModal}>
@@ -111,7 +103,9 @@ export default function FinanceModal({
                   as='h3'
                   className='text-lg font-medium leading-6 text-gray-900'
                 >
-                  {isEdit ? 'Edit Laporan Keuangan' : 'Tambah Laporan Keuangan'}
+                  {isEdit
+                    ? 'Edit Laporan Keuangan'
+                    : 'Tambah Laporan Keuangan Harian'}
                 </Dialog.Title>
 
                 <form
@@ -121,12 +115,15 @@ export default function FinanceModal({
                   {/* Income */}
                   <div>
                     <label className='block text-sm font-medium text-gray-700'>
-                      Pemasukan (Income)
+                      Pemasukan Hari Ini
                     </label>
+                    <p className='mt-1 text-xs text-gray-500'>
+                      Masukkan pemasukan untuk hari ini (bukan total kumulatif)
+                    </p>
                     <input
                       type='number'
                       className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm'
-                      placeholder='Contoh: 15000000'
+                      placeholder='Contoh: 5000000'
                       {...register('income', {
                         required: 'Pemasukan wajib diisi',
                         min: 0,
@@ -142,12 +139,16 @@ export default function FinanceModal({
                   {/* Expenses */}
                   <div>
                     <label className='block text-sm font-medium text-gray-700'>
-                      Pengeluaran (Expenses)
+                      Pengeluaran Hari Ini
                     </label>
+                    <p className='mt-1 text-xs text-gray-500'>
+                      Masukkan pengeluaran untuk hari ini (bukan total
+                      kumulatif)
+                    </p>
                     <input
                       type='number'
                       className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm'
-                      placeholder='Contoh: 5000000'
+                      placeholder='Contoh: 2000000'
                       {...register('expenses', {
                         required: 'Pengeluaran wajib diisi',
                         min: 0,
@@ -184,16 +185,13 @@ export default function FinanceModal({
                   {/* READ ONLY PREVIEWS */}
                   <div className='rounded-md bg-gray-50 p-3'>
                     <p className='text-sm text-gray-600'>
-                      Estimasi Balance:{' '}
+                      Balance Hari Ini:{' '}
                       <span className='font-bold'>
                         {formatIDR(calculateBalance())}
                       </span>
                     </p>
-                    <p className='text-sm text-gray-600'>
-                      Kekurangan Target:{' '}
-                      <span className='font-bold text-red-500'>
-                        {formatIDR(calculateShortfall())}
-                      </span>
+                    <p className='text-xs text-gray-500 mt-1'>
+                      Balance = Pemasukan - Pengeluaran untuk hari ini
                     </p>
                   </div>
 

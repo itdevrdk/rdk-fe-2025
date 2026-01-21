@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import {
   CreateFinanceReportForm,
   FinanceReport,
+  FinanceReportSummary,
   UpdateFinanceReportForm,
 } from '@/types/finance';
 
@@ -26,7 +27,7 @@ export const useFinanceReport = () => {
   }, []);
 
   const getLatestReport =
-    useCallback(async (): Promise<FinanceReport | null> => {
+    useCallback(async (): Promise<FinanceReportSummary | null> => {
       try {
         const response = await api.get('/finance-reports/latest');
         return response.data.data;

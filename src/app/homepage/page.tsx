@@ -18,7 +18,7 @@ import { useCreateSuggestion } from '@/app/homepage/hook/useCreateSuggestion';
 import { formatIDR } from '@/utils/format';
 
 import { CreateSuggestionRequest } from '@/types/entities/suggestion';
-import { FinanceReport } from '@/types/finance';
+import { FinanceReportSummary } from '@/types/finance';
 
 const KEGIATAN_ITEMS = [
   {
@@ -519,7 +519,9 @@ export default function HomeSection() {
   const [visibleItems, setVisibleItems] = useState(3);
 
   const { getLatestReport } = useFinanceReport();
-  const [latestReport, setLatestReport] = useState<FinanceReport | null>(null);
+  const [latestReport, setLatestReport] = useState<FinanceReportSummary | null>(
+    null,
+  );
 
   useEffect(() => {
     getLatestReport().then(setLatestReport);
@@ -1376,7 +1378,7 @@ export default function HomeSection() {
               weight='bold'
               className='mt-2'
             >
-              {latestReport ? formatIDR(latestReport.income) : 'Rp 0'}
+              {latestReport ? formatIDR(latestReport.total_income) : 'Rp 0'}
             </Typography>
             <Typography className='text-sm text-gray-500'>
               Dana Kebaikan Terkumpul
@@ -1390,7 +1392,7 @@ export default function HomeSection() {
                         Math.max(
                           0,
                           Number(latestReport.target) -
-                            Number(latestReport.income),
+                            Number(latestReport.total_income),
                         ),
                       )
                     : 'Rp 0'}
@@ -1414,10 +1416,15 @@ export default function HomeSection() {
               <Button
                 variant='primary'
                 className='bg-[#681819] w-full md:w-auto'
+                onClick={() => router.push('/infaq')}
               >
                 Donasi Sekarang
               </Button>
-              <Button variant='outline' className='w-full md:w-auto'>
+              <Button
+                variant='outline'
+                className='w-full md:w-auto'
+                onClick={() => router.push('/sponsorship')}
+              >
                 Informasi Sponsorship
               </Button>
             </div>

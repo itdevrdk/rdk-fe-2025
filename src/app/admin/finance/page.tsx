@@ -228,8 +228,12 @@ export default function AdminFinancePage() {
         variant='h4'
         className='mb-6 text-primary-100'
       >
-        Manajemen Keuangan
+        Manajemen Keuangan Harian
       </Typography>
+      <p className='mb-4 text-sm text-gray-600'>
+        Input pemasukan dan pengeluaran untuk setiap hari. Data akan diagregasi
+        untuk ditampilkan di landing page.
+      </p>
 
       {/* Toolbar - Mobile */}
       <div className='mb-4 flex flex-col gap-3 lg:hidden'>
