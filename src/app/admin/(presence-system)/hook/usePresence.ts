@@ -14,6 +14,8 @@ import {
   PaginatedResponse,
   Presence,
   PresenceListParams,
+  PresenceStatus,
+  PresenceSummary,
   SetStatusRequest,
   UpdatePresenceForm,
 } from '@/types/entities/presence';
@@ -114,7 +116,7 @@ export const useSetPresenceStatus = () => {
   return useMutation<
     ApiResponse<Presence>,
     AxiosError<ApiError>,
-    { committee_id: string; event_id: string; status: 'attend' | 'skip' }
+    { committee_id: string; event_id: string; status: PresenceStatus }
   >({
     mutationFn: async ({ committee_id, event_id, status }) => {
       const requestData: SetStatusRequest = {
@@ -235,5 +237,31 @@ export const useGetEventsForDropdown = () => {
       return response.data.data || [];
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+/**
+ * Hook to fetch presence summary counts for an event
+ * This is much more efficient than fetching all records
+ */
+export const useGetPresenceSummary = (eventId: string | undefined) => {
+  return useQuery<PresenceSummary, AxiosError<ApiError>>({
+    queryKey: [...presenceKeys.all, 'summary', eventId],
+    queryFn: async () => {
+      const response = await api.get<ApiResponse<PresenceSummary>>(
+        `${PRESENCE_BASE_URL}/summary`,
+        {
+          params: { event_id: eventId },
+        },
+      );
+
+      if (!response.data.data) {
+        throw new Error('No summary data returned');
+      }
+
+      return response.data.data;
+    },
+    enabled: !!eventId,
+    staleTime: 30 * 1000, // 30 seconds
   });
 };

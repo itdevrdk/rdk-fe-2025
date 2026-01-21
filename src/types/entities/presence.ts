@@ -40,7 +40,7 @@ export interface UpdateCommitteeEventForm {
 }
 
 // ============= PRESENCE =============
-export type PresenceStatus = 'attend' | 'skip';
+export type PresenceStatus = 'attend' | 'skip' | 'permit';
 
 export interface PresenceInfo {
   id: string;
@@ -108,6 +108,15 @@ export interface SetStatusRequest {
   committee_id: string;
   event_id: string;
   status: PresenceStatus;
+}
+
+// ============= PRESENCE SUMMARY =============
+export interface PresenceSummary {
+  event_id: string;
+  total_present: number;
+  total_absent: number;
+  total_permit: number;
+  total_records: number;
 }
 
 // ============= PAGINATION =============

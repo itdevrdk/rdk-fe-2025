@@ -109,10 +109,14 @@ export default function CheckPresencePage() {
         });
       }
 
-      toast(
-        `Status berhasil diubah menjadi ${status === 'attend' ? 'Hadir' : 'Tidak Hadir'}`,
-        SUCCESS_TOAST,
-      );
+      const statusText =
+        status === 'attend'
+          ? 'Hadir'
+          : status === 'permit'
+            ? 'Izin'
+            : 'Tidak Hadir';
+
+      toast(`Status berhasil diubah menjadi ${statusText}`, SUCCESS_TOAST);
     } catch {
       toast('Gagal mengubah status', DANGER_TOAST);
     }
@@ -379,7 +383,9 @@ export default function CheckPresencePage() {
                   checkResult.presence
                     ? checkResult.presence.status === 'attend'
                       ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
+                      : checkResult.presence.status === 'permit'
+                        ? 'bg-yellow-100 text-orange-700'
+                        : 'bg-red-100 text-red-700'
                     : 'bg-gray-100 text-gray-600',
                 )}
               >
@@ -388,6 +394,11 @@ export default function CheckPresencePage() {
                     <>
                       <CheckCircle size={16} />
                       Hadir
+                    </>
+                  ) : checkResult.presence.status === 'permit' ? (
+                    <>
+                      <CheckCircle size={16} />
+                      Izin
                     </>
                   ) : (
                     <>
@@ -425,6 +436,19 @@ export default function CheckPresencePage() {
                 )}
               >
                 Hadir
+              </Button>
+              <Button
+                variant='primary'
+                leftIcon={CheckCircle}
+                onClick={() => handleUpdateStatus('permit')}
+                isLoading={setStatusMutation.isPending}
+                className={cn(
+                  'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600',
+                  checkResult.presence?.status === 'permit' &&
+                    'ring-2 ring-yellow-300 ring-offset-2',
+                )}
+              >
+                Izin
               </Button>
               <Button
                 variant='primary'

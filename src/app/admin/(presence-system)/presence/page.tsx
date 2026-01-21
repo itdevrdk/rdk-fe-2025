@@ -1,13 +1,12 @@
 'use client';
 
-import { ArrowLeft, Edit2, Search } from 'lucide-react';
+import { Edit2, Search } from 'lucide-react';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import EditReasonModal from '@/components/admin/EditReasonModal';
 import PresenceStatusBadge from '@/components/admin/PresenceStatusBadge';
-import Button from '@/components/buttons/Button';
 import AdminSidebar from '@/components/layouts/AdminSidebar';
 import Loading from '@/components/Loading';
 import { DANGER_TOAST, SUCCESS_TOAST } from '@/components/Toast';
@@ -24,6 +23,7 @@ import {
 import {
   useGetEventsForDropdown,
   useGetPresences,
+  useGetPresenceSummary,
   useUpdatePresence,
 } from '../hook/usePresence';
 import { useGetMe } from '../../hook/getMe';
@@ -84,14 +84,8 @@ export default function PresencePage() {
     status: 'all',
   });
 
-  // Fetch ALL presences for summary counts (without pagination)
-  const { data: allPresencesData } = useGetPresences({
-    page: 1,
-    limit: 10000, // Large limit to get all data
-    search: undefined, // No search filter for total counts
-    event_id: selectedEventId || undefined,
-    status: 'all',
-  });
+  // Fetch summary counts using new efficient endpoint
+  const { data: summary } = useGetPresenceSummary(selectedEventId);
 
   // Extract data and meta from response (memoized to fix hook dependencies)
   const data = React.useMemo(
@@ -100,26 +94,15 @@ export default function PresencePage() {
   );
   const meta = presencesData?.meta;
 
-  // Extract all data for counts
-  const allData = React.useMemo(
-    () => allPresencesData?.data || [],
-    [allPresencesData?.data],
-  );
-
   // Mutations
   const updatePresenceMutation = useUpdatePresence();
 
   const totalPages = meta?.total_page || 1;
 
-  // Calculate summary counts from ALL data (not paginated)
-  const totalPresent = React.useMemo(
-    () => allData.filter((p) => p.status === 'attend').length,
-    [allData],
-  );
-  const totalAbsent = React.useMemo(
-    () => allData.filter((p) => p.status === 'skip').length,
-    [allData],
-  );
+  // Get summary counts from API (not from paginated data)
+  const totalPresent = summary?.total_present || 0;
+  const totalAbsent = summary?.total_absent || 0;
+  const totalPermit = summary?.total_permit || 0;
 
   // Get selected event info
   const selectedEvent = React.useMemo(
@@ -243,6 +226,12 @@ export default function PresencePage() {
                 <span>Hadir</span>
               </div>
             </SelectItem>
+            <SelectItem value='permit'>
+              <div className='flex items-center gap-2'>
+                <div className='w-3 h-3 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500'></div>
+                <span>Izin</span>
+              </div>
+            </SelectItem>
             <SelectItem value='skip'>
               <div className='flex items-center gap-2'>
                 <div className='w-3 h-3 rounded-full bg-red-500'></div>
@@ -286,16 +275,6 @@ export default function PresencePage() {
   return (
     <AdminSidebar user={user}>
       <div className='space-y-6'>
-        {/* Back Button */}
-        <Button
-          variant='outline'
-          leftIcon={ArrowLeft}
-          onClick={() => window.history.back()}
-          className='mb-4'
-        >
-          Kembali
-        </Button>
-
         {/* Page Title */}
         <Typography
           as='h1'
@@ -359,7 +338,7 @@ export default function PresencePage() {
             </div>
 
             {/* Summary Cards */}
-            <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
+            <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
               {/* Present Card */}
               <div className='bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1'>
                 <Typography
@@ -370,6 +349,19 @@ export default function PresencePage() {
                 </Typography>
                 <Typography variant='h3' className='font-bold text-green-900'>
                   {totalPresent}
+                </Typography>
+              </div>
+
+              {/* Permit Card */}
+              <div className='bg-gradient-to-br from-yellow-50 to-orange-100 border-2 border-yellow-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1'>
+                <Typography
+                  variant='body'
+                  className='text-orange-700 text-sm mb-2'
+                >
+                  Izin
+                </Typography>
+                <Typography variant='h3' className='font-bold text-orange-900'>
+                  {totalPermit}
                 </Typography>
               </div>
 
