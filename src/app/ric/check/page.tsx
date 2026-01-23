@@ -234,47 +234,60 @@ const RegistrationResult = ({
         <div className='mb-6'>
           <h3 className='font-semibold text-[#681819] mb-3'>Status Dokumen</h3>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-            {Object.entries(data.documents).map(([key, doc]) => (
-              <div
-                key={key}
-                className='bg-gray-50 rounded-lg p-3 flex items-center justify-between'
-              >
-                <span className='text-sm text-gray-700'>
-                  {DOCUMENT_LABELS[key] || key}
-                </span>
-                {/* Instagram link - show as clickable link */}
-                {key === 'instagram_link' && 'url' in doc && doc.url ? (
-                  <a
-                    href={doc.url}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='text-xs text-pink-600 hover:underline truncate max-w-[150px]'
-                  >
-                    Lihat Post
-                  </a>
-                ) : isTeamDocumentStatus(doc) ? (
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      doc.uploaded === doc.total
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-red-100 text-red-600'
-                    }`}
-                  >
-                    {doc.uploaded}/{doc.total} Diunggah
+            {Object.entries(data.documents)
+              .filter(([key]) => {
+                // Extract event key from registration_id (format: RIC-{EVENT_KEY}-YEAR-NUMBER)
+                const eventKey = data.registration_id.split('-')[1] as EventKey;
+                // Filter out statement_link for POSTER and VIDEOGRAFI events
+                if (
+                  key === 'statement_link' &&
+                  (eventKey === 'POSTER' || eventKey === 'VIDEOGRAFI')
+                ) {
+                  return false;
+                }
+                return true;
+              })
+              .map(([key, doc]) => (
+                <div
+                  key={key}
+                  className='bg-gray-50 rounded-lg p-3 flex items-center justify-between'
+                >
+                  <span className='text-sm text-gray-700'>
+                    {DOCUMENT_LABELS[key] || key}
                   </span>
-                ) : (
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      doc.uploaded
-                        ? 'bg-green-100 text-green-600'
-                        : 'bg-red-100 text-red-600'
-                    }`}
-                  >
-                    {doc.uploaded ? 'Sudah Diunggah' : 'Belum Diunggah'}
-                  </span>
-                )}
-              </div>
-            ))}
+                  {/* Instagram link - show as clickable link */}
+                  {key === 'instagram_link' && 'url' in doc && doc.url ? (
+                    <a
+                      href={doc.url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='text-xs text-pink-600 hover:underline truncate max-w-[150px]'
+                    >
+                      Lihat Post
+                    </a>
+                  ) : isTeamDocumentStatus(doc) ? (
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        doc.uploaded === doc.total
+                          ? 'bg-green-100 text-green-600'
+                          : 'bg-red-100 text-red-600'
+                      }`}
+                    >
+                      {doc.uploaded}/{doc.total} Diunggah
+                    </span>
+                  ) : (
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        doc.uploaded
+                          ? 'bg-green-100 text-green-600'
+                          : 'bg-red-100 text-red-600'
+                      }`}
+                    >
+                      {doc.uploaded ? 'Sudah Diunggah' : 'Belum Diunggah'}
+                    </span>
+                  )}
+                </div>
+              ))}
           </div>
         </div>
       )}
