@@ -81,6 +81,19 @@ export interface RicRegistrationFormData {
   city: string;
   supervisor_name: string;
   supervisor_phone: string;
+  // Link fields (Text)
+  result_link?: string;
+  instagram_link?: string;
+  // File fields (Object/File)
+  statement_link?: File;
+  poster_link?: File;
+  result_file?: File; // PDF for KTIQ
+  plagiarism_statement?: File;
+  identity_card?: File; // Main ID card
+  // Team ID cards
+  identity_card_0?: File;
+  identity_card_1?: File;
+  identity_card_2?: File;
 }
 
 export interface RicRegistrationListParams {

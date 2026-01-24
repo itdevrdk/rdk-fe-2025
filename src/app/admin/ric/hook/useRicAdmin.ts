@@ -104,9 +104,37 @@ export const useUpdateRicRegistration = () => {
     { id: string; data: RicRegistrationFormData }
   >({
     mutationFn: async ({ id, data }) => {
+      const formData = new FormData();
+
+      // Append text fields
+      Object.keys(data).forEach((key) => {
+        const value = data[key as keyof RicRegistrationFormData];
+        // Skip file fields here to handle them explicitly or let them cascade if they are not Files
+        // But for safety and clarity per requirements, strictly append what is needed.
+        // However, generic iteration is fine as long as we filter null/undefined.
+        // Files are objects, so we need to check strict type or key names.
+
+        // Actually, logic:
+        // Append all scalar values as text.
+        // Append File objects.
+
+        if (value !== null && value !== undefined) {
+          if (value instanceof File) {
+            formData.append(key, value);
+          } else {
+            formData.append(key, String(value));
+          }
+        }
+      });
+
       const response = await api.put<RicRegistrationMutationResponse>(
         `${RIC_ADMIN_BASE_URL}/${id}`,
-        data,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
       );
       return response.data;
     },
