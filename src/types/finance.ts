@@ -54,3 +54,28 @@ export interface FinanceReportSummaryResponse {
   message: string;
   data: FinanceReportSummary;
 }
+
+// Finance Report Details (For Report Page with Charts)
+export interface FinanceChartData {
+  name: string;
+  value: number;
+}
+
+export interface FinanceCategoryDetails {
+  total: number;
+  last_updated: string;
+  history: FinanceChartData[];
+}
+
+export interface FinanceReportDetails {
+  total_balance: number;
+  income: FinanceCategoryDetails;
+  expense: FinanceCategoryDetails;
+}
+
+export interface FinanceReportDetailsResponse {
+  code: number;
+  status: boolean;
+  message: string;
+  data: FinanceReportDetails;
+}

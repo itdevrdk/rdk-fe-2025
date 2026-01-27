@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import {
   CreateFinanceReportForm,
   FinanceReport,
+  FinanceReportDetails,
   FinanceReportSummary,
   UpdateFinanceReportForm,
 } from '@/types/finance';
@@ -30,6 +31,16 @@ export const useFinanceReport = () => {
     useCallback(async (): Promise<FinanceReportSummary | null> => {
       try {
         const response = await api.get('/finance-reports/latest');
+        return response.data.data;
+      } catch (error) {
+        return null;
+      }
+    }, []);
+
+  const getFinanceReportDetails =
+    useCallback(async (): Promise<FinanceReportDetails | null> => {
+      try {
+        const response = await api.get('/finance-reports/details');
         return response.data.data;
       } catch (error) {
         return null;
@@ -76,5 +87,6 @@ export const useFinanceReport = () => {
     createReport,
     updateReport,
     deleteReport,
+    getFinanceReportDetails,
   };
 };

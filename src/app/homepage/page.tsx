@@ -125,7 +125,7 @@ const JOIN_US_ITEMS = [
     title: 'Open Volunteer Khataman Akbar 📖',
     subheadline: 'Dicari! Orang yang Siap Mengukir Sejarah',
     desc: "Tantangan mengkhatamkan Al-Qur'an bersama ratusan volunteer mulai 1 Ramadan hingga malam Nuzulul Qur'an. Jadilah bagian dari gerakan spiritual terbesar di kampus ini!",
-    image: '/images/homepage/coming-soon-placeholder.png',
+    image: '/images/homepage/event-carousel/khataman-akbar.png',
     link: '/volunteer-khataman',
     registrationOpenDate: new Date('2026-01-28'),
   },
