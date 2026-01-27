@@ -127,7 +127,7 @@ const JOIN_US_ITEMS = [
     desc: "Tantangan mengkhatamkan Al-Qur'an bersama ratusan volunteer mulai 1 Ramadan hingga malam Nuzulul Qur'an. Jadilah bagian dari gerakan spiritual terbesar di kampus ini!",
     image: '/images/homepage/coming-soon-placeholder.png',
     link: '/volunteer-khataman',
-    registrationOpenDate: null,
+    registrationOpenDate: new Date('2026-01-28'),
   },
   {
     title: 'Open Tenant Iftar Fest🍽️',
@@ -140,9 +140,18 @@ const JOIN_US_ITEMS = [
 ];
 
 const MOMENT_IMAGES = [
-  '/images/homepage/carousel/1.png',
-  '/images/homepage/carousel/2.png',
-  '/images/homepage/carousel/3.png',
+  {
+    image: '/images/homepage/carousel/1.png',
+    link: '/rdk-46',
+  },
+  {
+    image: '/images/homepage/carousel/2.png',
+    link: '/rdk-45',
+  },
+  {
+    image: '/images/homepage/carousel/3.png',
+    link: '/rdk-44',
+  },
 ];
 
 // Helper function untuk mengecek apakah pendaftaran sudah dibuka
@@ -272,7 +281,7 @@ function ComingSoonPopup({ onClose }: { onClose: () => void }) {
   });
 
   const calculateTimeLeft = React.useCallback(() => {
-    const targetDate = new Date('2026-02-17T17:55:00');
+    const targetDate = new Date('2026-02-18T17:55:00');
     const now = new Date().getTime();
     const distance = targetDate.getTime() - now;
 
@@ -1275,9 +1284,10 @@ export default function HomeSection() {
                 transform: `translateX(calc(-${currentSlide} * (100% / ${visibleItems} + ${visibleItems === 1 ? 0 : visibleItems === 2 ? 8 : 8}px)))`,
               }}
             >
-              {MOMENT_IMAGES.map((src, index) => (
+              {MOMENT_IMAGES.map((item, index) => (
                 <div
                   key={index}
+                  onClick={() => router.push(item.link)}
                   className='relative h-48 md:h-64 rounded-xl overflow-hidden shadow-lg bg-white flex-shrink-0 cursor-pointer group'
                   style={{
                     width:
@@ -1289,7 +1299,7 @@ export default function HomeSection() {
                   }}
                 >
                   <NextImage
-                    src={src}
+                    src={item.image}
                     alt={`Moment ${index + 1}`}
                     fill
                     className='object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out'
