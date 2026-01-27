@@ -87,9 +87,11 @@ export default function Header() {
             </Typography>
           </Link>
 
-          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
-            Laporan Keuangan
-          </Typography>
+          <Link href='/report'>
+            <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+              Laporan Keuangan
+            </Typography>
+          </Link>
         </nav>
 
         <button
@@ -153,9 +155,11 @@ export default function Header() {
             </Typography>
           </Link>
 
-          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
-            Laporan Keuangan
-          </Typography>
+          <Link href='/report' onClick={() => setMobileOpen(false)}>
+            <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+              Laporan Keuangan
+            </Typography>
+          </Link>
         </nav>
       </div>
     </header>
