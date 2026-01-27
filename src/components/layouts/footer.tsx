@@ -66,6 +66,14 @@ export default function Footer() {
           {/* Social Media */}
           <div className='flex gap-6'>
             <Link
+              href='https://wa.me/628132969381'
+              target='_blank'
+              className='hover:scale-110 transition-transform'
+              title='WhatsApp'
+            >
+              <FaPhone className='text-white w-[28px] h-[28px]' />
+            </Link>
+            <Link
               href='https://whatsapp.com/channel/0029VaqSS5UFCCoZBnLNIE43'
               target='_blank'
               className='hover:scale-110 transition-transform'
