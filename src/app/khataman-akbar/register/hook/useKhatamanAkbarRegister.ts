@@ -54,7 +54,7 @@ export const useKhatamanAkbarRegister = () => {
         payload.append('follow_proof', formData.buktiFollow);
       }
 
-      const response = await api.post('/api/v1/volunteer/register', payload, {
+      const response = await api.post('/volunteer/register', payload, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -243,10 +243,18 @@ export default function KhatamanAkbarPage() {
             </p>
 
             <div className='space-y-2 text-sm'>
-              <a href='https://wa.me/6282331445057' target='_blank'>
+              <a
+                href='https://wa.me/6282331445057'
+                className='text-black hover:text-primary-100'
+                target='_blank'
+              >
                 📞 082331445057 (Evriza)
               </a>
-              <a href='https://wa.me/6289606869712' target='_blank'>
+              <a
+                href='https://wa.me/6289606869712'
+                className='text-black hover:text-primary-100'
+                target='_blank'
+              >
                 📞 089606869712 (Isma)
               </a>
             </div>

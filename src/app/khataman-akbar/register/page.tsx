@@ -8,6 +8,7 @@ import { useState } from 'react';
 import Layout from '@/components/layouts/Layout';
 import { DANGER_TOAST, showToast } from '@/components/Toast';
 import Typography from '@/components/Typography';
+import { Input } from '@/components/ui/input';
 
 import { useKhatamanAkbarRegister } from './hook/useKhatamanAkbarRegister';
 
@@ -90,7 +91,7 @@ export default function KhatamanAkbarRegisterPage() {
         <div className='relative mx-auto max-w-6xl w-full px-4 md:px-6 py-8 md:py-16 flex-1 flex items-center z-20'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 w-full'>
             {/* LEFT SECTION - Title */}
-            <div className='order-2 lg:order-1 flex flex-col justify-start'>
+            <div className='order-1 flex flex-col justify-start'>
               <Typography
                 as='h1'
                 variant='h2'
@@ -105,7 +106,7 @@ export default function KhatamanAkbarRegisterPage() {
             </div>
 
             {/* RIGHT SECTION - Form */}
-            <div className='order-1 lg:order-2 flex flex-col gap-6 md:gap-8'>
+            <div className='order-2 flex flex-col gap-6 md:gap-8'>
               {/* Back Button */}
               <button
                 onClick={() => router.back()}
@@ -302,23 +303,21 @@ export default function KhatamanAkbarRegisterPage() {
                   >
                     Bukti follow @rdk.its
                   </label>
-                  <div className='relative'>
-                    <input
-                      type='file'
-                      id='buktiFollow'
-                      name='buktiFollow'
-                      accept='image/*'
-                      onChange={handleFileChange}
-                      required
-                      disabled={isLoading}
-                      className='absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed'
-                    />
-                    <div className='w-full px-4 py-3 rounded-lg bg-white text-gray-400 border border-gray-200 text-sm md:text-base'>
-                      {formData.buktiFollow
-                        ? formData.buktiFollow.name
-                        : 'Unggah bukti follow Anda disini'}
-                    </div>
-                  </div>
+                  <Input
+                    type='file'
+                    id='buktiFollow'
+                    name='buktiFollow'
+                    accept='image/*'
+                    onChange={handleFileChange}
+                    required
+                    disabled={isLoading}
+                    className='bg-white'
+                  />
+                  {formData.buktiFollow && (
+                    <p className='text-sm text-green-600 mt-1'>
+                      File terpilih: {formData.buktiFollow.name}
+                    </p>
+                  )}
                 </div>
 
                 {/* Submit Button */}
