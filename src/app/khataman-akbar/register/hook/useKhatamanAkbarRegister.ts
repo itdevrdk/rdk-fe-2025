@@ -64,7 +64,7 @@ export const useKhatamanAkbarRegister = () => {
         showToast('Pendaftaran berhasil!', SUCCESS_TOAST);
         // Optional: Redirect or Reset form
         setTimeout(() => {
-          router.push('/khataman-akbar');
+          router.push('/khataman-akbar/register/success');
         }, 1500);
       }
     } catch (error: unknown) {

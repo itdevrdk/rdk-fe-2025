@@ -91,7 +91,7 @@ export default function KhatamanAkbarSuccessPage() {
 
             {/* WhatsApp Button */}
             <a
-              href='https://chat.whatsapp.com/'
+              href='https://chat.whatsapp.com/Kb52Ze9sK0Z9bYEk24ATQy'
               target='_blank'
               rel='noopener noreferrer'
               className='flex items-center justify-center gap-2 w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors text-sm md:text-base'
@@ -117,10 +117,19 @@ export default function KhatamanAkbarSuccessPage() {
               <div className='flex items-center gap-3'>
                 <FaWhatsapp className='text-2xl text-[#681819]' />
                 <a
-                  href='https://wa.me/6281234567890'
+                  href='https://wa.me/6282331445057'
                   className='text-[#681819] font-semibold hover:text-[#5A1415] transition-colors text-sm md:text-base'
                 >
-                  08123456789 (Abc)
+                  082331445057 (Evriza)
+                </a>
+              </div>
+              <div className='flex items-center gap-3'>
+                <FaWhatsapp className='text-2xl text-[#681819]' />
+                <a
+                  href='https://wa.me/6289606869712'
+                  className='text-[#681819] font-semibold hover:text-[#5A1415] transition-colors text-sm md:text-base'
+                >
+                  📞 089606869712 (Isma)
                 </a>
               </div>
             </div>
