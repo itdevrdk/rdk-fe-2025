@@ -12,7 +12,7 @@ import {
   KhatamanStatusUpdatePayload,
 } from '@/types/entities/khataman';
 
-const ADMIN_VOLUNTEER_BASE_URL = '/api/v1/admin/volunteers';
+const ADMIN_VOLUNTEER_BASE_URL = '/admin/volunteers';
 
 // Query keys
 export const khatamanAdminKeys = {
