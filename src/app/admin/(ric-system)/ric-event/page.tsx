@@ -32,7 +32,7 @@ import {
   useGetRicEvents,
   useUpdateRicEvent,
 } from './hook/useRicEvent';
-import { useGetMe } from '../hook/getMe';
+import { useGetMe } from '../../hook/getMe';
 
 import {
   CreateRicEventRequest,

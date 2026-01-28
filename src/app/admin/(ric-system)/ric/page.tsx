@@ -40,7 +40,7 @@ import {
   useGetRicRegistrations,
   useUpdateRicRegistration,
 } from './hook/useRicAdmin';
-import { useGetMe } from '../hook/getMe';
+import { useGetMe } from '../../hook/getMe';
 
 import {
   RicRegistration,
