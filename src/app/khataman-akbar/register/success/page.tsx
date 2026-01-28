@@ -129,7 +129,7 @@ export default function KhatamanAkbarSuccessPage() {
                   href='https://wa.me/6289606869712'
                   className='text-[#681819] font-semibold hover:text-[#5A1415] transition-colors text-sm md:text-base'
                 >
-                  📞 089606869712 (Isma)
+                  089606869712 (Isma)
                 </a>
               </div>
             </div>
