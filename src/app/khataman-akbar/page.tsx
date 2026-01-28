@@ -4,8 +4,20 @@ import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 
 import Layout from '@/components/layouts/Layout';
+import SimpleCarousel from '@/components/SimpleCarousel';
 import Typography from '@/components/Typography';
 import { Button } from '@/components/ui/button';
+
+const CAROUSEL_IMAGES = [
+  '/images/khatam/carousel/1.jpg',
+  '/images/khatam/carousel/2.jpg',
+  '/images/khatam/carousel/3.jpg',
+  '/images/khatam/carousel/4.png',
+  '/images/khatam/carousel/5.jpg',
+  '/images/khatam/carousel/6.png',
+  '/images/khatam/carousel/7.png',
+  '/images/khatam/carousel/8.png',
+];
 
 export default function KhatamanAkbarPage() {
   const router = useRouter();
@@ -46,12 +58,12 @@ export default function KhatamanAkbarPage() {
 
           <div className='relative z-10 mx-auto max-w-7xl px-6 py-20'>
             {/* Banner */}
-            <div className='relative mb-12 h-[260px] w-full overflow-hidden rounded-3xl md:h-[320px]'>
-              <NextImage
-                src='/images/nuzulul-quran/coming-soon-placeholder.png'
-                alt='Khataman Akbar Banner'
-                fill
-                className='object-cover'
+            <div className='relative mb-12 w-full overflow-hidden rounded-3xl'>
+              <SimpleCarousel
+                images={CAROUSEL_IMAGES}
+                alt='Khataman Akbar Carousel'
+                aspectRatio='video'
+                className='w-full'
               />
             </div>
 
@@ -75,7 +87,12 @@ export default function KhatamanAkbarPage() {
               <Button
                 variant='outline'
                 className='px-8'
-                onClick={() => router.push('/khataman-akbar/guidebook')}
+                onClick={() =>
+                  window.open(
+                    'https://www.rdk-its.com/s/GuidebookKhatamanAkbarRDK47ITS',
+                    '_blank',
+                  )
+                }
               >
                 Guidebook
               </Button>
@@ -226,8 +243,12 @@ export default function KhatamanAkbarPage() {
             </p>
 
             <div className='space-y-2 text-sm'>
-              <p>📞 082331445057 (Erviza)</p>
-              <p>📞 089606869712 (Isma)</p>
+              <a href='https://wa.me/6282331445057' target='_blank'>
+                📞 082331445057 (Evriza)
+              </a>
+              <a href='https://wa.me/6289606869712' target='_blank'>
+                📞 089606869712 (Isma)
+              </a>
             </div>
           </div>
         </section>

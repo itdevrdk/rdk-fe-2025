@@ -73,6 +73,12 @@ const navItems = [
       { name: 'Data Event RIC', href: '/admin/ric-event' },
     ],
   },
+  {
+    name: 'Khataman Akbar',
+    href: '/admin/khataman-akbar',
+    icon: Database,
+    allowedRoles: ['admin', 'event'] as AdminRole[],
+  },
 ];
 
 type AdminUser = {

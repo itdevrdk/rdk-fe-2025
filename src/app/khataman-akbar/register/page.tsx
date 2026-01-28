@@ -6,10 +6,14 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import Layout from '@/components/layouts/Layout';
+import { DANGER_TOAST, showToast } from '@/components/Toast';
 import Typography from '@/components/Typography';
+
+import { useKhatamanAkbarRegister } from './hook/useKhatamanAkbarRegister';
 
 export default function KhatamanAkbarRegisterPage() {
   const router = useRouter();
+  const { isLoading, registerContent } = useKhatamanAkbarRegister();
   const [formData, setFormData] = useState({
     email: '',
     namaLengkap: '',
@@ -34,15 +38,22 @@ export default function KhatamanAkbarRegisterPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
+
+    if (file && file.size > 5 * 1024 * 1024) {
+      showToast('Ukuran file maksimal 5MB', DANGER_TOAST);
+      e.target.value = '';
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       buktiFollow: file,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement form submission logic
+    await registerContent(formData);
   };
 
   return (
@@ -127,7 +138,8 @@ export default function KhatamanAkbarRegisterPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base'
+                    disabled={isLoading}
+                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
                   />
                 </div>
 
@@ -147,7 +159,8 @@ export default function KhatamanAkbarRegisterPage() {
                     value={formData.namaLengkap}
                     onChange={handleInputChange}
                     required
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base'
+                    disabled={isLoading}
+                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
                   />
                 </div>
 
@@ -164,6 +177,7 @@ export default function KhatamanAkbarRegisterPage() {
                         value='Mahasiswa ITS'
                         checked={formData.status === 'Mahasiswa ITS'}
                         onChange={handleInputChange}
+                        disabled={isLoading}
                         className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
                       />
                       <span className='text-gray-700 text-sm md:text-base'>
@@ -177,6 +191,7 @@ export default function KhatamanAkbarRegisterPage() {
                         value='Umum'
                         checked={formData.status === 'Umum'}
                         onChange={handleInputChange}
+                        disabled={isLoading}
                         className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
                       />
                       <span className='text-gray-700 text-sm md:text-base'>
@@ -202,7 +217,8 @@ export default function KhatamanAkbarRegisterPage() {
                     value={formData.whatsapp}
                     onChange={handleInputChange}
                     required
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base'
+                    disabled={isLoading}
+                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
                   />
                 </div>
 
@@ -222,7 +238,8 @@ export default function KhatamanAkbarRegisterPage() {
                     onChange={handleInputChange}
                     required
                     rows={4}
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base resize-none'
+                    disabled={isLoading}
+                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base resize-none disabled:opacity-50'
                   />
                 </div>
 
@@ -239,6 +256,7 @@ export default function KhatamanAkbarRegisterPage() {
                         value='Insya Allah bisa'
                         checked={formData.komitmen === 'Insya Allah bisa'}
                         onChange={handleInputChange}
+                        disabled={isLoading}
                         className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
                       />
                       <span className='text-gray-700 text-sm md:text-base'>
@@ -252,6 +270,7 @@ export default function KhatamanAkbarRegisterPage() {
                         value='Insya Allah diusahakan'
                         checked={formData.komitmen === 'Insya Allah diusahakan'}
                         onChange={handleInputChange}
+                        disabled={isLoading}
                         className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
                       />
                       <span className='text-gray-700 text-sm md:text-base'>
@@ -265,6 +284,7 @@ export default function KhatamanAkbarRegisterPage() {
                         value='Tidak bisa'
                         checked={formData.komitmen === 'Tidak bisa'}
                         onChange={handleInputChange}
+                        disabled={isLoading}
                         className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
                       />
                       <span className='text-gray-700 text-sm md:text-base'>
@@ -290,7 +310,8 @@ export default function KhatamanAkbarRegisterPage() {
                       accept='image/*'
                       onChange={handleFileChange}
                       required
-                      className='absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10'
+                      disabled={isLoading}
+                      className='absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 disabled:cursor-not-allowed'
                     />
                     <div className='w-full px-4 py-3 rounded-lg bg-white text-gray-400 border border-gray-200 text-sm md:text-base'>
                       {formData.buktiFollow
@@ -303,9 +324,10 @@ export default function KhatamanAkbarRegisterPage() {
                 {/* Submit Button */}
                 <button
                   type='submit'
-                  className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base'
+                  disabled={isLoading}
+                  className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center'
                 >
-                  Daftar Sekarang
+                  {isLoading ? 'Mengirim...' : 'Daftar Sekarang'}
                 </button>
               </form>
             </div>
