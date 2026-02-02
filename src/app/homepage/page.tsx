@@ -15,12 +15,23 @@ import { showToast, SUCCESS_TOAST, WARNING_TOAST } from '@/components/Toast';
 import Typography from '@/components/Typography';
 
 import { useCreateSuggestion } from '@/app/homepage/hook/useCreateSuggestion';
+import { isRegistrationClosed } from '@/utils/date';
 import { formatIDR } from '@/utils/format';
 
 import { CreateSuggestionRequest } from '@/types/entities/suggestion';
 import { FinanceReportSummary } from '@/types/finance';
 
-const KEGIATAN_ITEMS = [
+interface KegiatanItem {
+  title: string;
+  desc: string;
+  hasRegister: boolean;
+  link: string;
+  image: string;
+  registrationOpenDate: Date | null;
+  registrationDeadline: Date | null;
+}
+
+const KEGIATAN_ITEMS: KegiatanItem[] = [
   {
     title: 'Ramadan Islamic Competition',
     desc: 'Ajang kompetisi bergengsi tingkat Jawa Timur dengan 6 cabang lomba: MHQ, MTQ, KTIQ, Dai, Poster, dan Sinematografi.',
@@ -28,6 +39,7 @@ const KEGIATAN_ITEMS = [
     link: '/ric',
     image: '/images/homepage/event-carousel/ric.png',
     registrationOpenDate: new Date('2026-01-18'),
+    registrationDeadline: null,
   },
   {
     title: 'Ngabuburits #1',
@@ -36,6 +48,7 @@ const KEGIATAN_ITEMS = [
     link: '/ngabuburits-1',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Ngabuburits #2',
@@ -44,6 +57,7 @@ const KEGIATAN_ITEMS = [
     link: '/ngabuburits-2',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Ngabuburits #3',
@@ -52,6 +66,7 @@ const KEGIATAN_ITEMS = [
     link: '/ngabuburits-3',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Ngabuburits #4',
@@ -60,6 +75,7 @@ const KEGIATAN_ITEMS = [
     link: '/ngabuburits-4',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Simposium Ramadan #1',
@@ -68,6 +84,7 @@ const KEGIATAN_ITEMS = [
     link: '/simposium-ramadan-1',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Simposium Ramadan #2',
@@ -76,6 +93,7 @@ const KEGIATAN_ITEMS = [
     link: '/simposium-ramadan-2',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'HOMe (Heart Of Muslimah)',
@@ -84,6 +102,7 @@ const KEGIATAN_ITEMS = [
     link: '/home-muslimah',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: "Nuzulul Qur'an",
@@ -92,6 +111,7 @@ const KEGIATAN_ITEMS = [
     link: '/nuzulul-quran',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Lailatul Hikmah',
@@ -100,6 +120,7 @@ const KEGIATAN_ITEMS = [
     link: '/lailatul-hikmah',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Ganti Oli & Cek Kendaraan Gratis',
@@ -108,6 +129,7 @@ const KEGIATAN_ITEMS = [
     link: '',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
   {
     title: 'Medical Check Up Gratis',
@@ -116,6 +138,7 @@ const KEGIATAN_ITEMS = [
     link: '',
     image: '/images/homepage/coming-soon-placeholder.png',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
 ];
 
@@ -128,6 +151,7 @@ const JOIN_US_ITEMS = [
     image: '/images/homepage/event-carousel/khataman-akbar.png',
     link: '/khataman-akbar',
     registrationOpenDate: new Date('2026-01-28'),
+    registrationDeadline: new Date('2026-02-02T18:00:00'),
   },
   {
     title: 'Open Tenant Iftar Fest🍽️',
@@ -136,6 +160,7 @@ const JOIN_US_ITEMS = [
     image: '/images/homepage/coming-soon-placeholder.png',
     link: '/tenant-iftar',
     registrationOpenDate: null,
+    registrationDeadline: null,
   },
 ];
 
@@ -582,7 +607,13 @@ export default function HomeSection() {
   const handleRegisterClick = (
     link: string,
     registrationOpenDate: Date | null,
+    registrationDeadline?: Date | null,
   ) => {
+    if (isRegistrationClosed(registrationDeadline)) {
+      showToast('Pendaftaran sudah ditutup', WARNING_TOAST);
+      return;
+    }
+
     if (!isRegistrationOpen(registrationOpenDate)) {
       const openDateText = registrationOpenDate
         ? `Pendaftaran dibuka pada ${formatDate(registrationOpenDate)}`
@@ -830,6 +861,7 @@ export default function HomeSection() {
                             handleRegisterClick(
                               item.link,
                               item.registrationOpenDate,
+                              item.registrationDeadline,
                             )
                           }
                         >
@@ -932,7 +964,11 @@ export default function HomeSection() {
                   size='sm'
                   className='mt-4 bg-[#942B2C] hover:bg-[#7A2324] text-white border-0 w-full text-center justify-center'
                   onClick={() =>
-                    handleRegisterClick(item.link, item.registrationOpenDate)
+                    handleRegisterClick(
+                      item.link,
+                      item.registrationOpenDate,
+                      item.registrationDeadline,
+                    )
                   }
                 >
                   Daftar Sekarang

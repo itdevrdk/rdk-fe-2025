@@ -8,6 +8,8 @@ import SimpleCarousel from '@/components/SimpleCarousel';
 import Typography from '@/components/Typography';
 import { Button } from '@/components/ui/button';
 
+import { isRegistrationClosed } from '@/utils/date';
+
 const CAROUSEL_IMAGES = [
   '/images/khatam/carousel/1.jpg',
   '/images/khatam/carousel/2.jpg',
@@ -77,12 +79,23 @@ export default function KhatamanAkbarPage() {
               Khataman Akbar
             </Typography>
 
+            {/* Button Section */}
             <div className='flex justify-center gap-4'>
               <Button
-                className='bg-[#681819] px-8 text-white hover:bg-[#7a1c1d]'
-                onClick={() => router.push('/khataman-akbar/register')}
+                className={`px-8 text-white ${
+                  isRegistrationClosed('2026-02-02T18:00:00')
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-[#681819] hover:bg-[#7a1c1d]'
+                }`}
+                onClick={() => {
+                  if (isRegistrationClosed('2026-02-02T18:00:00')) return;
+                  router.push('/khataman-akbar/register');
+                }}
+                disabled={isRegistrationClosed('2026-02-02T18:00:00')}
               >
-                Daftar Sekarang
+                {isRegistrationClosed('2026-02-02T18:00:00')
+                  ? 'Pendaftaran Ditutup'
+                  : 'Daftar Sekarang'}
               </Button>
               <Button
                 variant='outline'

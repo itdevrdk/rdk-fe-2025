@@ -1,9 +1,9 @@
 ﻿'use client';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Lock } from 'lucide-react';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import Layout from '@/components/layouts/Layout';
 import { DANGER_TOAST, showToast } from '@/components/Toast';
@@ -15,6 +15,7 @@ import { useKhatamanAkbarRegister } from './hook/useKhatamanAkbarRegister';
 export default function KhatamanAkbarRegisterPage() {
   const router = useRouter();
   const { isLoading, registerContent } = useKhatamanAkbarRegister();
+  const [isRegistrationClosed, setIsRegistrationClosed] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     namaLengkap: '',
@@ -24,6 +25,22 @@ export default function KhatamanAkbarRegisterPage() {
     komitmen: '',
     buktiFollow: null as File | null,
   });
+
+  useEffect(() => {
+    // Check if current time is past 6 PM on Feb 2, 2026
+    const checkTime = () => {
+      const now = new Date();
+      // Set deadline to Feb 2, 2026 18:00:00 (Local Time)
+      // Assuming the user is in WIB (UTC+7) or simply relying on client system time as requested "frontend only"
+      const deadline = new Date('2026-02-02T18:00:00');
+
+      if (now >= deadline) {
+        setIsRegistrationClosed(true);
+      }
+    };
+
+    checkTime();
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<
@@ -54,6 +71,10 @@ export default function KhatamanAkbarRegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isRegistrationClosed) {
+      showToast('Pendaftaran sudah ditutup', DANGER_TOAST);
+      return;
+    }
     await registerContent(formData);
   };
 
@@ -105,7 +126,7 @@ export default function KhatamanAkbarRegisterPage() {
               </Typography>
             </div>
 
-            {/* RIGHT SECTION - Form */}
+            {/* RIGHT SECTION - Form or Closed Message */}
             <div className='order-2 flex flex-col gap-6 md:gap-8'>
               {/* Back Button */}
               <button
@@ -118,217 +139,242 @@ export default function KhatamanAkbarRegisterPage() {
                 <span className='font-medium'>Kembali</span>
               </button>
 
-              {/* Form */}
-              <form
-                onSubmit={handleSubmit}
-                className='flex flex-col gap-5 w-full'
-              >
-                {/* Email Input */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='email'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Email
-                  </label>
-                  <input
-                    type='email'
-                    id='email'
-                    name='email'
-                    placeholder='Masukkan email Anda'
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
-                  />
-                </div>
-
-                {/* Nama Lengkap Input */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='namaLengkap'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Nama Lengkap
-                  </label>
-                  <input
-                    type='text'
-                    id='namaLengkap'
-                    name='namaLengkap'
-                    placeholder='Masukkan nama lengkap Anda'
-                    value={formData.namaLengkap}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
-                  />
-                </div>
-
-                {/* Status Radio */}
-                <div className='flex flex-col gap-2'>
-                  <label className='text-[#681819] font-bold text-sm md:text-base'>
-                    Status
-                  </label>
-                  <div className='flex flex-wrap gap-6'>
-                    <label className='flex items-center gap-2 cursor-pointer'>
-                      <input
-                        type='radio'
-                        name='status'
-                        value='Mahasiswa ITS'
-                        checked={formData.status === 'Mahasiswa ITS'}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                        className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
-                      />
-                      <span className='text-gray-700 text-sm md:text-base'>
-                        Mahasiswa ITS
-                      </span>
-                    </label>
-                    <label className='flex items-center gap-2 cursor-pointer'>
-                      <input
-                        type='radio'
-                        name='status'
-                        value='Umum'
-                        checked={formData.status === 'Umum'}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                        className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
-                      />
-                      <span className='text-gray-700 text-sm md:text-base'>
-                        Umum
-                      </span>
-                    </label>
+              {isRegistrationClosed ? (
+                <div className='flex flex-col items-center justify-center gap-6 bg-white/80 backdrop-blur-sm p-8 rounded-2xl border-2 border-[#681819]/10 text-center'>
+                  <div className='w-20 h-20 bg-[#681819]/10 rounded-full flex items-center justify-center'>
+                    <Lock className='w-10 h-10 text-[#681819]' />
+                  </div>
+                  <div>
+                    <Typography
+                      as='h3'
+                      variant='h3'
+                      font='marquisette'
+                      weight='bold'
+                      className='text-[#681819] text-2xl mb-2'
+                    >
+                      Pendaftaran Ditutup
+                    </Typography>
+                    <Typography as='p' className='text-[#681819]/80'>
+                      Mohon maaf, pendaftaran Khataman Akbar telah ditutup pada
+                      hari ini pukul 18.00 WIB.
+                    </Typography>
                   </div>
                 </div>
-
-                {/* WhatsApp Number Input */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='whatsapp'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Nomor WhatsApp
-                  </label>
-                  <input
-                    type='tel'
-                    id='whatsapp'
-                    name='whatsapp'
-                    placeholder='Masukkan nomor whatsapp Anda'
-                    value={formData.whatsapp}
-                    onChange={handleInputChange}
-                    required
-                    disabled={isLoading}
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
-                  />
-                </div>
-
-                {/* Motivasi Textarea */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='motivasi'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Motivasi
-                  </label>
-                  <textarea
-                    id='motivasi'
-                    name='motivasi'
-                    placeholder='Masukkan motivasi Anda'
-                    value={formData.motivasi}
-                    onChange={handleInputChange}
-                    required
-                    rows={4}
-                    disabled={isLoading}
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base resize-none disabled:opacity-50'
-                  />
-                </div>
-
-                {/* Komitmen Radio */}
-                <div className='flex flex-col gap-2'>
-                  <label className='text-[#681819] font-bold text-sm md:text-base'>
-                    Apakah bersedia untuk berkomitmen dalam 1 bulan ramadhan?
-                  </label>
-                  <div className='flex flex-col md:flex-row flex-wrap gap-3 md:gap-6'>
-                    <label className='flex items-center gap-2 cursor-pointer'>
-                      <input
-                        type='radio'
-                        name='komitmen'
-                        value='Insya Allah bisa'
-                        checked={formData.komitmen === 'Insya Allah bisa'}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                        className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
-                      />
-                      <span className='text-gray-700 text-sm md:text-base'>
-                        Insya Allah bisa
-                      </span>
-                    </label>
-                    <label className='flex items-center gap-2 cursor-pointer'>
-                      <input
-                        type='radio'
-                        name='komitmen'
-                        value='Insya Allah diusahakan'
-                        checked={formData.komitmen === 'Insya Allah diusahakan'}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                        className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
-                      />
-                      <span className='text-gray-700 text-sm md:text-base'>
-                        Insya Allah diusahakan
-                      </span>
-                    </label>
-                    <label className='flex items-center gap-2 cursor-pointer'>
-                      <input
-                        type='radio'
-                        name='komitmen'
-                        value='Tidak bisa'
-                        checked={formData.komitmen === 'Tidak bisa'}
-                        onChange={handleInputChange}
-                        disabled={isLoading}
-                        className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
-                      />
-                      <span className='text-gray-700 text-sm md:text-base'>
-                        Tidak bisa
-                      </span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Bukti Follow Input */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='buktiFollow'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Bukti follow @rdk.its
-                  </label>
-                  <Input
-                    type='file'
-                    id='buktiFollow'
-                    name='buktiFollow'
-                    accept='image/*'
-                    onChange={handleFileChange}
-                    required
-                    disabled={isLoading}
-                    className='bg-white'
-                  />
-                  {formData.buktiFollow && (
-                    <p className='text-sm text-green-600 mt-1'>
-                      File terpilih: {formData.buktiFollow.name}
-                    </p>
-                  )}
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type='submit'
-                  disabled={isLoading}
-                  className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center'
+              ) : (
+                /* Form */
+                <form
+                  onSubmit={handleSubmit}
+                  className='flex flex-col gap-5 w-full'
                 >
-                  {isLoading ? 'Mengirim...' : 'Daftar Sekarang'}
-                </button>
-              </form>
+                  {/* Email Input */}
+                  <div className='flex flex-col gap-2'>
+                    <label
+                      htmlFor='email'
+                      className='text-[#681819] font-bold text-sm md:text-base'
+                    >
+                      Email
+                    </label>
+                    <input
+                      type='email'
+                      id='email'
+                      name='email'
+                      placeholder='Masukkan email Anda'
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isLoading}
+                      className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
+                    />
+                  </div>
+
+                  {/* Nama Lengkap Input */}
+                  <div className='flex flex-col gap-2'>
+                    <label
+                      htmlFor='namaLengkap'
+                      className='text-[#681819] font-bold text-sm md:text-base'
+                    >
+                      Nama Lengkap
+                    </label>
+                    <input
+                      type='text'
+                      id='namaLengkap'
+                      name='namaLengkap'
+                      placeholder='Masukkan nama lengkap Anda'
+                      value={formData.namaLengkap}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isLoading}
+                      className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
+                    />
+                  </div>
+
+                  {/* Status Radio */}
+                  <div className='flex flex-col gap-2'>
+                    <label className='text-[#681819] font-bold text-sm md:text-base'>
+                      Status
+                    </label>
+                    <div className='flex flex-wrap gap-6'>
+                      <label className='flex items-center gap-2 cursor-pointer'>
+                        <input
+                          type='radio'
+                          name='status'
+                          value='Mahasiswa ITS'
+                          checked={formData.status === 'Mahasiswa ITS'}
+                          onChange={handleInputChange}
+                          disabled={isLoading}
+                          className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
+                        />
+                        <span className='text-gray-700 text-sm md:text-base'>
+                          Mahasiswa ITS
+                        </span>
+                      </label>
+                      <label className='flex items-center gap-2 cursor-pointer'>
+                        <input
+                          type='radio'
+                          name='status'
+                          value='Umum'
+                          checked={formData.status === 'Umum'}
+                          onChange={handleInputChange}
+                          disabled={isLoading}
+                          className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
+                        />
+                        <span className='text-gray-700 text-sm md:text-base'>
+                          Umum
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* WhatsApp Number Input */}
+                  <div className='flex flex-col gap-2'>
+                    <label
+                      htmlFor='whatsapp'
+                      className='text-[#681819] font-bold text-sm md:text-base'
+                    >
+                      Nomor WhatsApp
+                    </label>
+                    <input
+                      type='tel'
+                      id='whatsapp'
+                      name='whatsapp'
+                      placeholder='Masukkan nomor whatsapp Anda'
+                      value={formData.whatsapp}
+                      onChange={handleInputChange}
+                      required
+                      disabled={isLoading}
+                      className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base disabled:opacity-50'
+                    />
+                  </div>
+
+                  {/* Motivasi Textarea */}
+                  <div className='flex flex-col gap-2'>
+                    <label
+                      htmlFor='motivasi'
+                      className='text-[#681819] font-bold text-sm md:text-base'
+                    >
+                      Motivasi
+                    </label>
+                    <textarea
+                      id='motivasi'
+                      name='motivasi'
+                      placeholder='Masukkan motivasi Anda'
+                      value={formData.motivasi}
+                      onChange={handleInputChange}
+                      required
+                      rows={4}
+                      disabled={isLoading}
+                      className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-400 border border-gray-200 focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base resize-none disabled:opacity-50'
+                    />
+                  </div>
+
+                  {/* Komitmen Radio */}
+                  <div className='flex flex-col gap-2'>
+                    <label className='text-[#681819] font-bold text-sm md:text-base'>
+                      Apakah bersedia untuk berkomitmen dalam 1 bulan ramadhan?
+                    </label>
+                    <div className='flex flex-col md:flex-row flex-wrap gap-3 md:gap-6'>
+                      <label className='flex items-center gap-2 cursor-pointer'>
+                        <input
+                          type='radio'
+                          name='komitmen'
+                          value='Insya Allah bisa'
+                          checked={formData.komitmen === 'Insya Allah bisa'}
+                          onChange={handleInputChange}
+                          disabled={isLoading}
+                          className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
+                        />
+                        <span className='text-gray-700 text-sm md:text-base'>
+                          Insya Allah bisa
+                        </span>
+                      </label>
+                      <label className='flex items-center gap-2 cursor-pointer'>
+                        <input
+                          type='radio'
+                          name='komitmen'
+                          value='Insya Allah diusahakan'
+                          checked={
+                            formData.komitmen === 'Insya Allah diusahakan'
+                          }
+                          onChange={handleInputChange}
+                          disabled={isLoading}
+                          className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
+                        />
+                        <span className='text-gray-700 text-sm md:text-base'>
+                          Insya Allah diusahakan
+                        </span>
+                      </label>
+                      <label className='flex items-center gap-2 cursor-pointer'>
+                        <input
+                          type='radio'
+                          name='komitmen'
+                          value='Tidak bisa'
+                          checked={formData.komitmen === 'Tidak bisa'}
+                          onChange={handleInputChange}
+                          disabled={isLoading}
+                          className='w-4 h-4 text-[#681819] border-gray-300 focus:ring-[#681819]'
+                        />
+                        <span className='text-gray-700 text-sm md:text-base'>
+                          Tidak bisa
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Bukti Follow Input */}
+                  <div className='flex flex-col gap-2'>
+                    <label
+                      htmlFor='buktiFollow'
+                      className='text-[#681819] font-bold text-sm md:text-base'
+                    >
+                      Bukti follow @rdk.its
+                    </label>
+                    <Input
+                      type='file'
+                      id='buktiFollow'
+                      name='buktiFollow'
+                      accept='image/*'
+                      onChange={handleFileChange}
+                      required
+                      disabled={isLoading}
+                      className='bg-white'
+                    />
+                    {formData.buktiFollow && (
+                      <p className='text-sm text-green-600 mt-1'>
+                        File terpilih: {formData.buktiFollow.name}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type='submit'
+                    disabled={isLoading}
+                    className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center'
+                  >
+                    {isLoading ? 'Mengirim...' : 'Daftar Sekarang'}
+                  </button>
+                </form>
+              )}
             </div>
           </div>
         </div>
