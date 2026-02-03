@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, Search } from 'lucide-react';
+import { Download, Eye, Search } from 'lucide-react';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 
 import {
+  useExportKhatamanParticipants,
   useGetKhatamanParticipantDetail,
   useGetKhatamanParticipants,
   useUpdateKhatamanStatus,
@@ -100,6 +101,9 @@ export default function AdminKhatamanPage() {
   // Update Status Mutation
   const updateMutation = useUpdateKhatamanStatus();
 
+  // Export Mutation
+  const exportMutation = useExportKhatamanParticipants();
+
   // Extract data from response
   const registrations = React.useMemo(
     () => registrationsData?.data?.items || [],
@@ -148,6 +152,20 @@ export default function AdminKhatamanPage() {
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message || 'Terjadi kesalahan saa memperbarui status';
       toast(errorMessage, DANGER_TOAST);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      await exportMutation.mutateAsync({
+        event_code: EVENT_CODE,
+        search: debouncedSearch,
+        registration_status: statusFilter,
+        participant_type: typeFilter,
+      });
+      toast('Berhasil memulai download', SUCCESS_TOAST);
+    } catch (error) {
+      toast('Gagal mengunduh data', DANGER_TOAST);
     }
   };
 
@@ -267,6 +285,16 @@ export default function AdminKhatamanPage() {
       >
         Manajemen Peserta Khataman Akbar
       </Typography>
+
+      <div className='flex justify-end mb-4'>
+        <Button
+          onClick={handleExport}
+          isLoading={exportMutation.isPending}
+          leftIcon={Download}
+        >
+          Export CSV
+        </Button>
+      </div>
 
       {/* Toolbar */}
       <div className='mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between'>
