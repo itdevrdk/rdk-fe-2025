@@ -9,6 +9,7 @@ import {
   Link as LinkIcon,
   LogOut,
   Menu,
+  QrCode,
   User,
   X,
 } from 'lucide-react';
@@ -43,6 +44,12 @@ const navItems = [
     name: 'Shorten Link',
     href: '/admin/shorten-link',
     icon: LinkIcon,
+    allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
+  },
+  {
+    name: 'QR Generator',
+    href: '/admin/qr-generator',
+    icon: QrCode,
     allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
   },
   {
