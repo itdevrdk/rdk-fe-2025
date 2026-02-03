@@ -4,7 +4,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import QRCode from 'react-qr-code';
 
-import { Button } from '@/components/buttons/Button';
+import Button from '@/components/buttons/Button';
 import Loading from '@/components/Loading';
 
 import { CreateQRCodeRequest, QRCode as QRCodeType } from '@/types/qrCode';

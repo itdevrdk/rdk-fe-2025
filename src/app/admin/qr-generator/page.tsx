@@ -10,7 +10,7 @@ import { useQrCode } from '@/hooks/useQrCode';
 
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import QrCodeModal from '@/components/admin/QrCodeModal';
-import { Button } from '@/components/buttons/Button';
+import Button from '@/components/buttons/Button';
 import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
 import { Input } from '@/components/ui/input';
