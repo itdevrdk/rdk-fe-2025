@@ -6,6 +6,8 @@ import QRCode from 'react-qr-code';
 
 import Button from '@/components/buttons/Button';
 
+import { CreateQRCodeRequest, QRCode as QRCodeType } from '@/types/qrCode';
+
 interface QrCodeModalProps {
   isOpen: boolean;
   closeModal: () => void;
