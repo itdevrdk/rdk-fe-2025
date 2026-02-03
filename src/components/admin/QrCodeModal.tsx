@@ -5,9 +5,6 @@ import { useForm } from 'react-hook-form';
 import QRCode from 'react-qr-code';
 
 import Button from '@/components/buttons/Button';
-import Loading from '@/components/Loading';
-
-import { CreateQRCodeRequest, QRCode as QRCodeType } from '@/types/qrCode';
 
 interface QrCodeModalProps {
   isOpen: boolean;
@@ -327,14 +324,9 @@ export default function QrCodeModal({
                     type='submit'
                     form='qr-form' // Connects to the form via ID
                     disabled={isSubmitting}
+                    isLoading={isSubmitting}
                   >
-                    {isSubmitting ? (
-                      <Loading />
-                    ) : isEdit ? (
-                      'Simpan Perubahan'
-                    ) : (
-                      'Buat QR Code'
-                    )}
+                    {isEdit ? 'Simpan Perubahan' : 'Buat QR Code'}
                   </Button>
                 </div>
               </Dialog.Panel>
