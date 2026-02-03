@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Eye, Search } from 'lucide-react';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 
@@ -38,6 +38,8 @@ const statusColors: Record<SuggestionStatus, string> = {
   [SuggestionStatus.SOLVED]: 'bg-green-100 text-green-700',
 };
 
+import SuggestionModal from '@/components/admin/SuggestionModal';
+
 // Type for table data with id field added
 type SuggestionTableData = Suggestion & { id: string };
 
@@ -47,6 +49,11 @@ export default function AdminSuggestionsPage() {
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [currentPage, setCurrentPage] = React.useState(1);
   const itemsPerPage = 10;
+
+  // Modal State
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] =
+    React.useState<SuggestionTableData | null>(null);
 
   // Build query params
   const queryParams: SuggestionQuery = React.useMemo(
@@ -87,6 +94,24 @@ export default function AdminSuggestionsPage() {
     } catch (error) {
       toast('Gagal memperbarui status', DANGER_TOAST);
     }
+  };
+
+  const handleViewDetail = (item: SuggestionTableData) => {
+    setSelectedSuggestion(item);
+    setModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedSuggestion(null);
+  };
+
+  const handleModalStatusUpdate = async (
+    id: string,
+    newStatus: SuggestionStatus,
+  ) => {
+    await handleStatusChange(id, newStatus);
+    handleModalClose();
   };
 
   // Columns
@@ -157,6 +182,23 @@ export default function AdminSuggestionsPage() {
             <SelectItem value={SuggestionStatus.SOLVED}>Selesai</SelectItem>
           </SelectContent>
         </Select>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Aksi',
+      className: 'w-20',
+      render: (item) => (
+        <div className='flex items-center gap-2'>
+          <button
+            onClick={() => handleViewDetail(item)}
+            className='rounded-lg border border-gray-200 p-2 text-gray-600 hover:bg-gray-100'
+            aria-label='Lihat detail'
+            title='Lihat detail'
+          >
+            <Eye size={16} />
+          </button>
+        </div>
       ),
     },
   ];
@@ -232,6 +274,14 @@ export default function AdminSuggestionsPage() {
         totalPages={totalPages}
         onPageChange={setCurrentPage}
         emptyMessage={isError ? 'Gagal memuat data.' : 'Belum ada masukan.'}
+      />
+
+      <SuggestionModal
+        isOpen={modalOpen}
+        onClose={handleModalClose}
+        data={selectedSuggestion}
+        onUpdateStatus={handleModalStatusUpdate}
+        isLoading={updateStatusMutation.isPending}
       />
     </AdminSidebar>
   );
