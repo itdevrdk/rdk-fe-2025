@@ -12,7 +12,6 @@ import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import QrCodeModal from '@/components/admin/QrCodeModal';
 import Button from '@/components/buttons/Button';
 import AdminSidebar from '@/components/layouts/AdminSidebar';
-import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
 import { Input } from '@/components/ui/input';
 
@@ -29,7 +28,7 @@ export default function QrGeneratorPage() {
     deleteQrCode,
   } = useQrCode();
 
-  const { user, isLoading: isUserLoading } = useGetMe();
+  const { user } = useGetMe();
 
   const [qrCodes, setQrCodes] = useState<QRCode[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -172,14 +171,6 @@ export default function QrGeneratorPage() {
       ),
     },
   ];
-
-  if (isUserLoading) {
-    return (
-      <div className='flex min-h-screen items-center justify-center'>
-        <Loading />
-      </div>
-    );
-  }
 
   if (!user) {
     return null;
