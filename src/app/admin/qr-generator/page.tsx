@@ -11,6 +11,7 @@ import { useQrCode } from '@/hooks/useQrCode';
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import QrCodeModal from '@/components/admin/QrCodeModal';
 import Button from '@/components/buttons/Button';
+import AdminSidebar from '@/components/layouts/AdminSidebar';
 import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
 import { Input } from '@/components/ui/input';
@@ -28,7 +29,7 @@ export default function QrGeneratorPage() {
     deleteQrCode,
   } = useQrCode();
 
-  const { isLoading: isUserLoading } = useGetMe();
+  const { user, isLoading: isUserLoading } = useGetMe();
 
   const [qrCodes, setQrCodes] = useState<QRCode[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -180,48 +181,12 @@ export default function QrGeneratorPage() {
     );
   }
 
-  // If used inside AdminSidebar layout, we just return the content.
-  // Based on your structure, the Layout is applied in layout.tsx or per page.
-  // The Shorten Link page uses <AdminSidebar user={user}> wrapper.
-  // I will check if I should wrap it. The previous QR page didn't wrap it?
-  // previous QR page code didn't wrap it, so it might be wrapped in layout.
-  // BUT the Shorten Link page wraps it. Let's look at `src/app/admin/layout.tsx` if it exists.
-  // Actually, looking at AdminSidebar.tsx usage in Shorten Link page, it seems I SHOULD wrap it if I want the sidebar.
-  // Wait, the previous QR code page which I wrote:
-  /*
-    export default function QrGeneratorPage() {
-      // ...
-      return (
-        <div className='flex flex-col gap-6'>
-          // ...
-    }
-  */
-  // It didn't use AdminSidebar. This suggests likely `src/app/admin/layout.tsx` provides it OR it was missing sidebar!
-  // Shorten Link page uses `AdminSidebar`.
-  // Let's assume I need to wrap it similar to Shorten Link page to ensure consistency OR check layout.
-  // Since I don't see `layout.tsx` in my `list_dir` output of `src/app/admin` earlier, only subdirs and `page.tsx`...
-  // Wait, Step 4 `list_dir` of `src/app/admin` showed `page.tsx` and subdirs. It did NOT show `layout.tsx`.
-  // This means `layout.tsx` might be missing or I missed it.
-  // However, `AdminShortenLinkPage` explicitly uses `<AdminSidebar user={user}>`.
-  // If I want the Sidebar, I should probably use it too.
+  if (!user) {
+    return null;
+  }
 
   return (
-    // Assuming we need to provide the user for the sidebar
-    // If I cannot find AdminSidebar usage in previous file, it's safer to follow a working example (ShortenLink).
-    <div className='flex flex-col gap-6'>
-      {/* We'll rely on the parent layout if it exists, but since ShortenLink uses it directly... */}
-      {/* Let's follow ShortenLink pattern for safety, assuming the page is independent or layout doesn't enforce sidebar */}
-      {/* Actually, if I wrap it in AdminSidebar here, I might double sidebar if layout has it. */}
-      {/* But ShortenLink has it. So let's add it if we have user. */}
-      {/* Wait, the previous code I generated for QR page didn't have it and user didn't complain about missing sidebar? */}
-      {/* But user hasn't seen it yet probably or maybe `src/app/admin/layout.tsx` handles it? */}
-      {/* Let's check `src/app/admin/layout.tsx` to be sure. */}
-      {/* I'll start with just the content div. If I need sidebar I'll add it. */}
-      {/* Actually the user Request 0 had `Active Document: .../khataman-akbar/...`. */}
-      {/* Let's look at `AdminSidebar.tsx` path again. It's a component. */}
-      {/* I will stick to the content first. If it looks broken (no sidebar), the walkthrough verification step will catch it. */}
-      {/* Better yet, I'll follow `AdminShortenLinkPage` pattern exactly which wraps it. */}
-
+    <AdminSidebar user={user}>
       {/* Toolbar - Mobile */}
       <div className='flex flex-col gap-3 lg:hidden'>
         <Button
@@ -248,7 +213,7 @@ export default function QrGeneratorPage() {
       </div>
 
       {/* Toolbar - Desktop */}
-      <div className='hidden items-center justify-between gap-4 lg:flex'>
+      <div className='hidden items-center justify-between gap-4 lg:flex mb-6'>
         <Typography
           as='h1'
           font='marquisette'
@@ -301,6 +266,6 @@ export default function QrGeneratorPage() {
         data={selectedQr}
         onSubmit={handleSubmit}
       />
-    </div>
+    </AdminSidebar>
   );
 }

@@ -89,16 +89,51 @@ export default function QrCodeModal({
       canvas.width = size;
       canvas.height = size;
       if (ctx) {
+        // Did user disable logo? For now we assume always show as per request.
         // Use current settings for background
         ctx.fillStyle = watchedBgColor || '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-        const pngFile = canvas.toDataURL('image/png');
 
-        const downloadLink = document.createElement('a');
-        downloadLink.download = `qr-code-${Date.now()}.png`;
-        downloadLink.href = pngFile;
-        downloadLink.click();
+        // Draw QR Code
+        ctx.drawImage(img, 0, 0);
+
+        // Draw Logo
+        const logoUrl = '/images/qrcode/logo-rdk.svg';
+        const logoImg = new Image();
+        logoImg.crossOrigin = 'anonymous'; // Needed if image is from external, but local is fine usually
+
+        logoImg.onload = () => {
+          const logoSize = size * 0.2; // 20% of QR size
+          const logoX = (size - logoSize) / 2;
+          const logoY = (size - logoSize) / 2;
+
+          // Draw white background for logo
+          ctx.beginPath();
+          ctx.fillStyle = '#ffffff';
+          // Circle background
+          ctx.arc(size / 2, size / 2, logoSize / 2 + 4, 0, 2 * Math.PI);
+          ctx.fill();
+
+          // Draw Logo
+          ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
+
+          const pngFile = canvas.toDataURL('image/png');
+          const downloadLink = document.createElement('a');
+          downloadLink.download = `qr-code-${Date.now()}.png`;
+          downloadLink.href = pngFile;
+          downloadLink.click();
+        };
+
+        // If logo fails to load, still download basic QR
+        logoImg.onerror = () => {
+          const pngFile = canvas.toDataURL('image/png');
+          const downloadLink = document.createElement('a');
+          downloadLink.download = `qr-code-${Date.now()}.png`;
+          downloadLink.href = pngFile;
+          downloadLink.click();
+        };
+
+        logoImg.src = logoUrl;
       }
     };
 
@@ -230,7 +265,7 @@ export default function QrCodeModal({
                     <h4 className='font-medium text-gray-900'>Live Preview</h4>
 
                     <div className='flex flex-col items-center justify-center gap-4 bg-white p-4 shadow-sm rounded-lg'>
-                      <div ref={qrRef} className='bg-white p-2'>
+                      <div ref={qrRef} className='bg-white p-2 relative'>
                         <QRCode
                           value={previewText || 'https://rdk.its.ac.id'}
                           size={size}
@@ -238,6 +273,16 @@ export default function QrCodeModal({
                           fgColor={watchedFgColor}
                           level='H'
                         />
+                        {/* Logo Overlay */}
+                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white p-1 flex items-center justify-center'>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src='/images/qrcode/logo-rdk.svg'
+                            alt='RDK Logo'
+                            style={{ width: size * 0.2, height: size * 0.2 }}
+                            className='object-contain'
+                          />
+                        </div>
                       </div>
                     </div>
 
