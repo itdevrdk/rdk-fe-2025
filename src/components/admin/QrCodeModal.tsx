@@ -1,5 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { Download, X } from 'lucide-react';
+import NextImage from 'next/image';
 import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import QRCode from 'react-qr-code';
@@ -106,20 +107,7 @@ export default function QrCodeModal({
           const logoX = (size - logoSize) / 2;
           const logoY = (size - logoSize) / 2;
 
-          // Padding for the white background to ensure it surrounds the logo
-          // 24px is a reasonable padding relative to a large download size, but we use a ratio here.
-          // Using 5% of logo size as padding to mimic the p-1 effect (roughly)
-          const padding = logoSize * 0.05;
-          const bgSize = logoSize + padding * 2;
-          const bgX = logoX - padding;
-          const bgY = logoY - padding;
-
-          // Draw White Background behind Logo
-          ctx.fillStyle = '#ffffff';
-          // Draw a filled rectangle with the calculated size
-          ctx.fillRect(bgX, bgY, bgSize, bgSize);
-
-          // Draw Logo
+          // Draw Logo directly without background
           ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
 
           const pngFile = canvas.toDataURL('image/png');
@@ -279,12 +267,12 @@ export default function QrCodeModal({
                           level='H'
                         />
                         {/* Logo Overlay */}
-                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center bg-white p-1 rounded-sm'>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src='/images/qrcode/logo-rdk.svg'
+                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center'>
+                          <NextImage
+                            src='/images/qrcode/logo-rdk.png'
                             alt='RDK Logo'
-                            style={{ width: size * 0.2, height: size * 0.2 }}
+                            width={size * 0.2}
+                            height={size * 0.2}
                             className='object-contain'
                           />
                         </div>
