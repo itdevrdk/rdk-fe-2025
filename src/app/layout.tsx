@@ -5,6 +5,8 @@ import '@/styles/globals.css';
 
 import { marquisette, zabal } from '@/lib/fonts';
 
+import VisitorTracker from '@/components/VisitorTracker';
+
 import Providers from '@/app/providers';
 import { siteConfig } from '@/constant/config';
 
@@ -51,7 +53,10 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body className={`${marquisette.variable} ${zabal.variable}`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <VisitorTracker />
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -97,7 +97,7 @@ export default function QrCodeModal({
         ctx.drawImage(img, 0, 0);
 
         // Draw Logo
-        const logoUrl = '/images/qrcode/logo-rdk.svg';
+        const logoUrl = '/images/qrcode/logo-rdk.png';
         const logoImg = new Image();
         logoImg.crossOrigin = 'anonymous'; // Needed if image is from external, but local is fine usually
 
