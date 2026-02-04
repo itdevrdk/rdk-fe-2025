@@ -106,6 +106,19 @@ export default function QrCodeModal({
           const logoX = (size - logoSize) / 2;
           const logoY = (size - logoSize) / 2;
 
+          // Padding for the white background to ensure it surrounds the logo
+          // 24px is a reasonable padding relative to a large download size, but we use a ratio here.
+          // Using 5% of logo size as padding to mimic the p-1 effect (roughly)
+          const padding = logoSize * 0.05;
+          const bgSize = logoSize + padding * 2;
+          const bgX = logoX - padding;
+          const bgY = logoY - padding;
+
+          // Draw White Background behind Logo
+          ctx.fillStyle = '#ffffff';
+          // Draw a filled rectangle with the calculated size
+          ctx.fillRect(bgX, bgY, bgSize, bgSize);
+
           // Draw Logo
           ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
 
@@ -266,7 +279,7 @@ export default function QrCodeModal({
                           level='H'
                         />
                         {/* Logo Overlay */}
-                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center'>
+                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center bg-white p-1 rounded-sm'>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src='/images/qrcode/logo-rdk.svg'
