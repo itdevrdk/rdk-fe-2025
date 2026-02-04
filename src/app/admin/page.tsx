@@ -235,7 +235,7 @@ export default function AdminDashboard() {
       <div className='mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         <StatsCard
           title='Dana Terkumpul'
-          value={`${dashboardStats?.fund_target_percentage ?? 0}%`}
+          value={`${(dashboardStats?.fund_target_percentage ?? 0).toFixed(2)}%`}
           subtext={`Dari target Rp ${(dashboardStats?.fund_target_value ?? 0).toLocaleString('id-ID')}`}
           icon={TrendingUp}
           trend='up'

@@ -106,13 +106,6 @@ export default function QrCodeModal({
           const logoX = (size - logoSize) / 2;
           const logoY = (size - logoSize) / 2;
 
-          // Draw white background for logo
-          ctx.beginPath();
-          ctx.fillStyle = '#ffffff';
-          // Circle background
-          ctx.arc(size / 2, size / 2, logoSize / 2 + 4, 0, 2 * Math.PI);
-          ctx.fill();
-
           // Draw Logo
           ctx.drawImage(logoImg, logoX, logoY, logoSize, logoSize);
 
@@ -273,7 +266,7 @@ export default function QrCodeModal({
                           level='H'
                         />
                         {/* Logo Overlay */}
-                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white p-1 flex items-center justify-center'>
+                        <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center'>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src='/images/qrcode/logo-rdk.svg'
