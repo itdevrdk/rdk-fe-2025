@@ -294,13 +294,38 @@ export default function ReportPage() {
                           axisLine={false}
                           tickLine={false}
                           tick={{ fontSize: 10, fill: '#9ca3af' }}
+                          tickFormatter={(value) => {
+                            const date = new Date(value);
+                            return date.toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'short',
+                            });
+                          }}
                         />
                         <YAxis
                           axisLine={false}
                           tickLine={false}
                           tick={{ fontSize: 10, fill: '#9ca3af' }}
+                          tickFormatter={(value) => `${value / 1000}k`}
                         />
-                        <Tooltip />
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: '8px',
+                            border: 'none',
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                          }}
+                          formatter={(value: number | undefined) =>
+                            `Rp ${(value || 0).toLocaleString('id-ID')}`
+                          }
+                          labelFormatter={(label) => {
+                            const date = new Date(label);
+                            return date.toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            });
+                          }}
+                        />
                         <Area
                           type='monotone'
                           dataKey='value'
@@ -382,13 +407,38 @@ export default function ReportPage() {
                           axisLine={false}
                           tickLine={false}
                           tick={{ fontSize: 10, fill: '#9ca3af' }}
+                          tickFormatter={(value) => {
+                            const date = new Date(value);
+                            return date.toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'short',
+                            });
+                          }}
                         />
                         <YAxis
                           axisLine={false}
                           tickLine={false}
                           tick={{ fontSize: 10, fill: '#9ca3af' }}
+                          tickFormatter={(value) => `${value / 1000}k`}
                         />
-                        <Tooltip />
+                        <Tooltip
+                          contentStyle={{
+                            borderRadius: '8px',
+                            border: 'none',
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                          }}
+                          formatter={(value: number | undefined) =>
+                            `Rp ${(value || 0).toLocaleString('id-ID')}`
+                          }
+                          labelFormatter={(label) => {
+                            const date = new Date(label);
+                            return date.toLocaleDateString('id-ID', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric',
+                            });
+                          }}
+                        />
                         <Area
                           type='monotone'
                           dataKey='value'
