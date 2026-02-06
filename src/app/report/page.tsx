@@ -296,6 +296,7 @@ export default function ReportPage() {
                           tick={{ fontSize: 10, fill: '#9ca3af' }}
                           tickFormatter={(value) => {
                             const date = new Date(value);
+                            if (isNaN(date.getTime())) return value;
                             return date.toLocaleDateString('id-ID', {
                               day: 'numeric',
                               month: 'short',
@@ -319,6 +320,7 @@ export default function ReportPage() {
                           }
                           labelFormatter={(label) => {
                             const date = new Date(label);
+                            if (isNaN(date.getTime())) return label;
                             return date.toLocaleDateString('id-ID', {
                               day: 'numeric',
                               month: 'long',
@@ -409,6 +411,7 @@ export default function ReportPage() {
                           tick={{ fontSize: 10, fill: '#9ca3af' }}
                           tickFormatter={(value) => {
                             const date = new Date(value);
+                            if (isNaN(date.getTime())) return value;
                             return date.toLocaleDateString('id-ID', {
                               day: 'numeric',
                               month: 'short',
@@ -432,6 +435,7 @@ export default function ReportPage() {
                           }
                           labelFormatter={(label) => {
                             const date = new Date(label);
+                            if (isNaN(date.getTime())) return label;
                             return date.toLocaleDateString('id-ID', {
                               day: 'numeric',
                               month: 'long',
