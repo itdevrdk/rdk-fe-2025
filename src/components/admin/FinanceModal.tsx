@@ -265,7 +265,6 @@ export default function FinanceModal({
             </Transition.Child>
           </div>
         </div>
-        g
       </Dialog>
     </Transition>
   );
