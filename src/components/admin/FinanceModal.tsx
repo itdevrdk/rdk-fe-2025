@@ -42,11 +42,20 @@ export default function FinanceModal({
   // Set initial data for edit mode
   useEffect(() => {
     if (isEdit && data) {
+      // Use date from data if available, otherwise fallback to created_at
+      const dateSource = data.date || data.created_at;
+      const initialDate = dateSource
+        ? new Date(dateSource).toISOString().split('T')[0]
+        : new Date().toISOString().split('T')[0];
+
       setValue('income', data.income);
       setValue('expenses', data.expenses);
       setValue('target', data.target);
+      setValue('date', initialDate);
     } else {
       reset();
+      // Default to today
+      setValue('date', new Date().toISOString().split('T')[0]);
       // Auto-fill target with latest target value when creating new entry
       if (latestTarget !== undefined && latestTarget > 0) {
         setValue('target', latestTarget);
@@ -61,6 +70,7 @@ export default function FinanceModal({
         income: Number(formData.income),
         expenses: Number(formData.expenses),
         target: Number(formData.target),
+        date: formData.date,
       };
 
       await onSubmit(payload);
@@ -118,6 +128,25 @@ export default function FinanceModal({
                   onSubmit={handleSubmit(onFormSubmit)}
                   className='mt-4 space-y-4'
                 >
+                  {/* Date Selection */}
+                  <div>
+                    <label className='block text-sm font-medium text-gray-700'>
+                      Tanggal
+                    </label>
+                    <input
+                      type='date'
+                      className='mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm'
+                      {...register('date', {
+                        required: 'Tanggal wajib diisi',
+                      })}
+                    />
+                    {errors.date && (
+                      <span className='text-xs text-red-500'>
+                        {errors.date.message}
+                      </span>
+                    )}
+                  </div>
+
                   {/* Income */}
                   <div>
                     <label className='block text-sm font-medium text-gray-700'>
@@ -132,7 +161,10 @@ export default function FinanceModal({
                       placeholder='Contoh: 5000000'
                       {...register('income', {
                         required: 'Pemasukan wajib diisi',
-                        min: 0,
+                        min: {
+                          value: 0,
+                          message: 'Pemasukan tidak boleh kurang dari 0',
+                        },
                       })}
                     />
                     {errors.income && (
@@ -157,7 +189,10 @@ export default function FinanceModal({
                       placeholder='Contoh: 2000000'
                       {...register('expenses', {
                         required: 'Pengeluaran wajib diisi',
-                        min: 0,
+                        min: {
+                          value: 0,
+                          message: 'Pengeluaran tidak boleh kurang dari 0',
+                        },
                       })}
                     />
                     {errors.expenses && (

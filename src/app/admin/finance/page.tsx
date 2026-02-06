@@ -157,10 +157,12 @@ export default function AdminFinancePage() {
 
   const columns: TableColumn<FinanceReport & { id: string }>[] = [
     {
-      key: 'created_at',
+      key: 'date',
       header: 'Tanggal',
       render: (item) =>
-        format(new Date(item.created_at), 'dd MMM yyyy', { locale: id }),
+        format(new Date(item.date || item.created_at), 'dd MMM yyyy', {
+          locale: id,
+        }),
     },
     {
       key: 'income',

@@ -6,18 +6,21 @@ export interface FinanceReport {
   target: number; // IDR
   created_at: string; // ISO Date String
   updated_at: string; // ISO Date String
+  date?: string;
 }
 
 export interface CreateFinanceReportForm {
   income: number;
   expenses: number;
   target: number;
+  date: string;
 }
 
 export interface UpdateFinanceReportForm {
   income?: number;
   expenses?: number;
   target?: number;
+  date?: string;
 }
 
 // Pagination types
