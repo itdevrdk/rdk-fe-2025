@@ -1,85 +1,14 @@
 'use client';
 
-import { ChevronLeft, MapPin, UserRound } from 'lucide-react';
+import { ChevronLeft, MapPin } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+
+import { useEvent } from '@/hooks/useEvent';
 
 import Layout from '@/components/layouts/Layout';
 import Typography from '@/components/Typography';
 
-type EventItem = {
-  id: string;
-  title: string;
-  start: string;
-  end: string;
-  speaker: string;
-  location: string;
-};
-
-const EVENTS: EventItem[] = [
-  {
-    id: 'ev-1',
-    title:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-    start: '2026-02-22T15:30',
-    end: '2026-02-22T17:30',
-    speaker: 'John Doe',
-    location: 'Masjid Manarul Ilmi',
-  },
-  {
-    id: 'ev-2',
-    title:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-    start: '2026-02-22T18:30',
-    end: '2026-02-22T20:00',
-    speaker: 'John Doe',
-    location: 'Masjid Manarul Ilmi',
-  },
-  {
-    id: 'ev-3',
-    title:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-    start: '2026-02-23T15:30',
-    end: '2026-02-23T17:30',
-    speaker: 'John Doe',
-    location: 'Masjid Manarul Ilmi',
-  },
-  {
-    id: 'ev-4',
-    title:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-    start: '2026-03-14T18:30',
-    end: '2026-03-14T20:00',
-    speaker: 'John Doe',
-    location: 'Masjid Manarul Ilmi',
-  },
-  {
-    id: 'ev-5',
-    title:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-    start: '2026-03-14T15:30',
-    end: '2026-03-14T17:30',
-    speaker: 'John Doe',
-    location: 'Masjid Manarul Ilmi',
-  },
-  {
-    id: 'ev-6',
-    title:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-    start: '2026-02-23T15:30',
-    end: '2026-02-23T17:30',
-    speaker: 'John Doe',
-    location: 'Masjid Manarul Ilmi',
-  },
-  {
-    id: 'ev-7',
-    title:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt',
-    start: '2026-02-24T15:30',
-    end: '2026-02-24T17:30',
-    speaker: 'John Doe',
-    location: 'Masjid Manarul Ilmi',
-  },
-];
+import { RamadanEvent } from '@/types/event';
 
 function pad2(n: number) {
   return n.toString().padStart(2, '0');
@@ -90,10 +19,9 @@ function toDateKey(d: Date) {
 }
 
 function parseLocalISO(isoLocal: string) {
-  const [datePart, timePart] = isoLocal.split('T');
-  const [y, m, day] = datePart.split('-').map(Number);
-  const [hh, mm] = timePart.split(':').map(Number);
-  return new Date(y, m - 1, day, hh, mm, 0);
+  // Assuming isoLocal is "YYYY-MM-DDTHH:mm:ssZ" or similar.
+  // We want to create a Date object.
+  return new Date(isoLocal);
 }
 
 function getIndoDayName(d: Date) {
@@ -117,18 +45,29 @@ function formatHeaderDate(d: Date) {
   return `${capDay}, ${day} ${monthName} ${year}`;
 }
 
-function isFebOrMar(date: Date) {
-  const m = date.getMonth() + 1;
-  return m === 2 || m === 3;
-}
+// Helper to check if a date (from API) fits our calendar range if needed.
+// For now, we display all fetched events.
 
 export default function CalendarPage() {
+  const { getEvents, loading } = useEvent();
+  const [events, setEvents] = useState<RamadanEvent[]>([]);
+
+  useEffect(() => {
+    getEvents({ year: 2025 }).then((res) => {
+      if (res) {
+        setEvents(res);
+      }
+    });
+  }, [getEvents]);
+
   const normalizedEvents = useMemo(() => {
-    const items = EVENTS.map((e) => {
-      const startDate = parseLocalISO(e.start);
-      const endDate = parseLocalISO(e.end);
+    if (!events) return [];
+
+    const items = events.map((e) => {
+      const startDate = parseLocalISO(e.date);
+      const endDate = e.end_date ? parseLocalISO(e.end_date) : startDate; // Fallback if no end date
       return { ...e, startDate, endDate, dateKey: toDateKey(startDate) };
-    }).filter((e) => isFebOrMar(e.startDate));
+    });
 
     items.sort((a, b) => {
       if (a.startDate.getTime() !== b.startDate.getTime())
@@ -137,7 +76,7 @@ export default function CalendarPage() {
     });
 
     return items;
-  }, []);
+  }, [events]);
 
   const availableDates = useMemo(() => {
     const map = new Map<string, Date>();
@@ -150,21 +89,25 @@ export default function CalendarPage() {
       .map(([key, date]) => ({ key, date }));
   }, [normalizedEvents]);
 
-  const [selectedDateKey, setSelectedDateKey] = useState<string>(() => {
-    return availableDates[0]?.key ?? toDateKey(new Date());
-  });
+  const [selectedDateKey, setSelectedDateKey] = useState<string>('');
 
   useEffect(() => {
-    if (availableDates.length === 0) return;
-
-    const stillExists = availableDates.some((d) => d.key === selectedDateKey);
-
-    if (!stillExists) {
-      setSelectedDateKey(availableDates[0].key);
+    if (availableDates.length > 0 && !selectedDateKey) {
+      // Default to today if available, else first date
+      const todayKey = toDateKey(new Date());
+      const hasToday = availableDates.some((d) => d.key === todayKey);
+      setSelectedDateKey(hasToday ? todayKey : availableDates[0].key);
+    } else if (availableDates.length > 0) {
+      // Check if selected still exists
+      const stillExists = availableDates.some((d) => d.key === selectedDateKey);
+      if (!stillExists) {
+        setSelectedDateKey(availableDates[0].key);
+      }
     }
   }, [availableDates, selectedDateKey]);
 
   const eventsForSelectedDate = useMemo(() => {
+    if (!selectedDateKey) return [];
     const items = normalizedEvents.filter((e) => e.dateKey === selectedDateKey);
     items.sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
     return items;
@@ -181,7 +124,10 @@ export default function CalendarPage() {
         <div className='mx-auto max-w-7xl px-6 py-12'>
           {/*  HEADER  */}
           <div className='mb-8 flex items-center gap-4'>
-            <button className='rounded border p-2'>
+            <button
+              className='rounded border p-2'
+              onClick={() => window.history.back()}
+            >
               <ChevronLeft size={18} />
             </button>
 
@@ -192,85 +138,110 @@ export default function CalendarPage() {
               weight='bold'
               className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'
             >
-              Kalender RDK 47
+              Kalender RDK 46
             </Typography>
           </div>
 
-          {/*  DATE SELECTOR  */}
-          <div className='mb-6 flex gap-4 overflow-x-auto w-full pb-1'>
-            {availableDates.map(({ key, date }) => {
-              const active = key === selectedDateKey;
-              return (
-                <button
-                  key={key}
-                  type='button'
-                  onClick={() => setSelectedDateKey(key)}
-                  className={`w-full rounded-xl border px-4 py-3 text-center transition ${
-                    active
-                      ? 'border-[#E6C89A] bg-[#FFF3D4]'
-                      : 'bg-white hover:bg-[#FFF7E8]'
-                  }`}
-                >
-                  <Typography
-                    font='marquisette'
-                    variant='h6'
-                    className='text-xl font-semibold bg-gradient-to-r from-[#C33A3C] to-[#681819] bg-clip-text text-transparent'
-                  >
-                    {date.getDate()}
-                  </Typography>
-                  <Typography font='zabal' className='text-xs text-gray-500'>
-                    {getIndoDayName(date).charAt(0).toUpperCase() +
-                      getIndoDayName(date).slice(1)}
-                  </Typography>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className='mb-8 h-[2px] w-full bg-[#681819]' />
-
-          {/*  DATE LABEL  */}
-          <div className='mb-6 rounded-xl bg-gradient-to-r from-[#942B2C] to-[#C33A3C] py-2 text-center text-sm text-white text-zabal'>
-            {formatHeaderDate(selectedDateObj)}
-          </div>
-
-          {/*  EVENT LIST  */}
-          <div className='space-y-4'>
-            {eventsForSelectedDate.length === 0 ? (
-              <div className='rounded-xl border bg-[#FFF7E8] p-6 text-sm text-[#681819]'>
-                Tidak ada kegiatan pada tanggal ini.
-              </div>
-            ) : (
-              eventsForSelectedDate.map((e) => (
-                <div key={e.id} className='rounded-xl border bg-[#FFF7E8] p-4'>
-                  <div className='flex gap-4'>
-                    <div className='w-[90px] text-sm font-semibold text-[#3a3a3a]'>
-                      {formatTimeHHmm(e.startDate)}
-                      <br />–<br />
-                      {formatTimeHHmm(e.endDate)}
-                    </div>
-
-                    <div className='flex-1'>
-                      <p className='mb-2 text-sm font-semibold text-[#9E2A2F]'>
-                        {e.title}
-                      </p>
-
-                      <div className='flex flex-col gap-1 text-xs text-[#681819]'>
-                        <p>
-                          <UserRound className='inline mr-1 w-4 h-4' />
-                          oleh {e.speaker}
-                        </p>
-                        <p>
-                          <MapPin className='inline mr-1 w-4 h-4' />
-                          {e.location}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+          {loading && availableDates.length === 0 ? (
+            <div className='py-12 text-center text-gray-500'>
+              Memuat jadwal...
+            </div>
+          ) : (
+            <>
+              {/*  DATE SELECTOR  */}
+              {availableDates.length === 0 ? (
+                <div className='py-12 text-center text-gray-500'>
+                  Belum ada kegiatan yang tersedia.
                 </div>
-              ))
-            )}
-          </div>
+              ) : (
+                <>
+                  <div className='mb-6 flex gap-4 overflow-x-auto w-full pb-1 scrollbar-hide'>
+                    {availableDates.map(({ key, date }) => {
+                      const active = key === selectedDateKey;
+                      return (
+                        <button
+                          key={key}
+                          type='button'
+                          onClick={() => setSelectedDateKey(key)}
+                          className={`min-w-[80px] rounded-xl border px-4 py-3 text-center transition ${
+                            active
+                              ? 'border-[#E6C89A] bg-[#FFF3D4]'
+                              : 'bg-white hover:bg-[#FFF7E8]'
+                          }`}
+                        >
+                          <Typography
+                            font='marquisette'
+                            variant='h6'
+                            className='text-xl font-semibold bg-gradient-to-r from-[#C33A3C] to-[#681819] bg-clip-text text-transparent'
+                          >
+                            {date.getDate()}
+                          </Typography>
+                          <Typography
+                            font='zabal'
+                            className='text-xs text-gray-500'
+                          >
+                            {getIndoDayName(date).charAt(0).toUpperCase() +
+                              getIndoDayName(date).slice(1)}
+                          </Typography>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className='mb-8 h-[2px] w-full bg-[#681819]' />
+
+                  {/*  DATE LABEL  */}
+                  <div className='mb-6 rounded-xl bg-gradient-to-r from-[#942B2C] to-[#C33A3C] py-2 text-center text-sm text-white text-zabal'>
+                    {formatHeaderDate(selectedDateObj)}
+                  </div>
+
+                  {/*  EVENT LIST  */}
+                  <div className='space-y-4'>
+                    {eventsForSelectedDate.length === 0 ? (
+                      <div className='rounded-xl border bg-[#FFF7E8] p-6 text-sm text-[#681819]'>
+                        Tidak ada kegiatan pada tanggal ini.
+                      </div>
+                    ) : (
+                      eventsForSelectedDate.map((e) => (
+                        <div
+                          key={e.id}
+                          className='rounded-xl border bg-[#FFF7E8] p-4'
+                        >
+                          <div className='flex gap-4'>
+                            <div className='w-[100px] shrink-0 text-sm font-semibold text-[#3a3a3a]'>
+                              {formatTimeHHmm(e.startDate)}
+                              <br />–<br />
+                              {formatTimeHHmm(e.endDate)}
+                            </div>
+
+                            <div className='flex-1'>
+                              <p className='mb-2 text-sm font-semibold text-[#9E2A2F]'>
+                                {e.title}
+                              </p>
+
+                              <p className='mb-2 text-xs text-gray-600'>
+                                {e.description}
+                              </p>
+
+                              <div className='flex flex-col gap-1 text-xs text-[#681819]'>
+                                {/* Speaker field removed as it is not in API based on requirements, 
+                                    but if description contains it, we show description. 
+                                    If there is a location: */}
+                                <p>
+                                  <MapPin className='inline mr-1 w-4 h-4' />
+                                  {e.location}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </>
+              )}
+            </>
+          )}
         </div>
       </main>
     </Layout>
