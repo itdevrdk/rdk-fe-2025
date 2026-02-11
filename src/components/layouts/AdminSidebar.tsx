@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Calendar,
   ChevronDown,
   ClipboardList,
   Database,
@@ -33,6 +34,12 @@ const navItems = [
     href: '/admin',
     icon: Home,
     allowedRoles: ['admin', 'event', 'mentoring', 'publication'] as AdminRole[],
+  },
+  {
+    name: 'Kegiatan Ramadhan',
+    href: '/admin/ramadan-events',
+    icon: Calendar,
+    allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
   },
   {
     name: 'Laporan Keuangan',
