@@ -11,13 +11,19 @@ import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
 import EventModal from '@/components/admin/EventModal';
 import Button from '@/components/buttons/Button';
+import AdminSidebar from '@/components/layouts/AdminSidebar';
+import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
+
+import { useGetMe } from '../hook/getMe';
 
 import { CreateEventRequest, RamadanEvent } from '@/types/event';
 
 export default function AdminEventsPage() {
   const { getEvents, createEvent, updateEvent, deleteEvent, loading } =
     useEvent();
+  const { user, isLoading: isUserLoading } = useGetMe();
+
   const [events, setEvents] = useState<RamadanEvent[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -152,52 +158,61 @@ export default function AdminEventsPage() {
     },
   ];
 
+  if (isUserLoading) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <Loading />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
-    <div className='space-y-6'>
-      <div className='flex items-center justify-between'>
-        <div>
+    <AdminSidebar user={user}>
+      <div className='space-y-6'>
+        <div className='flex items-center justify-between'>
           <Typography
             as='h1'
-            variant='h3'
             font='marquisette'
-            className='text-gray-900'
+            variant='h4'
+            className='text-primary-100'
           >
             Manajemen Kegiatan Ramadhan
           </Typography>
-          <Typography className='text-gray-500'>
-            Kelola daftar kegiatan Ramadhan di sini.
-          </Typography>
+          <Button onClick={handleCreate} leftIcon={Plus}>
+            Tambah Kegiatan
+          </Button>
         </div>
-        <Button onClick={handleCreate} leftIcon={Plus}>
-          Tambah Kegiatan
-        </Button>
+
+        <AdminTable
+          columns={columns}
+          data={paginatedEvents}
+          isLoading={loading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
+
+        <EventModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleSubmit}
+          isLoading={loading}
+          editData={editingEvent}
+        />
+
+        <DeleteConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
+          onConfirm={handleConfirmDelete}
+          isLoading={loading}
+          title='Hapus Kegiatan'
+          message='Apakah Anda yakin ingin menghapus kegiatan ini? Tindakan ini tidak dapat dibatalkan.'
+        />
       </div>
-
-      <AdminTable
-        columns={columns}
-        data={paginatedEvents}
-        isLoading={loading}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-
-      <EventModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleSubmit}
-        isLoading={loading}
-        editData={editingEvent}
-      />
-
-      <DeleteConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        isLoading={loading}
-        title='Hapus Kegiatan'
-        message='Apakah Anda yakin ingin menghapus kegiatan ini? Tindakan ini tidak dapat dibatalkan.'
-      />
-    </div>
+    </AdminSidebar>
   );
 }
