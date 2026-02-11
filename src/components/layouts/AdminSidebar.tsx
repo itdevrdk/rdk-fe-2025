@@ -10,6 +10,8 @@ import {
   Link as LinkIcon,
   LogOut,
   Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
   QrCode,
   User,
   X,
@@ -175,6 +177,11 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
     setExpandedMenu(expandedMenu === name ? null : name);
   };
 
+  // ... inside component ...
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // ...
+
   return (
     <div className='min-h-screen bg-gray-50'>
       {/* Mobile Header */}
@@ -215,59 +222,94 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 h-full w-64 transform border-r border-gray-200 bg-white transition-transform duration-300 lg:translate-x-0',
+          'fixed left-0 top-0 z-40 h-full transform border-r border-gray-200 bg-white transition-all duration-300',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+          isCollapsed ? 'lg:w-20' : 'lg:w-64',
+          'lg:translate-x-0',
           'lg:top-0 top-16',
           'flex flex-col',
         )}
       >
-        {/* Desktop Logo */}
-        <div className='hidden h-20 flex-shrink-0 items-center gap-3 border-b border-gray-200 px-6 lg:flex'>
-          <NextImage
-            src='/images/navbar/logo-rdk.svg'
-            alt='RDK 47'
-            width={40}
-            height={40}
-            priority
-          />
-          <Typography
-            as='span'
-            font='marquisette'
-            weight='bold'
-            className='text-xl text-primary-100'
+        {/* Desktop Logo & Toggle */}
+        <div
+          className={cn(
+            'hidden h-20 flex-shrink-0 items-center border-b border-gray-200 lg:flex',
+            isCollapsed ? 'justify-center' : 'justify-between px-6',
+          )}
+        >
+          {!isCollapsed && (
+            <div className='flex items-center gap-3'>
+              <NextImage
+                src='/images/navbar/logo-rdk.svg'
+                alt='RDK 47'
+                width={40}
+                height={40}
+                priority
+              />
+              <Typography
+                as='span'
+                font='marquisette'
+                weight='bold'
+                className='text-xl text-primary-100'
+              >
+                RDK 47
+              </Typography>
+            </div>
+          )}
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className='text-gray-500 hover:text-primary-100'
           >
-            RDK 47
-          </Typography>
+            {isCollapsed ? (
+              <PanelLeftOpen size={20} />
+            ) : (
+              <PanelLeftClose size={20} />
+            )}
+          </button>
         </div>
 
         {/* Admin Profile */}
-        <div className='flex-shrink-0 border-b border-gray-200 px-4 py-4'>
-          <div className='flex items-center gap-3 rounded-lg border border-gray-200 px-3 py-2'>
+        <div
+          className={cn(
+            'flex-shrink-0 border-b border-gray-200 py-4',
+            isCollapsed ? 'px-2' : 'px-4',
+          )}
+        >
+          <div
+            className={cn(
+              'flex items-center rounded-lg border border-gray-200 py-2',
+              isCollapsed
+                ? 'justify-center border-0 bg-transparent'
+                : 'gap-3 px-3 bg-white',
+            )}
+          >
             <div className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-100'>
               <User size={18} className='text-gray-600' />
             </div>
-            <div className='flex flex-col'>
-              <Typography
-                as='span'
-                font='zabal'
-                weight='bold'
-                className='text-sm text-gray-800'
-              >
-                {user.name}
-              </Typography>
-              <Typography
-                as='span'
-                font='zabal'
-                className='text-xs text-gray-500'
-              >
-                {user.email}
-              </Typography>
-            </div>
+            {!isCollapsed && (
+              <div className='flex flex-col'>
+                <Typography
+                  as='span'
+                  font='zabal'
+                  weight='bold'
+                  className='text-sm text-gray-800'
+                >
+                  {user.name}
+                </Typography>
+                <Typography
+                  as='span'
+                  font='zabal'
+                  className='text-xs text-gray-500'
+                >
+                  {user.email}
+                </Typography>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Navigation - Scrollable Area */}
-        <nav className='flex flex-1 flex-col gap-1 overflow-y-auto px-4 py-4'>
+        {/* Navigation */}
+        <nav className='flex flex-1 flex-col gap-1 overflow-y-auto px-2 py-4'>
           {filteredNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = isItemActive(item);
@@ -278,34 +320,40 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
               return (
                 <div key={item.name}>
                   <button
-                    onClick={() => toggleMenu(item.name)}
+                    onClick={() => !isCollapsed && toggleMenu(item.name)}
                     className={cn(
-                      'flex w-full items-center justify-between rounded-lg px-3 py-2.5 transition-colors',
+                      'flex w-full items-center rounded-lg py-2.5 transition-colors',
                       isActive
                         ? 'bg-primary-100/10 text-primary-100'
                         : 'text-gray-600 hover:bg-gray-100',
+                      isCollapsed ? 'justify-center' : 'justify-between px-3',
                     )}
+                    title={isCollapsed ? item.name : undefined}
                   >
                     <div className='flex items-center gap-3'>
                       <Icon size={18} />
-                      <Typography
-                        as='span'
-                        font='zabal'
-                        weight={isActive ? 'medium' : 'regular'}
-                        className='text-sm'
-                      >
-                        {item.name}
-                      </Typography>
-                    </div>
-                    <ChevronDown
-                      size={16}
-                      className={cn(
-                        'transition-transform',
-                        isExpanded && 'rotate-180',
+                      {!isCollapsed && (
+                        <Typography
+                          as='span'
+                          font='zabal'
+                          weight={isActive ? 'medium' : 'regular'}
+                          className='text-sm'
+                        >
+                          {item.name}
+                        </Typography>
                       )}
-                    />
+                    </div>
+                    {!isCollapsed && (
+                      <ChevronDown
+                        size={16}
+                        className={cn(
+                          'transition-transform',
+                          isExpanded && 'rotate-180',
+                        )}
+                      />
+                    )}
                   </button>
-                  {isExpanded && (
+                  {!isCollapsed && isExpanded && (
                     <div className='ml-6 mt-1 flex flex-col gap-1 border-l border-gray-200 pl-3'>
                       {item.subItems?.map((subItem) => {
                         const isSubActive = pathname === subItem.href;
@@ -344,42 +392,57 @@ export default function AdminSidebar({ user, children }: AdminSidebarProps) {
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  'flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors',
+                  'flex items-center rounded-lg py-2.5 transition-colors',
                   isActive
                     ? 'bg-primary-100/10 text-primary-100'
                     : 'text-gray-600 hover:bg-gray-100',
+                  isCollapsed ? 'justify-center' : 'gap-3 px-3',
                 )}
+                title={isCollapsed ? item.name : undefined}
               >
                 <Icon size={18} />
-                <Typography
-                  as='span'
-                  font='zabal'
-                  weight={isActive ? 'medium' : 'regular'}
-                  className='text-sm'
-                >
-                  {item.name}
-                </Typography>
+                {!isCollapsed && (
+                  <Typography
+                    as='span'
+                    font='zabal'
+                    weight={isActive ? 'medium' : 'regular'}
+                    className='text-sm'
+                  >
+                    {item.name}
+                  </Typography>
+                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Logout Button - Fixed at Bottom */}
-        <div className='flex-shrink-0 border-t border-gray-200 px-4 py-4'>
+        {/* Logout Button */}
+        <div className='flex-shrink-0 border-t border-gray-200 px-2 py-4'>
           <button
             onClick={handleLogout}
-            className='flex w-full items-center gap-3 rounded-lg border border-gray-200 px-3 py-2.5 text-gray-600 transition-colors hover:bg-gray-100'
+            className={cn(
+              'flex w-full items-center rounded-lg border border-gray-200 py-2.5 text-gray-600 transition-colors hover:bg-gray-100',
+              isCollapsed ? 'justify-center border-0' : 'gap-3 px-3',
+            )}
+            title={isCollapsed ? 'Keluar' : undefined}
           >
             <LogOut size={18} />
-            <Typography as='span' font='zabal' className='text-sm'>
-              Keluar
-            </Typography>
+            {!isCollapsed && (
+              <Typography as='span' font='zabal' className='text-sm'>
+                Keluar
+              </Typography>
+            )}
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className='pt-16 lg:ml-64 lg:pt-0'>
+      <main
+        className={cn(
+          'pt-16 transition-all duration-300 lg:pt-0',
+          isCollapsed ? 'lg:ml-20' : 'lg:ml-64',
+        )}
+      >
         <div className='p-6 lg:p-8'>{children}</div>
       </main>
     </div>
