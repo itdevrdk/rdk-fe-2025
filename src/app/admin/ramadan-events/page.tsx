@@ -141,8 +141,8 @@ export default function AdminEventsPage() {
           </Button>
           <Button
             size='sm'
-            variant='danger'
-            className='p-2'
+            variant='primary'
+            className='p-2 bg-red-600 hover:bg-red-700 border-red-600 text-white'
             onClick={() => handleDeleteClick(item.id)}
           >
             <Trash2 size={16} />
