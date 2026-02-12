@@ -42,9 +42,11 @@ export default function Header() {
 
         {/* DESKTOP MENU */}
         <nav className='hidden items-center md:flex gap-10'>
-          <Typography className='cursor-pointer text-[#8B1E1F]' weight='bold'>
-            Kalender
-          </Typography>
+          <Link href='/calendar'>
+            <Typography className='cursor-pointer text-[#8B1E1F]' weight='bold'>
+              Kalender
+            </Typography>
+          </Link>
 
           <div className='relative'>
             <button
@@ -110,9 +112,11 @@ export default function Header() {
         `}
       >
         <nav className='flex flex-col gap-6 px-6 py-6'>
-          <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
-            Kalender
-          </Typography>
+          <Link href='/calendar'>
+            <Typography weight='bold' className='cursor-pointer text-[#8B1E1F]'>
+              Kalender
+            </Typography>
+          </Link>
           <button
             onClick={() => setKegiatanOpen((v) => !v)}
             className='flex items-center justify-between text-[#8B1E1F]'

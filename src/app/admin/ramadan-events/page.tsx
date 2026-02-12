@@ -1,10 +1,11 @@
 'use client';
 
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { Edit, Plus, Search, Trash2 } from 'lucide-react';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+import useDebounce from '@/hooks/useDebounce';
 import { useEvent } from '@/hooks/useEvent';
 
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
@@ -14,17 +15,31 @@ import Button from '@/components/buttons/Button';
 import AdminSidebar from '@/components/layouts/AdminSidebar';
 import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
+import { Input } from '@/components/ui/input';
 
 import { useGetMe } from '../hook/getMe';
 
-import { CreateEventRequest, RamadanEvent } from '@/types/event';
+import {
+  CreateEventRequest,
+  MetaPagination,
+  RamadanEvent,
+} from '@/types/event';
 
 export default function AdminEventsPage() {
-  const { getEvents, createEvent, updateEvent, deleteEvent, loading } =
+  const { getAdminEvents, createEvent, updateEvent, deleteEvent, loading } =
     useEvent();
   const { user, isLoading: isUserLoading } = useGetMe();
 
   const [events, setEvents] = useState<RamadanEvent[]>([]);
+  const [meta, setMeta] = useState<MetaPagination>({
+    page: 1,
+    limit: 10,
+    total_data: 0,
+    total_page: 0,
+  });
+
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<RamadanEvent | null>(null);
@@ -32,20 +47,34 @@ export default function AdminEventsPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingEventId, setDeletingEventId] = useState<string | null>(null);
 
-  const fetchEvents = React.useCallback(async () => {
-    try {
-      const data = await getEvents({ year: 2026 }); // Assuming 2025 for now
-      if (data) {
-        setEvents(data);
+  const fetchEvents = React.useCallback(
+    async (page: number, search: string) => {
+      try {
+        const res = await getAdminEvents({
+          page,
+          limit: 10,
+          search,
+        });
+        if (res) {
+          setEvents(res.data.data);
+          setMeta(res.data.meta);
+        }
+      } catch (error) {
+        toast.error('Gagal memuat data kegiatan');
       }
-    } catch (error) {
-      toast.error('Gagal memuat data kegiatan');
-    }
-  }, [getEvents]);
+    },
+    [getAdminEvents],
+  );
 
   useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    fetchEvents(meta.page, debouncedSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, meta.page]); // Only triggering when search or page changes
+
+  // Reset page to 1 when search changes
+  useEffect(() => {
+    setMeta((prev) => ({ ...prev, page: 1 }));
+  }, [debouncedSearch]);
 
   const handleCreate = () => {
     setEditingEvent(null);
@@ -72,7 +101,7 @@ export default function AdminEventsPage() {
         toast.success('Kegiatan berhasil ditambahkan');
       }
       setIsModalOpen(false);
-      fetchEvents();
+      fetchEvents(meta.page, debouncedSearch);
     } catch (error) {
       toast.error('Gagal menyimpan kegiatan');
     }
@@ -84,20 +113,11 @@ export default function AdminEventsPage() {
       await deleteEvent(deletingEventId);
       toast.success('Kegiatan berhasil dihapus');
       setIsDeleteModalOpen(false);
-      fetchEvents();
+      fetchEvents(meta.page, debouncedSearch);
     } catch (error) {
       toast.error('Gagal menghapus kegiatan');
     }
   };
-
-  // Pagination (client-side for now as API seems to return all events in one list based on query)
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const totalPages = Math.ceil(events.length / itemsPerPage);
-  const paginatedEvents = events.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
 
   const columns: TableColumn<RamadanEvent>[] = [
     {
@@ -187,13 +207,31 @@ export default function AdminEventsPage() {
           </Button>
         </div>
 
+        <div className='flex justify-end'>
+          <div className='relative w-full max-w-xs'>
+            <Search
+              size={18}
+              className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'
+            />
+            <Input
+              id='search'
+              placeholder='Cari kegiatan...'
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setSearch(e.target.value)
+              }
+              className='pl-10'
+            />
+          </div>
+        </div>
+
         <AdminTable
           columns={columns}
-          data={paginatedEvents}
+          data={events}
           isLoading={loading}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          currentPage={meta.page}
+          totalPages={meta.total_page}
+          onPageChange={(page) => setMeta((prev) => ({ ...prev, page }))}
         />
 
         <EventModal

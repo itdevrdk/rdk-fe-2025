@@ -26,4 +26,23 @@ export interface UpdateEventRequest {
 
 export interface EventQuery {
   year?: number;
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export interface MetaPagination {
+  page: number;
+  limit: number;
+  total_data: number;
+  total_page: number;
+}
+
+export interface RamadanEventsResponse {
+  data: {
+    data: RamadanEvent[];
+    meta: MetaPagination;
+  };
+  code: number;
+  status: string;
 }

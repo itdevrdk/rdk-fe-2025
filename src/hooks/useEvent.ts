@@ -7,6 +7,7 @@ import {
   CreateEventRequest,
   EventQuery,
   RamadanEvent,
+  RamadanEventsResponse,
   UpdateEventRequest,
 } from '@/types/event';
 
@@ -23,6 +24,21 @@ export const useEvent = () => {
         },
       );
       return res.data.data;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const getAdminEvents = useCallback(async (params?: EventQuery) => {
+    try {
+      setLoading(true);
+      const res = await api.get<RamadanEventsResponse>(
+        '/admin/ramadan-events',
+        {
+          params,
+        },
+      );
+      return res.data;
     } finally {
       setLoading(false);
     }
@@ -72,6 +88,7 @@ export const useEvent = () => {
   return {
     loading,
     getEvents,
+    getAdminEvents,
     createEvent,
     updateEvent,
     deleteEvent,
