@@ -53,7 +53,7 @@ export default function CalendarPage() {
   const [events, setEvents] = useState<RamadanEvent[]>([]);
 
   useEffect(() => {
-    getEvents({ year: 2025 }).then((res) => {
+    getEvents({ year: 2026 }).then((res) => {
       if (res) {
         setEvents(res);
       }

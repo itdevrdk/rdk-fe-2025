@@ -34,7 +34,7 @@ export default function AdminEventsPage() {
 
   const fetchEvents = React.useCallback(async () => {
     try {
-      const data = await getEvents({ year: 2025 }); // Assuming 2025 for now
+      const data = await getEvents({ year: 2026 }); // Assuming 2025 for now
       if (data) {
         setEvents(data);
       }

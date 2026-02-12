@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import * as React from 'react';
 
+import { useEvent } from '@/hooks/useEvent';
 import { useFinanceReport } from '@/hooks/useFinanceReport';
 
 import Button from '@/components/buttons/Button';
@@ -19,6 +20,7 @@ import { isRegistrationClosed } from '@/utils/date';
 import { formatIDR } from '@/utils/format';
 
 import { CreateSuggestionRequest } from '@/types/entities/suggestion';
+import { RamadanEvent } from '@/types/event';
 import { FinanceReportSummary } from '@/types/finance';
 
 interface KegiatanItem {
@@ -210,56 +212,6 @@ const RAMADAN_START_DAY = RAMADAN_START_DATE.getDay();
 const RAMADAN_END_DATE = new Date(RAMADAN_START_DATE);
 RAMADAN_END_DATE.setDate(RAMADAN_END_DATE.getDate() + TOTAL_DAYS_RAMADAN - 1);
 
-// Format data kegiatan: tambahkan kegiatan sesuai tanggal Ramadan
-const CALENDAR_EVENTS: {
-  [key: number]: { title: string; time?: string; location?: string }[];
-} = {
-  1: [
-    {
-      title: 'Pembukaan Ramadan di Kampus',
-      time: '16:00 WIB',
-      location: 'Masjid Manarul Ilmi',
-    },
-  ],
-  8: [
-    { title: 'Ngabuburits #1', time: '15:30 WIB', location: 'Gedung Robotika' },
-  ],
-  15: [
-    { title: 'Simposium Ramadan #1', time: '13:00 WIB', location: 'Aula ITS' },
-    { title: 'Ngabuburits #2', time: '15:30 WIB', location: 'Gedung Robotika' },
-  ],
-  17: [
-    {
-      title: "Nuzulul Qur'an",
-      time: '19:00 WIB',
-      location: 'Masjid Manarul Ilmi',
-    },
-  ],
-  22: [
-    { title: 'Simposium Ramadan #2', time: '13:00 WIB', location: 'Aula ITS' },
-  ],
-  25: [
-    {
-      title: 'Lailatul Hikmah',
-      time: '21:00 WIB',
-      location: 'Masjid Manarul Ilmi',
-    },
-  ],
-  27: [
-    {
-      title: 'Malam Lailatul Qadar',
-      time: '22:00 WIB',
-      location: 'Masjid Manarul Ilmi',
-    },
-  ],
-  29: [
-    {
-      title: 'Ganti Oli & Medical Check Up',
-      time: '08:00 WIB',
-      location: 'Parkiran Graha',
-    },
-  ],
-};
 // ==================== END KALENDER CONFIG ====================
 
 const today = new Date();
@@ -284,7 +236,6 @@ const currentRamadanDay = isRamadanActive
   : null;
 
 const dates = Array.from({ length: TOTAL_DAYS_RAMADAN }, (_, i) => i + 1);
-const eventDates = Object.keys(CALENDAR_EVENTS).map(Number);
 
 // Padding di awal untuk menyesuaikan hari pertama Ramadan
 const startPadding: (number | null)[] = Array(RAMADAN_START_DAY).fill(null);
@@ -547,6 +498,68 @@ export default function HomeSection() {
   const [isAutoPlayKegiatan, setIsAutoPlayKegiatan] = React.useState(true);
   const [visibleItemsKegiatan, setVisibleItemsKegiatan] = React.useState(3);
   const [selectedDate, setSelectedDate] = React.useState<number | null>(null);
+
+  const { getEvents } = useEvent();
+  const [events, setEvents] = useState<RamadanEvent[]>([]);
+
+  useEffect(() => {
+    getEvents({ year: 2026 }).then((res) => {
+      if (res) setEvents(res);
+    });
+  }, [getEvents]);
+
+  const calendarEvents = React.useMemo(() => {
+    const map: {
+      [key: number]: { title: string; time?: string; location?: string }[];
+    } = {};
+
+    events.forEach((event) => {
+      const eventDate = new Date(event.date);
+      // Normalize to start of day
+      const d = new Date(eventDate);
+      d.setHours(0, 0, 0, 0);
+
+      const start = new Date(RAMADAN_START_DATE);
+      start.setHours(0, 0, 0, 0);
+
+      // Diff in ms
+      const diffTime = d.getTime() - start.getTime();
+      // Diff in days.
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+      const dayIndex = diffDays + 1;
+
+      if (dayIndex >= 1 && dayIndex <= 30) {
+        if (!map[dayIndex]) {
+          map[dayIndex] = [];
+        }
+
+        let timeString = '';
+        try {
+          timeString =
+            new Date(event.date).toLocaleTimeString('id-ID', {
+              hour: '2-digit',
+              minute: '2-digit',
+            }) + ' WIB';
+        } catch (e) {
+          timeString = 'Waktu tidak valid';
+        }
+
+        map[dayIndex].push({
+          title: event.title,
+          time: timeString,
+          location: event.location,
+        });
+      }
+    });
+
+    return map;
+  }, [events]);
+
+  const eventDates = React.useMemo(
+    () => Object.keys(calendarEvents).map(Number),
+    [calendarEvents],
+  );
 
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
@@ -1076,16 +1089,15 @@ export default function HomeSection() {
                             {date}
                           </span>
                           {eventDates.includes(date) &&
-                            CALENDAR_EVENTS[date] && (
+                            calendarEvents[date] && (
                               <div className='mt-8 lg:mt-10 rounded-lg bg-[#EAF6FF] p-2 lg:p-3 text-left text-xs lg:text-sm'>
                                 <div className='relative pr-3'>
                                   <span className='font-medium leading-tight line-clamp-2'>
-                                    {CALENDAR_EVENTS[date][0].title}
+                                    {calendarEvents[date][0].title}
                                   </span>
-                                  {CALENDAR_EVENTS[date].length > 1 && (
+                                  {calendarEvents[date].length > 1 && (
                                     <span className='text-xs text-gray-500'>
-                                      +{CALENDAR_EVENTS[date].length - 1}{' '}
-                                      lainnya
+                                      +{calendarEvents[date].length - 1} lainnya
                                     </span>
                                   )}
                                   <span className='absolute right-0 top-0 h-2 w-2 rounded-full bg-blue-500' />
@@ -1111,7 +1123,7 @@ export default function HomeSection() {
                   <div className='space-y-2'>
                     {(() => {
                       const dateToShow = selectedDate || currentRamadanDay || 1;
-                      const events = CALENDAR_EVENTS[dateToShow];
+                      const events = calendarEvents[dateToShow];
                       if (!events || events.length === 0) {
                         return (
                           <p className='text-sm text-gray-500 italic'>
@@ -1208,7 +1220,7 @@ export default function HomeSection() {
                       {(() => {
                         const dateToShow =
                           selectedDate || currentRamadanDay || 1;
-                        const events = CALENDAR_EVENTS[dateToShow];
+                        const events = calendarEvents[dateToShow];
                         if (!events || events.length === 0) {
                           return (
                             <p className='text-sm text-gray-500 italic'>
