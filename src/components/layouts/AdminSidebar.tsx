@@ -95,6 +95,16 @@ const navItems = [
     icon: Database,
     allowedRoles: ['admin', 'event'] as AdminRole[],
   },
+  {
+    name: 'Nuzulul Quran',
+    href: '',
+    icon: Calendar,
+    allowedRoles: ['admin', 'event'] as AdminRole[],
+    subItems: [
+      { name: 'Check RSVP', href: '/admin/nuzulul-quran/check' },
+      { name: 'Data RSVP', href: '/admin/nuzulul-quran' },
+    ],
+  },
 ];
 
 type AdminUser = {

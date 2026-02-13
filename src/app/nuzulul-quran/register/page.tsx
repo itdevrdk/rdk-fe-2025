@@ -5,8 +5,12 @@ import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { useNuzululQuran } from '@/hooks/useNuzululQuran';
+
 import Layout from '@/components/layouts/Layout';
 import Typography from '@/components/Typography';
+
+import { NuzululQuranRegistration } from '@/types/nuzulul-quran';
 
 export default function NuzululQuranRegisterPage() {
   const router = useRouter();
@@ -31,9 +35,35 @@ export default function NuzululQuranRegisterPage() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { registerParticipant, loading } = useNuzululQuran();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement form submission logic
+    try {
+      const payload: NuzululQuranRegistration = {
+        nama_lengkap: formData.namaLengkap,
+        email: formData.email,
+        whatsapp: formData.whatsapp,
+        jenis_kelamin: formData.jenisKelamin as 'Laki-laki' | 'Perempuan',
+        instansi: formData.instansi,
+        mentoring_2026: formData.mentoring2026 as 'Ya' | 'Bukan',
+      };
+
+      const res = await registerParticipant(payload);
+
+      if (res?.status) {
+        alert(
+          `Registrasi berhasil! Kode Anda: ${res.data.code}. Silakan cek email Anda.`,
+        );
+        router.push('/nuzulul-quran');
+      }
+    } catch (error) {
+      // Handle error
+      const err = error as { response?: { data?: { message?: string } } };
+      const msg =
+        err?.response?.data?.message || 'Terjadi kesalahan saat mendaftar.';
+      alert(msg);
+    }
   };
 
   return (
@@ -46,7 +76,7 @@ export default function NuzululQuranRegisterPage() {
           alt='Top Right Decoration'
           width={147}
           height={243}
-          className='absolute top-0 right-0 z-10 right-6 lg:right-32 w-18'
+          className='absolute top-0 z-10 right-6 lg:right-32 w-18'
         />
 
         {/* Bottom Left Decoration */}
@@ -241,9 +271,10 @@ export default function NuzululQuranRegisterPage() {
                 {/* Submit Button */}
                 <button
                   type='submit'
-                  className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base'
+                  disabled={loading}
+                  className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed'
                 >
-                  Daftar Sekarang
+                  {loading ? 'Memproses...' : 'Daftar Sekarang'}
                 </button>
               </form>
             </div>

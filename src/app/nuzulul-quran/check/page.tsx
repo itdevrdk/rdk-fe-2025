@@ -5,19 +5,43 @@ import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
+import { useNuzululQuran } from '@/hooks/useNuzululQuran';
+
 import Layout from '@/components/layouts/Layout';
 import Typography from '@/components/Typography';
+
+import { NuzululQuranCheckData } from '@/types/nuzulul-quran';
 
 export default function NuzululQuranCheckPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+  const [result, setResult] = useState<NuzululQuranCheckData | null>(null);
+  const [notFound, setNotFound] = useState(false);
+  const { checkRegistrationStatus, loading } = useNuzululQuran();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
+    setResult(null);
+    setNotFound(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!searchQuery) return;
+
+    setResult(null);
+    setNotFound(false);
+
+    try {
+      const res = await checkRegistrationStatus(searchQuery);
+      if (res.data?.is_registered && res.data.data) {
+        setResult(res.data.data);
+      } else {
+        setNotFound(true);
+      }
+    } catch (error) {
+      setNotFound(true);
+    }
   };
 
   return (
@@ -30,7 +54,7 @@ export default function NuzululQuranCheckPage() {
           alt='Top Right Decoration'
           width={147}
           height={243}
-          className='absolute top-0 right-0 z-10 right-6 lg:right-32 w-18'
+          className='absolute top-0 z-10 right-6 lg:right-32 w-18'
         />
 
         {/* Bottom Left Decoration */}
@@ -123,11 +147,77 @@ export default function NuzululQuranCheckPage() {
                 {/* Submit Button */}
                 <button
                   type='submit'
-                  className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base'
+                  disabled={loading}
+                  className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-bold py-3 rounded-lg transition-colors mt-4 text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed'
                 >
-                  Cek Status Pendaftaran
+                  {loading ? 'Memproses...' : 'Cek Status Pendaftaran'}
                 </button>
               </form>
+
+              {/* Result Section */}
+              {loading && (
+                <div className='text-center text-[#681819] font-semibold'>
+                  Sedang memeriksa...
+                </div>
+              )}
+
+              {notFound && !loading && (
+                <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative'>
+                  <strong className='font-bold'>Data tidak ditemukan!</strong>
+                  <span className='block sm:inline'>
+                    {' '}
+                    Silakan periksa kembali email atau nama Anda, atau daftar
+                    jika belum.
+                  </span>
+                </div>
+              )}
+
+              {result && !loading && (
+                <div className='bg-white p-6 rounded-lg shadow-md border-l-4 border-[#681819]'>
+                  <Typography
+                    as='h4'
+                    variant='h4'
+                    font='marquisette'
+                    weight='bold'
+                    className='text-[#681819] mb-4'
+                  >
+                    Status: Terdaftar
+                  </Typography>
+                  <div className='grid grid-cols-1 gap-2 text-sm md:text-base'>
+                    <div className='flex flex-col'>
+                      <span className='text-gray-500'>Nama Lengkap</span>
+                      <span className='font-semibold text-gray-800'>
+                        {result.nama_lengkap}
+                      </span>
+                    </div>
+                    <div className='flex flex-col'>
+                      <span className='text-gray-500'>Email</span>
+                      <span className='font-semibold text-gray-800'>
+                        {result.email}
+                      </span>
+                    </div>
+                    <div className='flex flex-col'>
+                      <span className='text-gray-500'>Tanggal Daftar</span>
+                      <span className='font-semibold text-gray-800'>
+                        {new Date(result.registered_at).toLocaleDateString(
+                          'id-ID',
+                          {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                          },
+                        )}
+                      </span>
+                    </div>
+                    <div className='mt-2'>
+                      <span className='px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold uppercase tracking-wide'>
+                        {result.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* RIGHT SECTION - Mosque Image - Hidden on Mobile, Shown on Desktop */}
