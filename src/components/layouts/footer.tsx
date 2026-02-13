@@ -6,6 +6,13 @@ import { RiTiktokLine } from 'react-icons/ri';
 
 import Typography from '@/components/Typography';
 
+const FOOTER_LINKS = [
+  { name: 'Kalender', href: '/calendar' },
+  { name: 'Kegiatan', href: '#' },
+  { name: 'Pendaftaran Kegiatan', href: '/#pendaftaran-kegiatan' },
+  { name: 'Laporan Keuangan', href: '/report' },
+];
+
 export default function Footer() {
   return (
     <footer className='relative overflow-hidden bg-gradient-to-r from-[#C33A3C] to-[#942B2C] text-white'>
@@ -43,22 +50,17 @@ export default function Footer() {
 
           {/* Menu */}
           <nav className='flex gap-10'>
-            {[
-              'Kalender',
-              'Kegiatan',
-              'Pendaftaran Kegiatan',
-              'Laporan Keuangan',
-            ].map((item) => (
+            {FOOTER_LINKS.map((item) => (
               <Typography
-                key={item}
+                key={item.name}
                 as='a'
-                href='#'
+                href={item.href}
                 variant='body'
                 font='zabal'
                 weight='regular'
                 className='transition-opacity hover:opacity-80'
               >
-                {item}
+                {item.name}
               </Typography>
             ))}
           </nav>
@@ -123,21 +125,16 @@ export default function Footer() {
           </div>
 
           <nav className='flex flex-col gap-5'>
-            {[
-              'Kalender',
-              'Kegiatan',
-              'Pendaftaran Kegiatan',
-              'Laporan Keuangan',
-            ].map((item) => (
+            {FOOTER_LINKS.map((item) => (
               <Typography
-                key={item}
+                key={item.name}
                 as='a'
-                href='#'
+                href={item.href}
                 variant='body'
                 font='zabal'
                 weight='regular'
               >
-                {item}
+                {item.name}
               </Typography>
             ))}
           </nav>

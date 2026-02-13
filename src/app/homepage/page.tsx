@@ -10,6 +10,7 @@ import { useEvent } from '@/hooks/useEvent';
 import { useFinanceReport } from '@/hooks/useFinanceReport';
 
 import Button from '@/components/buttons/Button';
+import ScrollToTop from '@/components/buttons/ScrollToTop';
 import Layout from '@/components/layouts/Layout';
 import NextImageCustom from '@/components/NextImage';
 import { showToast, SUCCESS_TOAST, WARNING_TOAST } from '@/components/Toast';
@@ -682,6 +683,7 @@ export default function HomeSection() {
 
   return (
     <Layout withNavbar withFooter>
+      <ScrollToTop />
       {/* Coming Soon Popup */}
       {showPopup && <ComingSoonPopup onClose={() => setShowPopup(false)} />}
 
