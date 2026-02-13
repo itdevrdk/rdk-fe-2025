@@ -52,7 +52,7 @@ export default function AdminNuzululQuranCheck() {
   }, [isError, isLoading, searchTrigger]);
 
   return (
-    <div className='mx-auto max-w-2xl'>
+    <div className='mx-auto w-full'>
       <div className='rounded-xl border border-gray-200 bg-white p-6 shadow-sm'>
         <Typography variant='h4' className='mb-6 font-bold text-gray-900'>
           Check In Peserta
