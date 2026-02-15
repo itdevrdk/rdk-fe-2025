@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useNuzululQuran } from '@/hooks/useNuzululQuran';
 
 import Layout from '@/components/layouts/Layout';
+import { DANGER_TOAST, showToast } from '@/components/Toast';
 import Typography from '@/components/Typography';
 
 import { NuzululQuranRegistration } from '@/types/nuzulul-quran';
@@ -48,17 +49,15 @@ export default function NuzululQuranRegisterPage() {
       const res = await registerParticipant(payload);
 
       if (res?.status) {
-        alert(
-          `Registrasi berhasil! Kode Anda: ${res.data.code}. Silakan cek email Anda.`,
-        );
-        router.push('/nuzulul-quran');
+        // Redirect to success page with code
+        router.push(`/nuzulul-quran/register/success?code=${res.data.code}`);
       }
     } catch (error) {
-      // Handle error
+      // Handle error with toast
       const err = error as { response?: { data?: { message?: string } } };
       const msg =
         err?.response?.data?.message || 'Terjadi kesalahan saat mendaftar.';
-      alert(msg);
+      showToast(msg, DANGER_TOAST);
     }
   };
 

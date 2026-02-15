@@ -1,14 +1,15 @@
 'use client';
 
 import NextImage from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { FaWhatsapp } from 'react-icons/fa';
 
 import Layout from '@/components/layouts/Layout';
 import Typography from '@/components/Typography';
 
 export default function NuzululQuranSuccessPage() {
-  // TODO: Get unique code from URL params or previous page state
-  const uniqueCode = 'INIDODEUNIK';
+  const searchParams = useSearchParams();
+  const uniqueCode = searchParams.get('code') || 'INIDODEUNIK';
 
   return (
     <Layout withNavbar withFooter>
