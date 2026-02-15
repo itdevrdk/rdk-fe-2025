@@ -129,31 +129,6 @@ export default function AdminNuzululQuranDetail({
                           {data.data.institution}
                         </Typography>
                       </div>
-
-                      <div>
-                        <Typography variant='label' className='text-gray-500'>
-                          Kota/Kabupaten
-                        </Typography>
-                        <Typography
-                          variant='body'
-                          weight='medium'
-                          className='text-base'
-                        >
-                          {data.data.city}
-                        </Typography>
-                      </div>
-                      <div>
-                        <Typography variant='label' className='text-gray-500'>
-                          Provinsi
-                        </Typography>
-                        <Typography
-                          variant='body'
-                          weight='medium'
-                          className='text-base'
-                        >
-                          {data.data.province}
-                        </Typography>
-                      </div>
                     </div>
 
                     <div className='rounded-lg bg-gray-50 p-3'>
