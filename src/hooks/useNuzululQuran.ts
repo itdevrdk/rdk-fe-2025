@@ -14,12 +14,30 @@ import {
 export const useNuzululQuran = () => {
   const [loading, setLoading] = useState(false);
 
+  /**
+   * Register a new participant for Nuzulul Quran event
+   *
+   * @param data - Registration data including nama_lengkap, email, jenis_kelamin, instansi
+   * @returns API response with generated code and status
+   * @throws {AxiosError} 409 - Duplicate registration (same email)
+   * @throws {AxiosError} 422 - Validation error (missing required fields, invalid email)
+   *
+   * @example
+   * ```tsx
+   * const result = await registerParticipant({
+   *   nama_lengkap: "Fatimah Zahra",
+   *   email: "fatimah@example.com",
+   *   jenis_kelamin: "Perempuan",
+   *   instansi: "Engineering"
+   * });
+   * // result.data.code => "RDKB7X"
+   * // result.data.status => "registered"
+   * ```
+   */
   const registerParticipant = useCallback(
     async (data: NuzululQuranRegistration) => {
       try {
         setLoading(true);
-        // Assuming base URL handles /api/v1 prefix if configured, or relative path works.
-        // If api base is .../api/v1, then this becomes .../api/v1/nuzulul-quran/register
         const res = await api.post<
           ApiResponse<NuzululQuranRegistrationResponse>
         >('/rsvp/nuzulul-quran/register', data);
@@ -31,6 +49,27 @@ export const useNuzululQuran = () => {
     [],
   );
 
+  /**
+   * Check Nuzulul Quran registration status by email or full name
+   *
+   * @param search - Email address OR full name (nama_lengkap) to search for
+   * @returns Registration status and participant data if found
+   * @throws {AxiosError} 400 - Missing search parameter
+   * @throws {AxiosError} 404 - RSVP not found
+   *
+   * @example
+   * ```tsx
+   * // Search by email
+   * const result = await checkRegistrationStatus('fatimah@example.com');
+   *
+   * // Search by full name
+   * const result = await checkRegistrationStatus('Fatimah Zahra');
+   *
+   * if (result.data.is_registered) {
+   *   console.log('Found:', result.data.data);
+   * }
+   * ```
+   */
   const checkRegistrationStatus = useCallback(async (search: string) => {
     try {
       setLoading(true);

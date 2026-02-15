@@ -1,0 +1,122 @@
+// ============================================
+// General RSVP Types
+// ============================================
+
+/**
+ * Request payload for general RSVP registration
+ * POST /api/v1/rsvp
+ */
+export interface RsvpCreateRequest {
+  fullname: string;
+  institution: string;
+  province: string;
+  city: string;
+}
+
+/**
+ * Response from general RSVP registration
+ */
+export interface RsvpCreateResponse {
+  fullname: string;
+  code: string;
+  status: 'registered' | 'joined';
+}
+
+// ============================================
+// Admin RSVP Types (for both General & Nuzulul Quran)
+// ============================================
+
+/**
+ * Query parameters for admin RSVP list
+ * GET /api/v1/admin/rsvp
+ */
+export interface RsvpAdminQuery {
+  event_name?: string;
+  page?: number;
+  limit?: number;
+  status?: 'registered' | 'joined';
+  search?: string;
+}
+
+/**
+ * Individual RSVP item in admin list
+ */
+export interface RsvpAdminListItem {
+  fullname: string;
+  code: string;
+}
+
+/**
+ * Metadata for paginated RSVP list
+ */
+export interface RsvpAdminMeta {
+  event_name: string;
+  page: number;
+  limit: number;
+  total_data: number;
+  total_page: number;
+}
+
+/**
+ * RSVP data returned by GET /admin/rsvp/:code (for check-in)
+ */
+export interface RsvpByCodeData {
+  event_name: string;
+  fullname: string;
+  code: string;
+  status: 'registered' | 'joined';
+}
+
+/**
+ * Complete RSVP details returned by GET /admin/rsvp/:code/details
+ */
+export interface RsvpDetailsData {
+  rsvp_id: string;
+  event_name: string;
+  fullname: string;
+  institution: string;
+  province: string;
+  city: string;
+  code: string;
+  status: 'registered' | 'joined';
+}
+
+/**
+ * Request payload for updating RSVP status (check-in)
+ * PATCH /admin/rsvp/:code/status
+ */
+export interface RsvpStatusUpdateRequest {
+  status: 'joined';
+}
+
+/**
+ * Response from RSVP status update
+ */
+export interface RsvpStatusUpdateResponse {
+  event_name: string;
+  fullname: string;
+  code: string;
+}
+
+// ============================================
+// Database Entity (for reference only)
+// ============================================
+
+/**
+ * Complete RSVP entity structure (database model)
+ * This is for reference and may not be directly used in API responses
+ */
+export interface RsvpEntity {
+  id: string; // UUID
+  fullname: string;
+  institution: string;
+  province: string;
+  city: string;
+  code: string; // Unique, 6 characters (e.g., "RDKA49")
+  status: 'registered' | 'joined';
+  event_type: 'General' | "Peringatan Nuzulul Qur'an RDK 47 ITS";
+  email?: string; // Optional (used by Nuzulul Quran)
+  gender?: string; // Optional (used by Nuzulul Quran)
+  created_at: string;
+  updated_at: string;
+}
