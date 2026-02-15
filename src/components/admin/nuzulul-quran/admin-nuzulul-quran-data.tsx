@@ -44,6 +44,21 @@ export default function AdminNuzululQuranData() {
       header: 'Kode',
     },
     {
+      key: 'status',
+      header: 'Status',
+      render: (item) => (
+        <span
+          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+            item.status === 'joined'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-yellow-100 text-yellow-800'
+          }`}
+        >
+          {item.status === 'joined' ? 'Hadir' : 'Terdaftar'}
+        </span>
+      ),
+    },
+    {
       key: 'actions',
       header: 'Aksi',
       className: 'w-[100px]',

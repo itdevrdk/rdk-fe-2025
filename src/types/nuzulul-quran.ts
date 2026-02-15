@@ -31,6 +31,7 @@ export interface NuzululQuranAdminData {
   jenis_kelamin: string;
   instansi: string;
   code: string;
+  status: 'registered' | 'joined';
   created_at: string;
 }
 
@@ -57,6 +58,7 @@ export interface NuzululQuranAdminListResponse {
   data: {
     fullname: string;
     code: string;
+    status: 'registered' | 'joined';
   }[];
   meta: MetaData;
 }
