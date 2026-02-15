@@ -1,10 +1,8 @@
 export interface NuzululQuranRegistration {
   nama_lengkap: string;
   email: string;
-  whatsapp: string;
   jenis_kelamin: 'Laki-laki' | 'Perempuan';
   instansi: string;
-  mentoring_2026: 'Ya' | 'Bukan';
 }
 
 export interface NuzululQuranRegistrationResponse {
@@ -30,10 +28,8 @@ export interface NuzululQuranAdminData {
   id: string;
   nama_lengkap: string;
   email: string;
-  whatsapp: string;
   jenis_kelamin: string;
   instansi: string;
-  mentoring_2026: string;
   code: string;
   created_at: string;
 }
@@ -69,7 +65,6 @@ export interface NuzululQuranDetailData {
   rsvp_id: string;
   event_name: string;
   fullname: string;
-  telephone: string;
   institution: string;
   province: string;
   city: string;

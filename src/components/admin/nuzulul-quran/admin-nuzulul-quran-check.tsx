@@ -103,7 +103,7 @@ export default function AdminNuzululQuranCheck() {
                 {data.data.status === 'joined' ? 'Hadir' : 'Terdaftar'}
               </div>
             </div>
-            <div className='grid grid-cols-2 gap-4 border-t border-gray-200 py-4'>
+            <div className='border-t border-gray-200 py-4'>
               <div>
                 <Typography variant='label' className='text-gray-500'>
                   Kode
@@ -114,18 +114,6 @@ export default function AdminNuzululQuranCheck() {
                   className='text-base'
                 >
                   {data.data.code}
-                </Typography>
-              </div>
-              <div>
-                <Typography variant='label' className='text-gray-500'>
-                  No. Telepon
-                </Typography>
-                <Typography
-                  variant='body'
-                  weight='medium'
-                  className='text-base'
-                >
-                  {data.data.telephone}
                 </Typography>
               </div>
             </div>

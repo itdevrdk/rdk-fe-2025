@@ -129,18 +129,7 @@ export default function AdminNuzululQuranDetail({
                           {data.data.institution}
                         </Typography>
                       </div>
-                      <div>
-                        <Typography variant='label' className='text-gray-500'>
-                          No. Telepon
-                        </Typography>
-                        <Typography
-                          variant='body'
-                          weight='medium'
-                          className='text-base'
-                        >
-                          {data.data.telephone}
-                        </Typography>
-                      </div>
+
                       <div>
                         <Typography variant='label' className='text-gray-500'>
                           Kota/Kabupaten

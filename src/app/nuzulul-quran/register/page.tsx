@@ -17,10 +17,8 @@ export default function NuzululQuranRegisterPage() {
   const [formData, setFormData] = useState({
     namaLengkap: '',
     email: '',
-    whatsapp: '',
     jenisKelamin: '',
     instansi: '',
-    mentoring2026: '',
   });
 
   const handleInputChange = (
@@ -43,10 +41,8 @@ export default function NuzululQuranRegisterPage() {
       const payload: NuzululQuranRegistration = {
         nama_lengkap: formData.namaLengkap,
         email: formData.email,
-        whatsapp: formData.whatsapp,
         jenis_kelamin: formData.jenisKelamin as 'Laki-laki' | 'Perempuan',
         instansi: formData.instansi,
-        mentoring_2026: formData.mentoring2026 as 'Ya' | 'Bukan',
       };
 
       const res = await registerParticipant(payload);
@@ -181,26 +177,6 @@ export default function NuzululQuranRegisterPage() {
                   />
                 </div>
 
-                {/* WhatsApp Number Input */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='whatsapp'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Nomor WhatsApp
-                  </label>
-                  <input
-                    type='tel'
-                    id='whatsapp'
-                    name='whatsapp'
-                    placeholder='Nomor WhatsApp'
-                    value={formData.whatsapp}
-                    onChange={handleInputChange}
-                    required
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-300 border-2 border-transparent focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base'
-                  />
-                </div>
-
                 {/* Jenis Kelamin Select */}
                 <div className='flex flex-col gap-2'>
                   <label
@@ -244,28 +220,6 @@ export default function NuzululQuranRegisterPage() {
                   <p className='text-xs text-gray-600'>
                     Untuk jamaah umum, isi dengan "Umum"
                   </p>
-                </div>
-
-                {/* Apakah Peserta Mentoring 2026 Select */}
-                <div className='flex flex-col gap-2'>
-                  <label
-                    htmlFor='mentoring2026'
-                    className='text-[#681819] font-bold text-sm md:text-base'
-                  >
-                    Apakah Peserta Mentoring 2025/2026?
-                  </label>
-                  <select
-                    id='mentoring2026'
-                    name='mentoring2026'
-                    value={formData.mentoring2026}
-                    onChange={handleInputChange}
-                    required
-                    className='w-full px-4 py-3 rounded-lg bg-white text-gray-800 placeholder-gray-300 border-2 border-transparent focus:outline-none focus:border-[#681819] transition-colors text-sm md:text-base'
-                  >
-                    <option value=''>Pilih Jawaban</option>
-                    <option value='Ya'>Ya</option>
-                    <option value='Bukan'>Bukan</option>
-                  </select>
                 </div>
 
                 {/* Submit Button */}
