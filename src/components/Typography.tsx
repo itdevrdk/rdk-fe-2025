@@ -48,6 +48,7 @@ export default function Typography<T extends React.ElementType>({
   return (
     <Component
       className={cn(
+        'selection:bg-transparent selection:text-inherit',
         // *=============== Font Type ==================
         [
           font === 'marquisette' && [

@@ -45,66 +45,12 @@ const KEGIATAN_ITEMS: KegiatanItem[] = [
     registrationDeadline: null,
   },
   {
-    title: 'Ngabuburits #1',
-    desc: 'Seni Memantaskan Diri: Mengubah Sudut Pandang Kesendirian Menjadi Ibadah dan Investasi Masa Depan',
+    title: 'Kajian Inspiratif',
+    desc: 'Serangkaian kajian pilihan yang menghadirkan tokoh nasional dan ulama inspiratif untuk menerangi Ramadanmu dengan ilmu, refleksi, dan penguatan iman.',
     hasRegister: true,
-    link: '/ngabuburits-1',
+    link: '/kajian-inspiratif',
     image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: null,
-    registrationDeadline: null,
-  },
-  {
-    title: 'Ngabuburits #2',
-    desc: 'Menjaga Iman, Mengasah Akal: Filsafat Etika Mahasiswa di Era Digital',
-    hasRegister: true,
-    link: '/ngabuburits-2',
-    image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: null,
-    registrationDeadline: null,
-  },
-  {
-    title: 'Ngabuburits #3',
-    desc: "Al-Qur'an sebagai Pedoman Peradaban: Menyemai Nilai-Nilai Kehidupan di Bulan Ramadan",
-    hasRegister: true,
-    link: '/ngabuburits-3',
-    image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: null,
-    registrationDeadline: null,
-  },
-  {
-    title: 'Ngabuburits #4',
-    desc: 'Hadits sebagai Sumber Inspirasi: Cara Menghadapi Tekanan Akademik dan Tantangan di Kampus dengan Keteguhan Hati',
-    hasRegister: true,
-    link: '/ngabuburits-4',
-    image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: null,
-    registrationDeadline: null,
-  },
-  {
-    title: 'Simposium Ramadan #1',
-    desc: 'Inovasi Pendidikan Tinggi: Antara Citra Global dan Realita Lapangan',
-    hasRegister: true,
-    link: '/simposium-ramadan-1',
-    image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: null,
-    registrationDeadline: null,
-  },
-  {
-    title: 'Simposium Ramadan #2',
-    desc: 'Mahasiswa, Media, dan Spirit Ramadan: Mencari Jalan Tengah di Era Disrupsi',
-    hasRegister: true,
-    link: '/simposium-ramadan-2',
-    image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: null,
-    registrationDeadline: null,
-  },
-  {
-    title: 'HOMe (Heart Of Muslimah)',
-    desc: 'Muslimah di Dunia Akademik: Antara Intelektualitas, Akhlak, dan Kontribusi Sosial',
-    hasRegister: true,
-    link: '/home-muslimah',
-    image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: null,
+    registrationOpenDate: new Date('2026-02-18'),
     registrationDeadline: null,
   },
   {
@@ -199,6 +145,29 @@ const formatDate = (date: Date): string => {
     month: 'long',
     year: 'numeric',
   });
+};
+
+// Helper to get event color with fallback logic
+const getEventColor = (title: string): string => {
+  const titleLower = title.toLowerCase();
+
+  if (titleLower.includes('berbagi sahur') || titleLower.includes('sahur')) {
+    return '#3B82F6'; // Blue
+  } else if (
+    titleLower.includes('pembukaan') ||
+    titleLower.includes('penutupan')
+  ) {
+    return '#9333EA'; // Purple
+  } else if (titleLower.includes('kajian') || titleLower.includes('ceramah')) {
+    return '#10B981'; // Green
+  } else if (titleLower.includes('sosial') || titleLower.includes('bakti')) {
+    return '#F59E0B'; // Amber
+  } else if (titleLower.includes('penting') || titleLower.includes('khusus')) {
+    return '#EF4444'; // Red
+  }
+
+  // Default color
+  return '#3B82F6'; // Blue
 };
 
 // ==================== KALENDER RAMADAN CONFIG ====================
@@ -1092,18 +1061,21 @@ export default function HomeSection() {
                           </span>
                           {eventDates.includes(date) &&
                             calendarEvents[date] && (
-                              <div className='mt-8 lg:mt-10 rounded-lg bg-[#EAF6FF] p-2 lg:p-3 text-left text-xs lg:text-sm'>
-                                <div className='relative pr-3'>
-                                  <span className='font-medium leading-tight line-clamp-2'>
-                                    {calendarEvents[date][0].title}
-                                  </span>
-                                  {calendarEvents[date].length > 1 && (
-                                    <span className='text-xs text-gray-500'>
-                                      +{calendarEvents[date].length - 1} lainnya
-                                    </span>
-                                  )}
-                                  <span className='absolute right-0 top-0 h-2 w-2 rounded-full bg-blue-500' />
-                                </div>
+                              <div className='absolute left-2 right-2 top-8 lg:top-10 flex flex-col gap-1'>
+                                {calendarEvents[date]
+                                  .slice(0, 3)
+                                  .map((event, eventIdx) => (
+                                    <div
+                                      key={eventIdx}
+                                      className='h-1.5 rounded-full'
+                                      style={{
+                                        backgroundColor: getEventColor(
+                                          event.title,
+                                        ),
+                                      }}
+                                      title={event.title}
+                                    />
+                                  ))}
                               </div>
                             )}
                         </>
@@ -1138,7 +1110,12 @@ export default function HomeSection() {
                           key={idx}
                           className='flex items-center gap-3 rounded-lg bg-[#EAF6FF] p-3'
                         >
-                          <div className='flex-shrink-0 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold'>
+                          <div
+                            className='flex-shrink-0 h-10 w-10 rounded-full text-white flex items-center justify-center font-bold'
+                            style={{
+                              backgroundColor: getEventColor(event.title),
+                            }}
+                          >
                             {dateToShow}
                           </div>
                           <div className='flex-1'>
@@ -1189,9 +1166,7 @@ export default function HomeSection() {
                           key={idx}
                           onClick={() => date && setSelectedDate(date)}
                           className={`aspect-square flex items-center justify-center rounded-full text-sm relative cursor-pointer transition-colors
-                            ${date === currentRamadanDay && selectedDate !== date ? 'bg-red-600 text-white' : ''}
                             ${date && selectedDate === date ? 'bg-[#9E2A2F] text-white' : ''}
-                            ${date && eventDates.includes(date) && selectedDate !== date ? 'ring-2 ring-blue-500 ring-offset-1' : ''}
                             ${!date ? '' : 'hover:bg-gray-100'}`}
                         >
                           {date && (
@@ -1199,7 +1174,21 @@ export default function HomeSection() {
                               <span>{date}</span>
                               {eventDates.includes(date) &&
                                 selectedDate !== date && (
-                                  <span className='absolute -bottom-0.5 left-1/2 -translate-x-1/2 h-1 w-1 rounded-full bg-blue-500' />
+                                  <div className='absolute bottom-1 left-1 right-1 flex flex-col gap-0.5'>
+                                    {calendarEvents[date]
+                                      .slice(0, 2)
+                                      .map((event, eventIdx) => (
+                                        <div
+                                          key={eventIdx}
+                                          className='h-0.5 rounded-full'
+                                          style={{
+                                            backgroundColor: getEventColor(
+                                              event.title,
+                                            ),
+                                          }}
+                                        />
+                                      ))}
+                                  </div>
                                 )}
                             </>
                           )}
@@ -1235,7 +1224,12 @@ export default function HomeSection() {
                             key={idx}
                             className='flex items-center gap-3 rounded-lg bg-[#EAF6FF] p-3'
                           >
-                            <div className='flex-shrink-0 h-10 w-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold'>
+                            <div
+                              className='flex-shrink-0 h-10 w-10 rounded-full text-white flex items-center justify-center font-bold'
+                              style={{
+                                backgroundColor: getEventColor(event.title),
+                              }}
+                            >
                               {dateToShow}
                             </div>
                             <div className='flex-1'>
@@ -1493,18 +1487,23 @@ export default function HomeSection() {
       </section>
 
       {/* SPONSOR */}
-      {/* <section className='bg-white py-16 overflow-hidden'>
+      <section className='bg-white py-16 overflow-hidden'>
         <div className='relative w-full overflow-hidden'>
-          <div className='marquee-track flex gap-16'>
+          <div className='marquee-track flex gap-16 justify-center items-center'>
             {[...Array(12)].flatMap((_, idx) =>
-              ['/images/homepage/spon1.png'].map((src, i) => (
+              [
+                '/images/homepage/sponsor/1.png',
+                '/images/homepage/sponsor/2.webp',
+                '/images/homepage/sponsor/3.png',
+                '/images/homepage/sponsor/4.png',
+              ].map((src, i) => (
                 <NextImage
                   key={`${idx}-${src}-${i}`}
                   src={src}
                   alt='Sponsor'
                   width={120}
                   height={60}
-                  className='shrink-0'
+                  className='w-full h-full'
                 />
               )),
             )}
@@ -1526,7 +1525,7 @@ export default function HomeSection() {
             }
           }
         `}</style>
-      </section> */}
+      </section>
 
       {/* FEEDBACK */}
       <section className='relative bg-white py-24'>

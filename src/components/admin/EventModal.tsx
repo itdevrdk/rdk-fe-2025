@@ -22,7 +22,17 @@ const eventSchema = z.object({
   location: z.string().min(1, 'Lokasi wajib diisi'),
   date: z.string().min(1, 'Tanggal mulai wajib diisi'),
   end_date: z.string().optional(),
+  color: z.string().optional(),
 });
+
+// Preset colors matching the calendar color scheme
+const PRESET_COLORS = [
+  { name: 'Biru (Berbagi Sahur)', value: '#3B82F6' },
+  { name: 'Ungu (Acara Khusus)', value: '#9333EA' },
+  { name: 'Hijau (Kajian)', value: '#10B981' },
+  { name: 'Kuning (Sosial)', value: '#F59E0B' },
+  { name: 'Merah (Penting)', value: '#EF4444' },
+];
 
 type EventFormData = z.infer<typeof eventSchema>;
 
@@ -46,10 +56,13 @@ export default function EventModal({
     handleSubmit,
     reset,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
   });
+
+  const selectedColor = watch('color');
 
   // Reset form when modal opens/closes or editData changes
   useEffect(() => {
@@ -64,6 +77,7 @@ export default function EventModal({
           'end_date',
           editData.end_date ? editData.end_date.slice(0, 16) : '',
         );
+        setValue('color', editData.color || PRESET_COLORS[0].value);
       } else {
         reset({
           title: '',
@@ -71,6 +85,7 @@ export default function EventModal({
           location: '',
           date: '',
           end_date: '',
+          color: PRESET_COLORS[0].value,
         });
       }
     }
@@ -159,6 +174,39 @@ export default function EventModal({
                 </p>
               )}
             </div>
+          </div>
+
+          <div className='space-y-2'>
+            <Label htmlFor='color'>Warna Indikator</Label>
+            <div className='flex gap-2 flex-wrap'>
+              {PRESET_COLORS.map((colorOption) => (
+                <button
+                  key={colorOption.value}
+                  type='button'
+                  onClick={() => setValue('color', colorOption.value)}
+                  className={`group relative transition-transform hover:scale-110 ${
+                    selectedColor === colorOption.value
+                      ? 'ring-2 ring-primary-100 ring-offset-2 rounded-full'
+                      : ''
+                  }`}
+                  title={colorOption.name}
+                >
+                  <div
+                    className='w-10 h-10 rounded-full border-2 transition-all'
+                    style={{
+                      backgroundColor: colorOption.value,
+                      borderColor:
+                        selectedColor === colorOption.value
+                          ? '#ffffff'
+                          : 'transparent',
+                    }}
+                  />
+                </button>
+              ))}
+            </div>
+            <p className='text-xs text-gray-500'>
+              Pilih warna untuk indikator event di kalender
+            </p>
           </div>
 
           <div className='flex justify-end gap-2 pt-4'>

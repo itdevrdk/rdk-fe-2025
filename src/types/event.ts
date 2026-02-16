@@ -5,6 +5,7 @@ export interface RamadanEvent {
   location: string;
   date: string; // ISO String
   end_date?: string | null; // ISO String
+  color?: string | null; // Hex color code for calendar dot indicator
 }
 
 export interface CreateEventRequest {
@@ -13,6 +14,7 @@ export interface CreateEventRequest {
   location: string;
   date: string;
   end_date?: string;
+  color?: string;
 }
 
 export interface UpdateEventRequest {
@@ -22,6 +24,7 @@ export interface UpdateEventRequest {
   location: string;
   date: string;
   end_date?: string;
+  color?: string;
 }
 
 export interface EventQuery {
