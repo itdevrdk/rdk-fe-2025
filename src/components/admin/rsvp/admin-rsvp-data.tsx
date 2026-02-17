@@ -124,6 +124,8 @@ export default function AdminRsvpData() {
           onChange={(e) => {
             setSelectedEventName(e.target.value);
             setPage(1);
+            setSearch('');
+            setStatusFilter('all');
           }}
         >
           <option value=''>Semua Event</option>
