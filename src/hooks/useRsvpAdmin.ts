@@ -1,8 +1,9 @@
-import { useCallback, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 import { api } from '@/lib/api';
 
-import { ApiResponse } from '@/types/api';
+import { ApiError } from '@/types/api';
 import {
   RsvpAdminListItem,
   RsvpAdminMeta,
@@ -13,9 +14,16 @@ import {
   RsvpStatusUpdateResponse,
 } from '@/types/rsvp';
 
-/**
- * Response structure for admin RSVP list endpoint
- */
+const RSVP_ADMIN_BASE_URL = '/admin/rsvp';
+
+export const rsvpAdminKeys = {
+  all: ['admin-rsvp'] as const,
+  lists: () => [...rsvpAdminKeys.all, 'list'] as const,
+  list: (params: RsvpAdminQuery) => [...rsvpAdminKeys.lists(), params] as const,
+  details: () => [...rsvpAdminKeys.all, 'detail'] as const,
+  detail: (code: string) => [...rsvpAdminKeys.details(), code] as const,
+};
+
 interface RsvpAdminListResponse {
   code: number;
   status: boolean;
@@ -25,172 +33,108 @@ interface RsvpAdminListResponse {
 }
 
 /**
- * Hook for admin RSVP operations (authenticated endpoints)
- *
- * Provides functionality for:
- * - Get all RSVPs with pagination and filters
- * - Get RSVP by code (for check-in)
- * - Get complete RSVP details
- * - Update RSVP status (check-in)
- *
- * All methods require authentication (JWT Bearer token)
- *
- * @example
- * ```tsx
- * const { loading, getAllRsvps, getRsvpByCode, updateRsvpStatus } = useRsvpAdmin();
- *
- * // Get paginated list
- * const list = await getAllRsvps({ page: 1, limit: 10, status: 'registered' });
- *
- * // Check-in a participant
- * const participant = await getRsvpByCode('RDKA49');
- * await updateRsvpStatus('RDKA49', { status: 'joined' });
- * ```
+ * Hook to fetch RSVP list
  */
-export const useRsvpAdmin = () => {
-  const [loading, setLoading] = useState(false);
+export const useGetRsvps = (params: RsvpAdminQuery) => {
+  return useQuery<RsvpAdminListResponse, AxiosError<ApiError>>({
+    queryKey: rsvpAdminKeys.list(params),
+    queryFn: async () => {
+      const queryParams = new URLSearchParams();
 
-  /**
-   * Get all RSVPs with pagination and optional filters
-   *
-   * @param params - Query parameters for filtering and pagination
-   * @returns Paginated list of RSVPs with metadata
-   * @throws {AxiosError} 401 - Unauthorized (missing or invalid token)
-   * @throws {AxiosError} 422 - Invalid status value
-   *
-   * @example
-   * ```tsx
-   * const result = await getAllRsvps({
-   *   event_name: "Peringatan Nuzulul Qur'an RDK 47 ITS",
-   *   page: 1,
-   *   limit: 10,
-   *   status: 'registered',
-   *   search: 'Ahmad'
-   * });
-   * // result.data => [{ fullname: "Ahmad Fauzi", code: "RDKA49" }, ...]
-   * // result.meta => { page: 1, limit: 10, total_data: 25, total_page: 3 }
-   * ```
-   */
-  const getAllRsvps = useCallback(async (params?: RsvpAdminQuery) => {
-    try {
-      setLoading(true);
-      const res = await api.get<RsvpAdminListResponse>('/admin/rsvp', {
-        params,
-      });
-      return res.data;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      if (params.page) queryParams.set('page', String(params.page));
+      if (params.limit) queryParams.set('limit', String(params.limit));
+      if (params.search) queryParams.set('search', params.search);
+      if (params.event_name) queryParams.set('event_name', params.event_name);
+      if (params.status) queryParams.set('status', params.status);
 
-  /**
-   * Get RSVP by code (used for check-in verification)
-   *
-   * @param code - RSVP code (e.g., "RDKA49")
-   * @returns RSVP data with event info, fullname, code, and status
-   * @throws {AxiosError} 401 - Unauthorized
-   * @throws {AxiosError} 404 - RSVP not found
-   *
-   * @example
-   * ```tsx
-   * const result = await getRsvpByCode('RDKA49');
-   * // result.data => {
-   * //   event_name: "Peringatan Nuzulul Qur'an RDK 47 ITS",
-   * //   fullname: "Ahmad Fauzi",
-   * //   code: "RDKA49",
-   * //   status: "registered"
-   * // }
-   * ```
-   */
-  const getRsvpByCode = useCallback(async (code: string) => {
-    try {
-      setLoading(true);
-      const res = await api.get<ApiResponse<RsvpByCodeData>>(
-        `/admin/rsvp/${code}`,
+      const response = await api.get<RsvpAdminListResponse>(
+        `${RSVP_ADMIN_BASE_URL}?${queryParams.toString()}`,
       );
-      return res.data;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  /**
-   * Get complete RSVP details including all registration information
-   *
-   * @param code - RSVP code (e.g., "RDKA49")
-   * @returns Complete RSVP details including institution, province, city
-   * @throws {AxiosError} 401 - Unauthorized
-   * @throws {AxiosError} 404 - RSVP not found
-   *
-   * @example
-   * ```tsx
-   * const result = await getRsvpDetails('RDKA49');
-   * // result.data => {
-   * //   rsvp_id: "550e8400-e29b-41d4-a716-446655440000",
-   * //   event_name: "Peringatan Nuzulul Qur'an RDK 47 ITS",
-   * //   fullname: "Ahmad Fauzi",
-   * //   institution: "Institut Teknologi Sepuluh Nopember",
-   * //   province: "Jawa Timur",
-   * //   city: "Surabaya",
-   * //   code: "RDKA49",
-   * //   status: "registered"
-   * // }
-   * ```
-   */
-  const getRsvpDetails = useCallback(async (code: string) => {
-    try {
-      setLoading(true);
-      const res = await api.get<ApiResponse<RsvpDetailsData>>(
-        `/admin/rsvp/${code}/details`,
-      );
-      return res.data;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  /**
-   * Update RSVP status (check-in a participant)
-   *
-   * @param code - RSVP code (e.g., "RDKA49")
-   * @param data - Status update payload (must be { status: "joined" })
-   * @returns Updated RSVP confirmation with event name and fullname
-   * @throws {AxiosError} 401 - Unauthorized
-   * @throws {AxiosError} 404 - RSVP not found
-   * @throws {AxiosError} 409 - Already checked in (status already "joined")
-   * @throws {AxiosError} 422 - Invalid status value
-   *
-   * @example
-   * ```tsx
-   * const result = await updateRsvpStatus('RDKA49', { status: 'joined' });
-   * // result.data => {
-   * //   event_name: "Peringatan Nuzulul Qur'an RDK 47 ITS",
-   * //   fullname: "Ahmad Fauzi",
-   * //   code: "RDKA49"
-   * // }
-   * ```
-   */
-  const updateRsvpStatus = useCallback(
-    async (code: string, data: RsvpStatusUpdateRequest) => {
-      try {
-        setLoading(true);
-        const res = await api.patch<ApiResponse<RsvpStatusUpdateResponse>>(
-          `/admin/rsvp/${code}/status`,
-          data,
-        );
-        return res.data;
-      } finally {
-        setLoading(false);
-      }
+      return response.data;
     },
-    [],
-  );
+    staleTime: 30 * 1000,
+  });
+};
 
-  return {
-    loading,
-    getAllRsvps,
-    getRsvpByCode,
-    getRsvpDetails,
-    updateRsvpStatus,
-  };
+/**
+ * Hook to fetch single RSVP detail
+ */
+export const useGetRsvpDetail = (code: string | null) => {
+  return useQuery<
+    { data: RsvpDetailsData; code: number; status: boolean; message: string },
+    AxiosError<ApiError>
+  >({
+    queryKey: rsvpAdminKeys.detail(code || ''),
+    queryFn: async () => {
+      const response = await api.get<{
+        data: RsvpDetailsData;
+        code: number;
+        status: boolean;
+        message: string;
+      }>(`${RSVP_ADMIN_BASE_URL}/${code}/details`);
+      return response.data;
+    },
+    enabled: !!code,
+    staleTime: 60 * 1000,
+  });
+};
+
+/**
+ * Hook to fetch RSVP by code (for check-in verification)
+ * Using the endpoint /admin/rsvp/:code
+ */
+export const useGetRsvpByCode = (code: string | null) => {
+  return useQuery<
+    { data: RsvpByCodeData; code: number; status: boolean; message: string },
+    AxiosError<ApiError>
+  >({
+    queryKey: rsvpAdminKeys.detail(code || ''), // Reusing detail key or create a new one if strictly necessary
+    queryFn: async () => {
+      const response = await api.get<{
+        data: RsvpByCodeData;
+        code: number;
+        status: boolean;
+        message: string;
+      }>(`${RSVP_ADMIN_BASE_URL}/${code}`);
+      return response.data;
+    },
+    enabled: !!code,
+    retry: false, // Don't retry if not found
+  });
+};
+
+/**
+ * Hook to update status (Check-in)
+ */
+export const useUpdateRsvpStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    {
+      data: RsvpStatusUpdateResponse;
+      code: number;
+      status: boolean;
+      message: string;
+    },
+    AxiosError<ApiError>,
+    { code: string } & RsvpStatusUpdateRequest
+  >({
+    mutationFn: async ({ code, status }) => {
+      const response = await api.patch<{
+        data: RsvpStatusUpdateResponse;
+        code: number;
+        status: boolean;
+        message: string;
+      }>(`${RSVP_ADMIN_BASE_URL}/${code}/status`, { status });
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: rsvpAdminKeys.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: rsvpAdminKeys.detail(variables.code),
+      });
+    },
+  });
 };

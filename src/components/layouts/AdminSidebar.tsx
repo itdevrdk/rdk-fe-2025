@@ -62,6 +62,12 @@ const navItems = [
     allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
   },
   {
+    name: 'Daily Info',
+    href: '/admin/daily-info',
+    icon: ClipboardList,
+    allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
+  },
+  {
     name: 'Masukan',
     href: '/admin/suggestions',
     icon: FileText,
@@ -96,13 +102,13 @@ const navItems = [
     allowedRoles: ['admin', 'event'] as AdminRole[],
   },
   {
-    name: 'Nuzulul Quran',
+    name: 'RSVP',
     href: '',
     icon: Calendar,
     allowedRoles: ['admin', 'event'] as AdminRole[],
     subItems: [
-      { name: 'Check RSVP', href: '/admin/nuzulul-quran/check' },
-      { name: 'Data RSVP', href: '/admin/nuzulul-quran' },
+      { name: 'Check RSVP', href: '/admin/rsvp/check' },
+      { name: 'Data RSVP', href: '/admin/rsvp' },
     ],
   },
 ];

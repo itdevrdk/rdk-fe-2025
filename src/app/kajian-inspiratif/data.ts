@@ -14,7 +14,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/1.png',
-    registrationUrl: 'https://forms.gle/example7',
+    registrationUrl: '/home/register',
   },
   {
     id: '2',
@@ -29,7 +29,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/2.png',
-    registrationUrl: 'https://forms.gle/example1',
+    registrationUrl: '/ngabuburits-1/register',
   },
   {
     id: '3',
@@ -44,7 +44,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/3.png',
-    registrationUrl: 'https://forms.gle/example5',
+    registrationUrl: '/simposium-ramadan-1/register',
   },
   {
     id: '4',
@@ -59,7 +59,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/4.png',
-    registrationUrl: 'https://forms.gle/example6',
+    registrationUrl: '/simposium-ramadan-2/register',
   },
   {
     id: '5',
@@ -74,7 +74,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/5.png',
-    registrationUrl: 'https://forms.gle/example2',
+    registrationUrl: '/ngabuburits-2/register',
   },
   {
     id: '6',
@@ -89,7 +89,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/6.png',
-    registrationUrl: 'https://forms.gle/example3',
+    registrationUrl: '/ngabuburits-3/register',
   },
   {
     id: '7',
@@ -104,6 +104,6 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/7.png',
-    registrationUrl: 'https://forms.gle/example4',
+    registrationUrl: '/ngabuburits-4/register',
   },
 ];

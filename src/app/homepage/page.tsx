@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import * as React from 'react';
 
+import { useGetDailyInfoToday } from '@/hooks/useDailyInfo';
 import { useEvent } from '@/hooks/useEvent';
 import { useFinanceReport } from '@/hooks/useFinanceReport';
 
@@ -472,6 +473,10 @@ export default function HomeSection() {
   const { getEvents } = useEvent();
   const [events, setEvents] = useState<RamadanEvent[]>([]);
 
+  const { data: dailyInfoResponse, isLoading: dailyInfoLoading } =
+    useGetDailyInfoToday();
+  const dailyInfo = dailyInfoResponse?.data;
+
   useEffect(() => {
     getEvents({ year: 2026 }).then((res) => {
       if (res) setEvents(res);
@@ -717,21 +722,83 @@ export default function HomeSection() {
           <Typography className='mt-6 font-bold'>
             Menu Sahur dan Berbuka Hari Ini
           </Typography>
-          <Typography className='mt-2 bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
-            Coming Soon
-          </Typography>
+          {dailyInfoLoading ? (
+            <div className='mt-2 flex flex-col items-end gap-1'>
+              <div className='h-6 w-48 animate-pulse rounded bg-gray-200' />
+              <div className='h-6 w-40 animate-pulse rounded bg-gray-200' />
+            </div>
+          ) : (
+            <div className='mt-2'>
+              {dailyInfo?.sahur_menu || dailyInfo?.iftar_menu ? (
+                <>
+                  {dailyInfo.sahur_menu && (
+                    <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
+                      Sahur: {dailyInfo.sahur_menu}
+                    </Typography>
+                  )}
+                  {dailyInfo.iftar_menu && (
+                    <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
+                      Buka: {dailyInfo.iftar_menu}
+                    </Typography>
+                  )}
+                </>
+              ) : (
+                <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
+                  Coming Soon
+                </Typography>
+              )}
+            </div>
+          )}
 
           <Typography className='mt-6 font-bold'>
             Judul Kajian & Pemateri
           </Typography>
-          <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
-            Coming Soon
-          </Typography>
+          {dailyInfoLoading ? (
+            <div className='mt-2 flex flex-col items-end gap-1'>
+              <div className='h-6 w-48 animate-pulse rounded bg-gray-200' />
+              <div className='h-6 w-32 animate-pulse rounded bg-gray-200' />
+            </div>
+          ) : (
+            <div className='mt-2'>
+              {dailyInfo?.kajian_title || dailyInfo?.kajian_speaker ? (
+                <>
+                  {dailyInfo.kajian_title && (
+                    <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent font-semibold'>
+                      {dailyInfo.kajian_title}
+                    </Typography>
+                  )}
+                  {dailyInfo.kajian_speaker && (
+                    <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
+                      Oleh: {dailyInfo.kajian_speaker}
+                    </Typography>
+                  )}
+                </>
+              ) : (
+                <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
+                  Coming Soon
+                </Typography>
+              )}
+            </div>
+          )}
 
           <Typography className='mt-6 font-bold'>Event Spesial</Typography>
-          <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
-            Coming Soon
-          </Typography>
+          {dailyInfoLoading ? (
+            <div className='mt-2 flex justify-end'>
+              <div className='h-6 w-40 animate-pulse rounded bg-gray-200' />
+            </div>
+          ) : (
+            <div className='mt-2'>
+              {dailyInfo?.special_event ? (
+                <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
+                  {dailyInfo.special_event}
+                </Typography>
+              ) : (
+                <Typography className='bg-gradient-to-r from-[#681819] to-[#C33A3C] bg-clip-text text-transparent'>
+                  Coming Soon
+                </Typography>
+              )}
+            </div>
+          )}
         </div>
       </section>
 
@@ -1062,20 +1129,18 @@ export default function HomeSection() {
                           {eventDates.includes(date) &&
                             calendarEvents[date] && (
                               <div className='absolute left-2 right-2 top-8 lg:top-10 flex flex-col gap-1'>
-                                {calendarEvents[date]
-                                  .slice(0, 3)
-                                  .map((event, eventIdx) => (
-                                    <div
-                                      key={eventIdx}
-                                      className='h-1.5 rounded-full'
-                                      style={{
-                                        backgroundColor: getEventColor(
-                                          event.title,
-                                        ),
-                                      }}
-                                      title={event.title}
-                                    />
-                                  ))}
+                                {calendarEvents[date].map((event, eventIdx) => (
+                                  <div
+                                    key={eventIdx}
+                                    className='h-1.5 rounded-full'
+                                    style={{
+                                      backgroundColor: getEventColor(
+                                        event.title,
+                                      ),
+                                    }}
+                                    title={event.title}
+                                  />
+                                ))}
                               </div>
                             )}
                         </>
@@ -1175,9 +1240,8 @@ export default function HomeSection() {
                               {eventDates.includes(date) &&
                                 selectedDate !== date && (
                                   <div className='absolute bottom-1 left-1 right-1 flex flex-col gap-0.5'>
-                                    {calendarEvents[date]
-                                      .slice(0, 2)
-                                      .map((event, eventIdx) => (
+                                    {calendarEvents[date].map(
+                                      (event, eventIdx) => (
                                         <div
                                           key={eventIdx}
                                           className='h-0.5 rounded-full'
@@ -1187,7 +1251,8 @@ export default function HomeSection() {
                                             ),
                                           }}
                                         />
-                                      ))}
+                                      ),
+                                    )}
                                   </div>
                                 )}
                             </>

@@ -44,6 +44,8 @@ export interface RsvpAdminQuery {
 export interface RsvpAdminListItem {
   fullname: string;
   code: string;
+  status: 'registered' | 'joined';
+  event_name?: string;
 }
 
 /**
@@ -119,4 +121,44 @@ export interface RsvpEntity {
   gender?: string; // Optional (used by Nuzulul Quran)
   created_at: string;
   updated_at: string;
+}
+
+// ============================================
+// Generic RSVP Types (New System)
+// ============================================
+
+export interface GenericRsvpRequest {
+  nama_lengkap: string;
+  email: string;
+  jenis_kelamin: 'Laki-laki' | 'Perempuan';
+  instansi: string;
+}
+
+export interface GenericRsvpResponse {
+  code: number;
+  status: boolean;
+  message: string;
+  data: {
+    fullname: string;
+    code: string;
+    status: string;
+  };
+}
+
+export interface GenericRsvpCheckData {
+  id: string;
+  nama_lengkap: string;
+  email: string;
+  registered_at: string;
+  status: string;
+}
+
+export interface GenericRsvpCheckResponse {
+  code: number;
+  status: boolean;
+  message: string;
+  data: {
+    is_registered: boolean;
+    data: GenericRsvpCheckData | null;
+  } | null;
 }

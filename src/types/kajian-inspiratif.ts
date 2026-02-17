@@ -1,5 +1,6 @@
 export enum KajianStatus {
   UPCOMING = 'upcoming',
+  LIVE = 'live',
   REPLAY = 'replay',
 }
 

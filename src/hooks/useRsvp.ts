@@ -3,7 +3,13 @@ import { useCallback, useState } from 'react';
 import { api } from '@/lib/api';
 
 import { ApiResponse } from '@/types/api';
-import { RsvpCreateRequest, RsvpCreateResponse } from '@/types/rsvp';
+import {
+  GenericRsvpCheckResponse,
+  GenericRsvpRequest,
+  GenericRsvpResponse,
+  RsvpCreateRequest,
+  RsvpCreateResponse,
+} from '@/types/rsvp';
 
 /**
  * Hook for general RSVP operations (public endpoints)
@@ -61,8 +67,49 @@ export const useRsvp = () => {
     }
   }, []);
 
+  /**
+   * Register for a specific event using the generic system
+   * Endpoint: POST /api/v1/rsvp/:slug/register
+   */
+  const registerEvent = useCallback(
+    async (slug: string, data: GenericRsvpRequest) => {
+      try {
+        setLoading(true);
+        const res = await api.post<GenericRsvpResponse>(
+          `/rsvp/${slug}/register`,
+          data,
+        );
+        return res.data;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  /**
+   * Check registration status for a specific event
+   * Endpoint: GET /api/v1/rsvp/:slug/check
+   */
+  const checkEventStatus = useCallback(async (slug: string, search: string) => {
+    try {
+      setLoading(true);
+      const res = await api.get<GenericRsvpCheckResponse>(
+        `/rsvp/${slug}/check`,
+        {
+          params: { search },
+        },
+      );
+      return res.data;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     loading,
     registerRsvp,
+    registerEvent,
+    checkEventStatus,
   };
 };
