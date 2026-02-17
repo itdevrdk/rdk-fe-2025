@@ -1,4 +1,5 @@
 import { Calendar, Clock, MapPin } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import React from 'react';
 
 import Button from '@/components/buttons/Button';
@@ -12,8 +13,10 @@ interface KajianCardProps {
 }
 
 export function KajianCard({ event }: KajianCardProps) {
+  const router = useRouter();
+
   const handleRegistration = () => {
-    window.open(event.registrationUrl, '_blank', 'noopener,noreferrer');
+    router.push(event.registrationUrl);
   };
 
   return (
