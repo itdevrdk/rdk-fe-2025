@@ -162,3 +162,28 @@ export interface GenericRsvpCheckResponse {
     data: GenericRsvpCheckData | null;
   } | null;
 }
+
+// ============================================
+// RSVP Summary Types
+// ============================================
+
+/**
+ * RSVP summary statistics for an event or all events
+ * GET /api/v1/admin/rsvp/summary
+ */
+export interface RsvpSummary {
+  event_name: string | null; // null jika tidak ada filter
+  total_count: number; // Total semua pendaftar
+  total_joined: number; // Total yang sudah hadir
+  total_registered: number; // Total yang masih terdaftar
+}
+
+/**
+ * Response from RSVP summary endpoint
+ */
+export interface RsvpSummaryResponse {
+  code: number;
+  status: boolean;
+  message: string;
+  data: RsvpSummary;
+}

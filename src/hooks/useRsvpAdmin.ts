@@ -12,6 +12,8 @@ import {
   RsvpDetailsData,
   RsvpStatusUpdateRequest,
   RsvpStatusUpdateResponse,
+  RsvpSummary,
+  RsvpSummaryResponse,
 } from '@/types/rsvp';
 
 const RSVP_ADMIN_BASE_URL = '/admin/rsvp';
@@ -22,6 +24,9 @@ export const rsvpAdminKeys = {
   list: (params: RsvpAdminQuery) => [...rsvpAdminKeys.lists(), params] as const,
   details: () => [...rsvpAdminKeys.all, 'detail'] as const,
   detail: (code: string) => [...rsvpAdminKeys.details(), code] as const,
+  summaries: () => [...rsvpAdminKeys.all, 'summary'] as const,
+  summary: (eventName?: string) =>
+    [...rsvpAdminKeys.summaries(), eventName || 'all'] as const,
 };
 
 interface RsvpAdminListResponse {
@@ -104,6 +109,29 @@ export const useGetRsvpByCode = (code: string | null) => {
 };
 
 /**
+ * Hook to fetch RSVP summary statistics
+ * Efficient endpoint for getting counts without pagination
+ */
+export const useGetRsvpSummary = (eventName?: string) => {
+  return useQuery<RsvpSummary, AxiosError<ApiError>>({
+    queryKey: rsvpAdminKeys.summary(eventName),
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (eventName) {
+        params.set('event_name', eventName);
+      }
+
+      const response = await api.get<RsvpSummaryResponse>(
+        `${RSVP_ADMIN_BASE_URL}/summary${params.toString() ? `?${params.toString()}` : ''}`,
+      );
+      return response.data.data;
+    },
+    staleTime: 30 * 1000, // Cache 30 seconds
+    refetchOnWindowFocus: true,
+  });
+};
+
+/**
  * Hook to update status (Check-in)
  */
 export const useUpdateRsvpStatus = () => {
@@ -129,6 +157,9 @@ export const useUpdateRsvpStatus = () => {
       return response.data;
     },
     onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: rsvpAdminKeys.summaries(),
+      });
       queryClient.invalidateQueries({
         queryKey: rsvpAdminKeys.lists(),
       });

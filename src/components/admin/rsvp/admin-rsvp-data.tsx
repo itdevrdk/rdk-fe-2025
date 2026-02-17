@@ -4,13 +4,25 @@ import { Eye, Search } from 'lucide-react';
 import * as React from 'react';
 
 import useDebounce from '@/hooks/useDebounce';
-import { useEvent } from '@/hooks/useEvent';
-import { useGetRsvps } from '@/hooks/useRsvpAdmin';
+import { useGetRsvps, useGetRsvpSummary } from '@/hooks/useRsvpAdmin';
 
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
 import AdminRsvpDetail from '@/components/admin/rsvp/admin-rsvp-detail';
 import Button from '@/components/buttons/Button';
-import Loading from '@/components/Loading';
+import Typography from '@/components/Typography';
+
+// Static list of event names
+const EVENT_NAMES = [
+  'Nuzulul Quran',
+  'Ngabuburits #1',
+  'Ngabuburits #2',
+  'Ngabuburits #3',
+  'Ngabuburits #4',
+  'Simposium Ramadan #1',
+  'Simposium Ramadan #2',
+  'Lailatul Hikmah',
+  'HOMe (Heart Of Muslimah)',
+];
 
 export default function AdminRsvpData() {
   const [page, setPage] = React.useState(1);
@@ -19,22 +31,6 @@ export default function AdminRsvpData() {
   const [selectedCode, setSelectedCode] = React.useState<string | null>(null);
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [selectedEventName, setSelectedEventName] = React.useState<string>('');
-
-  // Fetch events for dropdown
-  const { getEvents, loading: isEventsLoading } = useEvent();
-  const [events, setEvents] = React.useState<{ id: string; title: string }[]>(
-    [],
-  );
-
-  React.useEffect(() => {
-    const fetchEvents = async () => {
-      const eventData = await getEvents();
-      if (eventData) {
-        setEvents(eventData);
-      }
-    };
-    fetchEvents();
-  }, [getEvents]);
 
   const { data, isLoading } = useGetRsvps({
     page,
@@ -46,6 +42,14 @@ export default function AdminRsvpData() {
         : (statusFilter as 'registered' | 'joined'),
     event_name: selectedEventName,
   });
+
+  // Fetch summary data efficiently with single API call
+  const { data: summary } = useGetRsvpSummary(selectedEventName || undefined);
+
+  // Get summary counts from summary data
+  const totalCount = summary?.total_count || 0;
+  const totalJoined = summary?.total_joined || 0;
+  const totalRegistered = summary?.total_registered || 0;
 
   // Transform data to satisfy AdminTable's <T extends { id: string | number }> requirement
   const tableData = React.useMemo(() => {
@@ -103,10 +107,6 @@ export default function AdminRsvpData() {
     },
   ];
 
-  if (isEventsLoading && events.length === 0) {
-    return <Loading />;
-  }
-
   return (
     <div className='space-y-4'>
       {/* Event Selector */}
@@ -127,12 +127,45 @@ export default function AdminRsvpData() {
           }}
         >
           <option value=''>Semua Event</option>
-          {events.map((event) => (
-            <option key={event.id} value={event.title}>
-              {event.title}
+          {EVENT_NAMES.map((eventName) => (
+            <option key={eventName} value={eventName}>
+              {eventName}
             </option>
           ))}
         </select>
+      </div>
+
+      {/* Summary Cards */}
+      <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
+        {/* Total Pendaftar Card */}
+        <div className='bg-gradient-to-br from-blue-50 to-blue-100 border-2 border-blue-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1'>
+          <Typography variant='body' className='text-blue-700 text-sm mb-2'>
+            Total Pendaftar
+          </Typography>
+          <Typography variant='h3' className='font-bold text-blue-900'>
+            {totalCount}
+          </Typography>
+        </div>
+
+        {/* Hadir Card */}
+        <div className='bg-gradient-to-br from-green-50 to-green-100 border-2 border-green-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1'>
+          <Typography variant='body' className='text-green-700 text-sm mb-2'>
+            Hadir
+          </Typography>
+          <Typography variant='h3' className='font-bold text-green-900'>
+            {totalJoined}
+          </Typography>
+        </div>
+
+        {/* Terdaftar Card */}
+        <div className='bg-gradient-to-br from-yellow-50 to-orange-100 border-2 border-yellow-200 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all hover:-translate-y-1'>
+          <Typography variant='body' className='text-orange-700 text-sm mb-2'>
+            Terdaftar
+          </Typography>
+          <Typography variant='h3' className='font-bold text-orange-900'>
+            {totalRegistered}
+          </Typography>
+        </div>
       </div>
 
       <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>

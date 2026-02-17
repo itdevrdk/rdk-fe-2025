@@ -4,12 +4,23 @@ import { Search, Trash2, UserCheck } from 'lucide-react';
 import * as React from 'react';
 import toast from 'react-hot-toast';
 
-import { useEvent } from '@/hooks/useEvent';
 import { useGetRsvpDetail, useUpdateRsvpStatus } from '@/hooks/useRsvpAdmin';
 
 import Button from '@/components/buttons/Button';
-import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
+
+// Static list of event names
+const EVENT_NAMES = [
+  'Nuzulul Quran',
+  'Ngabuburits #1',
+  'Ngabuburits #2',
+  'Ngabuburits #3',
+  'Ngabuburits #4',
+  'Simposium Ramadan #1',
+  'Simposium Ramadan #2',
+  'Lailatul Hikmah',
+  'HOMe (Heart Of Muslimah)',
+];
 
 export default function AdminRsvpCheck() {
   const [code, setCode] = React.useState('');
@@ -17,20 +28,6 @@ export default function AdminRsvpCheck() {
 
   // Event Selection State
   const [selectedEventName, setSelectedEventName] = React.useState<string>('');
-  const { getEvents, loading: isEventsLoading } = useEvent();
-  const [events, setEvents] = React.useState<{ id: string; title: string }[]>(
-    [],
-  );
-
-  React.useEffect(() => {
-    const fetchEvents = async () => {
-      const eventData = await getEvents();
-      if (eventData) {
-        setEvents(eventData);
-      }
-    };
-    fetchEvents();
-  }, [getEvents]);
 
   // When searchTrigger is set, we fetch the data
   // Note: getRsvpDetail fetches only by code. It returns the data regardless of event.
@@ -78,10 +75,6 @@ export default function AdminRsvpCheck() {
     }
   }, [isError, isLoading, searchTrigger]);
 
-  if (isEventsLoading && events.length === 0) {
-    return <Loading />;
-  }
-
   return (
     <div className='mx-auto w-full'>
       <div className='rounded-xl border border-gray-200 bg-white p-6 shadow-sm'>
@@ -109,9 +102,9 @@ export default function AdminRsvpCheck() {
             }}
           >
             <option value=''>Semua Event (Pencarian Global)</option>
-            {events.map((event) => (
-              <option key={event.id} value={event.title}>
-                {event.title}
+            {EVENT_NAMES.map((eventName) => (
+              <option key={eventName} value={eventName}>
+                {eventName}
               </option>
             ))}
           </select>
