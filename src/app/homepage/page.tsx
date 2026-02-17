@@ -51,7 +51,7 @@ const KEGIATAN_ITEMS: KegiatanItem[] = [
     hasRegister: true,
     link: '/kajian-inspiratif',
     image: '/images/homepage/coming-soon-placeholder.png',
-    registrationOpenDate: new Date('2026-02-18'),
+    registrationOpenDate: new Date('2026-02-17'),
     registrationDeadline: null,
   },
   {
