@@ -14,7 +14,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/1.png',
-    registrationUrl: '/home/register',
+    registrationUrl: '/home',
   },
   {
     id: '2',
@@ -29,7 +29,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/2.png',
-    registrationUrl: '/ngabuburits-1/register',
+    registrationUrl: '/ngabuburits-1',
   },
   {
     id: '3',
@@ -44,7 +44,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/3.png',
-    registrationUrl: '/simposium-ramadan-1/register',
+    registrationUrl: '/simposium-ramadan-1',
   },
   {
     id: '4',
@@ -59,7 +59,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/4.png',
-    registrationUrl: '/simposium-ramadan-2/register',
+    registrationUrl: '/simposium-ramadan-2',
   },
   {
     id: '5',
@@ -74,7 +74,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/5.png',
-    registrationUrl: '/ngabuburits-2/register',
+    registrationUrl: '/ngabuburits-2',
   },
   {
     id: '6',
@@ -89,7 +89,7 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/6.png',
-    registrationUrl: '/ngabuburits-3/register',
+    registrationUrl: '/ngabuburits-3',
   },
   {
     id: '7',
@@ -104,6 +104,6 @@ export const kajianEvents: KajianEvent[] = [
     time: '15.30 WIB',
     location: 'Masjid Manarul Ilmi ITS',
     thumbnailUrl: '/images/kajian-inspiratif/pemateri/7.png',
-    registrationUrl: '/ngabuburits-4/register',
+    registrationUrl: '/ngabuburits-4',
   },
 ];
