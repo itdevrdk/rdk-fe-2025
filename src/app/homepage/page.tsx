@@ -464,7 +464,10 @@ function ComingSoonPopup({ onClose }: { onClose: () => void }) {
 
 export default function HomeSection() {
   const router = useRouter();
-  const [showPopup, setShowPopup] = React.useState(true);
+  const [showPopup, setShowPopup] = React.useState(() => {
+    const targetDate = new Date('2026-02-18T17:55:00');
+    return new Date() < targetDate;
+  });
   const [kegiatanSlide, setKegiatanSlide] = React.useState(0);
   const [isAutoPlayKegiatan, setIsAutoPlayKegiatan] = React.useState(true);
   const [visibleItemsKegiatan, setVisibleItemsKegiatan] = React.useState(3);

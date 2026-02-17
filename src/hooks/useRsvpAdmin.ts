@@ -49,7 +49,8 @@ export const useGetRsvps = (params: RsvpAdminQuery) => {
       if (params.page) queryParams.set('page', String(params.page));
       if (params.limit) queryParams.set('limit', String(params.limit));
       if (params.search) queryParams.set('search', params.search);
-      if (params.event_name) queryParams.set('event_name', params.event_name);
+      // Always send event_name parameter, even if empty
+      queryParams.set('event_name', params.event_name ?? '');
       if (params.status) queryParams.set('status', params.status);
 
       const response = await api.get<RsvpAdminListResponse>(
