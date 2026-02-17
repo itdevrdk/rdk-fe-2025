@@ -23,6 +23,50 @@ export interface RsvpCreateResponse {
 }
 
 // ============================================
+// Admin Manual RSVP Creation Types
+// ============================================
+
+/**
+ * Valid event names for RSVP registration
+ * Must match exactly (case-sensitive) with backend validation
+ */
+export const VALID_EVENT_NAMES = [
+  'Nuzulul Quran',
+  'Ngabuburits #1',
+  'Ngabuburits #2',
+  'Ngabuburits #3',
+  'Ngabuburits #4',
+  'Simposium Ramadan #1',
+  'Simposium Ramadan #2',
+  'Lailatul Hikmah',
+  'HOMe (Heart Of Muslimah)',
+] as const;
+
+export type EventName = (typeof VALID_EVENT_NAMES)[number];
+
+/**
+ * Request payload for admin to manually add RSVP data
+ * POST /api/v1/admin/rsvp (or /api/v1/admin/rsvp/manual)
+ */
+export interface RsvpAdminCreateRequest {
+  fullname: string;
+  institution: string;
+  event_name: string; // Required
+}
+
+/**
+ * Response from admin manual RSVP creation
+ */
+export interface RsvpAdminCreateResponse {
+  rsvp_id?: string;
+  fullname: string;
+  institution: string;
+  code: string;
+  status: 'registered' | 'joined';
+  event_name?: string;
+}
+
+// ============================================
 // Admin RSVP Types (for both General & Nuzulul Quran)
 // ============================================
 

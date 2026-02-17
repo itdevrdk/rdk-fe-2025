@@ -5,6 +5,8 @@ import { api } from '@/lib/api';
 
 import { ApiError } from '@/types/api';
 import {
+  RsvpAdminCreateRequest,
+  RsvpAdminCreateResponse,
   RsvpAdminListItem,
   RsvpAdminMeta,
   RsvpAdminQuery,
@@ -166,6 +168,42 @@ export const useUpdateRsvpStatus = () => {
       });
       queryClient.invalidateQueries({
         queryKey: rsvpAdminKeys.detail(variables.code),
+      });
+    },
+  });
+};
+
+/**
+ * Hook to create RSVP manually by admin
+ */
+export const useCreateRsvpManual = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    {
+      data: RsvpAdminCreateResponse;
+      code: number;
+      status: boolean;
+      message: string;
+    },
+    AxiosError<ApiError>,
+    RsvpAdminCreateRequest
+  >({
+    mutationFn: async (payload) => {
+      const response = await api.post<{
+        data: RsvpAdminCreateResponse;
+        code: number;
+        status: boolean;
+        message: string;
+      }>(`${RSVP_ADMIN_BASE_URL}`, payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: rsvpAdminKeys.summaries(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: rsvpAdminKeys.lists(),
       });
     },
   });

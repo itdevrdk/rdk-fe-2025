@@ -1,28 +1,18 @@
 'use client';
 
-import { Eye, Search } from 'lucide-react';
+import { Eye, Plus, Search } from 'lucide-react';
 import * as React from 'react';
 
 import useDebounce from '@/hooks/useDebounce';
 import { useGetRsvps, useGetRsvpSummary } from '@/hooks/useRsvpAdmin';
 
 import AdminTable, { TableColumn } from '@/components/admin/AdminTable';
+import AdminRsvpAddModal from '@/components/admin/rsvp/admin-rsvp-add-modal';
 import AdminRsvpDetail from '@/components/admin/rsvp/admin-rsvp-detail';
 import Button from '@/components/buttons/Button';
 import Typography from '@/components/Typography';
 
-// Static list of event names
-const EVENT_NAMES = [
-  'Nuzulul Quran',
-  'Ngabuburits #1',
-  'Ngabuburits #2',
-  'Ngabuburits #3',
-  'Ngabuburits #4',
-  'Simposium Ramadan #1',
-  'Simposium Ramadan #2',
-  'Lailatul Hikmah',
-  'HOMe (Heart Of Muslimah)',
-];
+import { VALID_EVENT_NAMES } from '@/types/rsvp';
 
 export default function AdminRsvpData() {
   const [page, setPage] = React.useState(1);
@@ -31,6 +21,7 @@ export default function AdminRsvpData() {
   const [selectedCode, setSelectedCode] = React.useState<string | null>(null);
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [selectedEventName, setSelectedEventName] = React.useState<string>('');
+  const [isAddModalOpen, setIsAddModalOpen] = React.useState(false);
 
   const { data, isLoading } = useGetRsvps({
     page,
@@ -129,7 +120,7 @@ export default function AdminRsvpData() {
           }}
         >
           <option value=''>Semua Event</option>
-          {EVENT_NAMES.map((eventName) => (
+          {VALID_EVENT_NAMES.map((eventName) => (
             <option key={eventName} value={eventName}>
               {eventName}
             </option>
@@ -187,18 +178,31 @@ export default function AdminRsvpData() {
           />
         </div>
 
-        <select
-          className='block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 focus:border-primary-100 focus:ring-primary-100 sm:w-48'
-          value={statusFilter}
-          onChange={(e) => {
-            setStatusFilter(e.target.value);
-            setPage(1);
-          }}
-        >
-          <option value='all'>Semua Status</option>
-          <option value='registered'>Registered</option>
-          <option value='joined'>Joined</option>
-        </select>
+        <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3'>
+          <select
+            className='block w-full rounded-lg border border-gray-300 bg-white p-2.5 text-sm text-gray-900 focus:border-primary-100 focus:ring-primary-100 sm:w-48'
+            value={statusFilter}
+            onChange={(e) => {
+              setStatusFilter(e.target.value);
+              setPage(1);
+            }}
+          >
+            <option value='all'>Semua Status</option>
+            <option value='registered'>Registered</option>
+            <option value='joined'>Joined</option>
+          </select>
+
+          <Button
+            variant='primary'
+            size='sm'
+            leftIcon={Plus}
+            onClick={() => setIsAddModalOpen(true)}
+            disabled={!selectedEventName}
+            title={!selectedEventName ? 'Pilih event terlebih dahulu' : ''}
+          >
+            Tambah Manual
+          </Button>
+        </div>
       </div>
 
       <AdminTable
@@ -214,6 +218,11 @@ export default function AdminRsvpData() {
         isOpen={!!selectedCode}
         onClose={() => setSelectedCode(null)}
         code={selectedCode}
+      />
+      <AdminRsvpAddModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        selectedEventName={selectedEventName}
       />
     </div>
   );

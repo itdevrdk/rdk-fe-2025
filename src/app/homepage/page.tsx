@@ -1581,7 +1581,7 @@ export default function HomeSection() {
         <style jsx>{`
           .marquee-track {
             width: max-content;
-            animation: marquee 25s linear infinite;
+            animation: marquee 40s linear infinite;
           }
 
           @keyframes marquee {
