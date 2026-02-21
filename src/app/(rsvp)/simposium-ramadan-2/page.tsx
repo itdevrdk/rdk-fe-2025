@@ -114,14 +114,14 @@ export default function SimposiumRamadan2Page() {
                 <Button
                   variant='primary'
                   className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-semibold py-3 rounded-lg transition-colors'
-                  onClick={() => router.push('/nuzulul-quran/register')}
+                  onClick={() => router.push('/simposium-ramadan-2/register')}
                 >
                   Daftar Sekarang
                 </Button>
                 <Button
                   variant='primary'
                   className='w-full border-2 bg-white text-black font-semibold py-3 rounded-lg hover:bg-neutral-300 transition-colors'
-                  onClick={() => router.push('/nuzulul-quran/check')}
+                  onClick={() => router.push('/simposium-ramadan-2/check')}
                 >
                   Cek Status Pendaftaran
                 </Button>

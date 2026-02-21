@@ -110,14 +110,14 @@ export default function LailatulHikmahPage() {
                 <Button
                   variant='primary'
                   className='w-full bg-[#681819] hover:bg-[#5A1415] text-white font-semibold py-3 rounded-lg transition-colors'
-                  onClick={() => router.push('/nuzulul-quran/register')}
+                  onClick={() => router.push('/lailatul-hikmah/register')}
                 >
                   Daftar Sekarang
                 </Button>
                 <Button
                   variant='primary'
                   className='w-full border-2 bg-white text-black font-semibold py-3 rounded-lg hover:bg-neutral-300 transition-colors'
-                  onClick={() => router.push('/nuzulul-quran/check')}
+                  onClick={() => router.push('/lailatul-hikmah/check')}
                 >
                   Cek Status Pendaftaran
                 </Button>
