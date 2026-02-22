@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 
 import { api } from '@/lib/api';
@@ -9,6 +14,7 @@ import {
   FeedbackAdminQuery,
   FeedbackBulkDeleteResponse,
   FeedbackDeleteResponse,
+  FeedbackDetailResponse,
   FeedbackSummaryResponse,
 } from '@/types/feedback';
 
@@ -21,6 +27,7 @@ function buildFeedbackQueryParams(params: FeedbackAdminQuery) {
   if (params.limit) queryParams.set('limit', String(params.limit));
   if (params.search) queryParams.set('search', params.search);
   if (params.rating) queryParams.set('rating', params.rating);
+  if (params.event) queryParams.set('event', params.event);
   if (params.sort) queryParams.set('sort', params.sort);
 
   return queryParams.toString();
@@ -44,18 +51,42 @@ export function useGetFeedbackList(params: FeedbackAdminQuery) {
   });
 }
 
-async function getFeedbackSummary() {
+async function getFeedbackSummary(eventName?: string) {
+  const params = new URLSearchParams();
+  if (eventName) params.set('event', eventName);
+
   const { data } = await api.get<FeedbackSummaryResponse>(
-    `${ADMIN_FEEDBACK_BASE_URL}/summary`,
+    `${ADMIN_FEEDBACK_BASE_URL}/summary${params.toString() ? `?${params.toString()}` : ''}`,
   );
   return data;
 }
 
-export function useGetFeedbackSummary() {
+export function useGetFeedbackSummary(eventName?: string) {
   return useQuery<FeedbackSummaryResponse, AxiosError<ApiError>>({
-    queryKey: ['admin', 'feedback', 'summary'],
-    queryFn: getFeedbackSummary,
+    queryKey: ['admin', 'feedback', 'summary', eventName],
+    queryFn: () => getFeedbackSummary(eventName),
     staleTime: 30 * 1000,
+  });
+}
+
+async function getFeedbackDetail(id: string) {
+  const { data } = await api.get<FeedbackDetailResponse>(
+    `${ADMIN_FEEDBACK_BASE_URL}/${id}`,
+  );
+  return data;
+}
+
+export function useGetFeedbackDetail(
+  id: string,
+  options?: Partial<
+    UseQueryOptions<FeedbackDetailResponse, AxiosError<ApiError>>
+  >,
+) {
+  return useQuery<FeedbackDetailResponse, AxiosError<ApiError>>({
+    queryKey: ['admin', 'feedback', 'detail', id],
+    queryFn: () => getFeedbackDetail(id),
+    staleTime: 30 * 1000,
+    ...options,
   });
 }
 

@@ -17,15 +17,11 @@ import NextImageCustom from '@/components/NextImage';
 import { showToast, SUCCESS_TOAST, WARNING_TOAST } from '@/components/Toast';
 import Typography from '@/components/Typography';
 
-import { useCreateFeedback } from '@/app/homepage/hook/useCreateFeedback';
+import { useCreateSuggestion } from '@/app/homepage/hook/useCreateSuggestion';
 import { isRegistrationClosed } from '@/utils/date';
 import { formatIDR } from '@/utils/format';
 
-import {
-  EMOJI_RATINGS,
-  EmojiRating,
-  FeedbackCreateRequest,
-} from '@/types/feedback';
+import { CreateSuggestionRequest } from '@/types/entities/suggestion';
 import { RamadanEvent } from '@/types/event';
 import { FinanceReportSummary } from '@/types/finance';
 
@@ -206,8 +202,8 @@ const isRamadanActive = isRamadanStarted && !isRamadanEnded;
 // Hitung tanggal Ramadan saat ini (1-30) jika dalam periode Ramadan
 const currentRamadanDay = isRamadanActive
   ? Math.floor(
-    (today.getTime() - RAMADAN_START_DATE.getTime()) / (1000 * 60 * 60 * 24),
-  ) + 1
+      (today.getTime() - RAMADAN_START_DATE.getTime()) / (1000 * 60 * 60 * 24),
+    ) + 1
   : null;
 
 const dates = Array.from({ length: TOTAL_DAYS_RAMADAN }, (_, i) => i + 1);
@@ -947,10 +943,11 @@ export default function HomeSection() {
                 <button
                   key={index}
                   onClick={() => goToKegiatanSlide(index)}
-                  className={`transition-all ${index === kegiatanSlide
+                  className={`transition-all ${
+                    index === kegiatanSlide
                       ? 'w-8 h-3 bg-[#FFB121]'
                       : 'w-3 h-3 bg-white/50 hover:bg-white/70'
-                    } rounded-full`}
+                  } rounded-full`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
@@ -1454,10 +1451,11 @@ export default function HomeSection() {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`transition-all ${index === currentSlide
+                className={`transition-all ${
+                  index === currentSlide
                     ? 'w-8 h-3 bg-[#681819]'
                     : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
-                  } rounded-full`}
+                } rounded-full`}
                 aria-label={`Go to item ${index + 1}`}
               />
             ))}
@@ -1513,12 +1511,12 @@ export default function HomeSection() {
                 <Typography weight='bold' className='text-[#681819]'>
                   {latestReport
                     ? formatIDR(
-                      Math.max(
-                        0,
-                        Number(latestReport.target) -
-                        Number(latestReport.total_income),
-                      ),
-                    )
+                        Math.max(
+                          0,
+                          Number(latestReport.target) -
+                            Number(latestReport.total_income),
+                        ),
+                      )
                     : 'Rp 0'}
                 </Typography>
                 <Typography className='text-xs text-gray-500'>
@@ -1566,6 +1564,8 @@ export default function HomeSection() {
                 '/images/homepage/sponsor/2.webp',
                 '/images/homepage/sponsor/3.png',
                 '/images/homepage/sponsor/4.png',
+                '/images/homepage/sponsor/5.png',
+                '/images/homepage/sponsor/6.webp',
               ].map((src, i) => (
                 <NextImage
                   key={`${idx}-${src}-${i}`}
@@ -1624,41 +1624,38 @@ export default function HomeSection() {
             </Typography>
           </div>
 
-          <FeedbackForm />
+          <SuggestionForm />
         </div>
       </section>
     </Layout>
   );
 }
 
-function FeedbackForm() {
-  const mutation = useCreateFeedback();
-  const [rating, setRating] = useState<EmojiRating | ''>('');
+function SuggestionForm() {
+  const mutation = useCreateSuggestion();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const name = formData.get('name') as string;
-    const message = formData.get('message') as string;
+    const suggestion = formData.get('suggestion') as string;
     const trimmedName = name.trim();
-    const trimmedMessage = message.trim();
+    const trimmedSuggestion = suggestion.trim();
 
-    if (!trimmedName || !trimmedMessage || !rating) {
+    if (!trimmedName || !trimmedSuggestion) {
       showToast('Mohon lengkapi semua field', WARNING_TOAST);
       return;
     }
 
     try {
-      const data: FeedbackCreateRequest = {
+      const data: CreateSuggestionRequest = {
         name: trimmedName,
-        rating: rating as EmojiRating,
-        message: trimmedMessage,
+        suggestion: trimmedSuggestion,
       };
       await mutation.mutateAsync(data);
       showToast('Terima kasih atas masukan Anda!', SUCCESS_TOAST);
-      setRating('');
       (e.target as HTMLFormElement).reset();
-    } catch (error) {
+    } catch {
       showToast('Gagal mengirim masukan. Silakan coba lagi.', WARNING_TOAST);
     }
   };
@@ -1673,39 +1670,9 @@ function FeedbackForm() {
         maxLength={100}
         disabled={mutation.isPending}
       />
-      <div className='grid grid-cols-2 gap-3 sm:grid-cols-3'>
-        {EMOJI_RATINGS.map((option) => {
-          const isSelected = rating === option.value;
-
-          return (
-            <label
-              key={option.value}
-              className={`flex cursor-pointer items-center gap-2 rounded border px-3 py-2 text-sm transition-colors ${isSelected
-                  ? 'border-primary-200 bg-primary-50 text-primary-700'
-                  : 'border-gray-200 text-gray-700 hover:border-primary-100'
-                } ${mutation.isPending
-                  ? 'cursor-not-allowed opacity-60'
-                  : ''
-                }`}
-            >
-              <input
-                type='radio'
-                name='rating'
-                value={option.value}
-                checked={isSelected}
-                onChange={() => setRating(option.value)}
-                disabled={mutation.isPending}
-                className='sr-only'
-              />
-              <span className='text-base'>{option.emoji}</span>
-              <span>{option.label}</span>
-            </label>
-          );
-        })}
-      </div>
       <textarea
-        name='message'
-        placeholder='Pesan feedback'
+        name='suggestion'
+        placeholder='Masukan Anda'
         className='w-full rounded border px-4 py-2'
         required
         maxLength={1000}

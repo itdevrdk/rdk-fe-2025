@@ -1,8 +1,9 @@
+import { AxiosError } from 'axios';
 import { useCallback, useState } from 'react';
 
 import { api } from '@/lib/api';
 
-import { ApiResponse } from '@/types/api';
+import { ApiError, ApiResponse } from '@/types/api';
 import {
   FeedbackCreateRequest,
   FeedbackCreateResponse,
@@ -13,10 +14,11 @@ import {
  *
  * Provides functionality for:
  * - Submitting feedback (POST /api/v1/feedback)
+ * - No authentication required
  *
  * @example
  * ```tsx
- * const { loading, submitFeedback } = useFeedback();
+ * const { loading, submitFeedback, error } = useFeedback();
  *
  * const handleSubmit = async (data) => {
  *   try {
@@ -30,13 +32,14 @@ import {
  */
 export const useFeedback = () => {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<ApiError | null>(null);
 
   /**
    * Submit new feedback
    *
    * @param data - Feedback data including name, rating, and message
    * @returns API response with feedback data
-   * @throws {AxiosError} 422 - Validation error (missing required fields)
+   * @throws {AxiosError<ApiError>} - Validation error or server error
    *
    * @example
    * ```tsx
@@ -46,6 +49,7 @@ export const useFeedback = () => {
    *   message: "Website sangat membantu!"
    * });
    * console.log('Submitted with ID:', result.data.id);
+   * console.log('Created at:', result.data.created_at);
    * ```
    */
   const submitFeedback = useCallback(
@@ -53,12 +57,18 @@ export const useFeedback = () => {
       data: FeedbackCreateRequest,
     ): Promise<ApiResponse<FeedbackCreateResponse>> => {
       setLoading(true);
+      setError(null);
       try {
         const response = await api.post<ApiResponse<FeedbackCreateResponse>>(
           '/feedback',
           data,
         );
         return response.data;
+      } catch (err) {
+        const axiosError = err as AxiosError<ApiError>;
+        const errorData = axiosError.response?.data;
+        setError(errorData || null);
+        throw err;
       } finally {
         setLoading(false);
       }
@@ -68,6 +78,7 @@ export const useFeedback = () => {
 
   return {
     loading,
+    error,
     submitFeedback,
   };
 };

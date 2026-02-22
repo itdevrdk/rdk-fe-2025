@@ -10,6 +10,7 @@ import {
   Link as LinkIcon,
   LogOut,
   Menu,
+  MessageSquareHeart,
   PanelLeftClose,
   PanelLeftOpen,
   QrCode,
@@ -110,6 +111,12 @@ const navItems = [
       { name: 'Check RSVP', href: '/admin/rsvp/check' },
       { name: 'Data RSVP', href: '/admin/rsvp' },
     ],
+  },
+  {
+    name: 'Feedback',
+    href: '/admin/feedback',
+    icon: MessageSquareHeart,
+    allowedRoles: ['admin', 'event', 'publication'] as AdminRole[],
   },
 ];
 
