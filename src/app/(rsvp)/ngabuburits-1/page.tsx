@@ -132,7 +132,7 @@ export default function Ngabuburits1Page() {
             {/* RIGHT POSTER */}
             <div className='order-1 lg:order-2 flex justify-center md:justify-end '>
               <NextImage
-                src='/images/nuzulul-quran/coming-soon-placeholder.png'
+                src='/images/kajian-inspiratif/poster/ngabuburits-1.png'
                 alt='Ornament'
                 width={477}
                 height={462}
