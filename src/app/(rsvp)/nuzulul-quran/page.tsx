@@ -74,8 +74,8 @@ export default function NuzululQuranPage() {
                     weight='bold'
                     className='text-[#681819] text-center md:text-justify text-sm md:text-base leading-relaxed'
                   >
-                    "Healing di Era Digital : Menjadi Muslim Berkarakter Melalui
-                    Cahaya Ketenangan Al-Qur'an"
+                    "Menemukan Kembali Energi Kehidupan melalui Cahaya Nuzulul
+                    Qur'an
                   </Typography>
                 </div>
                 <div className='flex flex-row gap-4 justify-start items-center'>
@@ -195,10 +195,16 @@ export default function NuzululQuranPage() {
                 <div className='flex items-center gap-3'>
                   <FaWhatsapp className='text-2xl text-[#681819]' />
                   <a
-                    href='https://wa.me/6281329693818'
+                    href='https://wa.me/6281357394069'
                     className='text-[#681819] font-semibold hover:text-[#C33A3C] transition-colors'
                   >
-                    081329693818 (Admin RDK ITS)
+                    081357394069 (Nailul)
+                  </a>
+                  <a
+                    href='https://wa.me/6281291076937'
+                    className='text-[#681819] font-semibold hover:text-[#C33A3C] transition-colors'
+                  >
+                    081291076937 (Ikhsan)
                   </a>
                 </div>
               </div>
