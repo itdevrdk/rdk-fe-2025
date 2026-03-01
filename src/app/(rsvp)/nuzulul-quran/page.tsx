@@ -75,7 +75,7 @@ export default function NuzululQuranPage() {
                     className='text-[#681819] text-center md:text-justify text-sm md:text-base leading-relaxed'
                   >
                     "Menemukan Kembali Energi Kehidupan melalui Cahaya Nuzulul
-                    Qur'an
+                    Qur'an"
                   </Typography>
                 </div>
                 <div className='flex flex-row gap-4 justify-start items-center'>
@@ -127,7 +127,7 @@ export default function NuzululQuranPage() {
             {/* RIGHT POSTER */}
             <div className='order-1 lg:order-2 flex justify-center md:justify-end '>
               <NextImage
-                src='/images/nuzulul-quran/coming-soon-placeholder.png'
+                src='/images/kajian-inspiratif/poster/nuzulul-quran.png'
                 alt='Ornament'
                 width={477}
                 height={462}
