@@ -65,6 +65,61 @@ export default function Ngabuburits4RegisterPage() {
     <Layout withNavbar withFooter>
       {/* RSVP FORM SECTION */}
       <section className='relative bg-[#FFE9B5] min-h-screen flex flex-col overflow-hidden pb-64 md:pb-80 lg:pb-0'>
+        {/* Infaq Information */}
+        <div className='relative z-30 mx-auto max-w-2xl w-full px-4 md:px-6 py-4 mt-8 mb-4 bg-white/80 rounded-lg shadow border border-[#681819] flex flex-col items-center'>
+          <Typography
+            as='h2'
+            variant='h4'
+            className='text-[#681819] font-bold mb-2'
+          >
+            Informasi Infaq Ramadhan
+          </Typography>
+          <p className='text-[#681819] text-sm md:text-base text-center mb-2'>
+            Panitia menerima infaq berupa uang tunai, transfer, makanan/minuman,
+            atau barang. Infaq dapat disalurkan ke:
+          </p>
+          <div className='flex flex-col items-center mb-2'>
+            <span className='font-semibold text-[#681819] text-lg'>
+              BSI 7770778977
+            </span>
+            <span className='text-xs'>(a.n Takmir Masjid Manarul Ilmi)</span>
+            <span className='text-xs'>
+              Tambahkan kode <strong>047</strong> pada nominal transfer (Contoh:
+              Rp 10.047)
+            </span>
+          </div>
+          <div className='flex flex-col items-center mb-2'>
+            <span className='font-semibold text-[#681819]'>
+              Contact Person:
+            </span>
+            <a
+              href='https://wa.me/6287817503128'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline text-green-700'
+            >
+              0878-1750-3128 (Fikri)
+            </a>
+            <a
+              href='https://wa.me/6285239204463'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline text-green-700'
+            >
+              0852-3920-4463 (Putri)
+            </a>
+          </div>
+          <div className='flex flex-col items-center'>
+            <span className='font-semibold text-[#681819] mb-1'>
+              Scan QRIS untuk donasi:
+            </span>
+            <img
+              src='/images/infaq/qris.png'
+              alt='QRIS Donasi'
+              className='w-40 h-auto rounded shadow'
+            />
+          </div>
+        </div>
         {/* Top Right Decoration - Lamps */}
         <NextImage
           src='/images/nuzulul-quran/register/top-right-decoration-lamp.png'
